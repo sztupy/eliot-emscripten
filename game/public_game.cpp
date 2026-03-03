@@ -28,7 +28,6 @@
 #include "topping.h"
 #include "game_factory.h"
 #include "game_exception.h"
-#include "xml_writer.h"
 #include "player.h"
 #include "pldrack.h"
 
@@ -397,20 +396,6 @@ void PublicGame::arbitrationFinalizeTurn()
 
 /***************************/
 
-PublicGame *PublicGame::load(const string &iFileName, const Dictionary &iDic)
-{
-    Game *game = GameFactory::Instance()->load(iFileName, iDic);
-    return new PublicGame(*game);
-}
-
-
-void PublicGame::save(const string &iFileName) const
-{
-    XmlWriter::write(m_game, iFileName);
-}
-
-/***************************/
-
 unsigned int PublicGame::getCurrTurn() const
 {
     // +1 to have a 1-based index (more user-friendly)
@@ -470,4 +455,3 @@ void PublicGame::printTurns() const
 {
     m_game.getNavigation().print();
 }
-

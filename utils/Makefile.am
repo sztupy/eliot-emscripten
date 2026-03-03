@@ -25,7 +25,7 @@ bin_PROGRAMS =
 if BUILD_TEXT
 noinst_PROGRAMS += eliottxt
 eliottxt_SOURCES = game_io.h game_io.cpp eliottxt.cpp
-eliottxt_LDADD = $(top_builddir)/game/libgame.a $(top_builddir)/dic/libdic.a @LIBINTL@ @LIBICONV@ @LIBCONFIG_LIBS@ @ARABICA_LIBS@ @EXPAT_LIBS@
+eliottxt_LDADD = $(top_builddir)/game/libgame.a $(top_builddir)/dic/libdic.a @LIBINTL@ @LIBICONV@ @LIBCONFIG_LIBS@
 
 if HAS_READLINE
 eliottxt_LDADD += -lreadline
@@ -34,14 +34,3 @@ if WITH_LOGGING
 eliottxt_LDADD += @LOG4CXX_LIBS@
 endif
 endif
-
-if BUILD_NCURSES
-bin_PROGRAMS += eliotcurses
-eliotcurses_SOURCES = curses_intf.cpp curses_intf.h
-eliotcurses_LDADD = ../game/libgame.a ../dic/libdic.a @CURSES_LIB@ @LIBINTL@ @LIBICONV@ @LIBCONFIG_LIBS@ @ARABICA_LIBS@ @EXPAT_LIBS@
-if WITH_LOGGING
-eliotcurses_LDADD += @LOG4CXX_LIBS@
-endif
-
-endif
-

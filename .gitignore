@@ -93,4 +93,9 @@ qt/resources.cpp
 qt/win32icon.rc
 test/eliottxt
 test/eliottxt.exe
-
+extras/innosetup/eliot-setup.iss
+*.o
+dic/libdic.a
+game/cmd/.dirstamp
+game/libgame.a
+po/stamp-po

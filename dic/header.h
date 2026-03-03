@@ -54,8 +54,8 @@ struct DictHeaderInfo
     wstring letters;
     vector<uint8_t> points;
     vector<uint8_t> frequency;
-    vector<bool> vowels;
-    vector<bool> consonants;
+    vector<uint8_t> vowels;
+    vector<uint8_t> consonants;
     map<wchar_t, vector<wstring> > displayInputData;
 };
 
@@ -198,10 +198,10 @@ private:
     vector<uint8_t> m_frequency;
 
     /// Vowels
-    vector<bool> m_vowels;
+    vector<uint8_t> m_vowels;
 
     /// Consonants
-    vector<bool> m_consonants;
+    vector<uint8_t> m_consonants;
 
     /// Additional display and input strings for some letters
     map<wchar_t, vector<wstring> > m_displayAndInputData;
@@ -236,4 +236,3 @@ private:
 };
 
 #endif /* _HEADER_H */
-

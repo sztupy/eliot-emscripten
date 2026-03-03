@@ -518,19 +518,6 @@ void commonCommands(PublicGame &iGame, const vector<wstring> &tokens)
         if (res != 0)
             printf("Mot incorrect ou mal placé (%i)\n", res);
     }
-    else if (command == L's')
-    {
-        const wstring &fileName = parseFileName(tokens, 1);
-        try
-        {
-            iGame.save(lfw(fileName));
-        }
-        catch (std::exception &e)
-        {
-            printf("Cannot save game to %ls: %s\n", fileName.c_str(), e.what());
-            return;
-        }
-    }
 }
 
 
@@ -894,30 +881,6 @@ void mainLoop(const Dictionary &iDic)
                 case L'?':
                     help();
                     break;
-                case L'c':
-                    {
-                        const string &fileName = lfw(parseFileName(tokens, 1));
-                        try
-                        {
-                            PublicGame *game = PublicGame::load(fileName, iDic);
-                            if (game->getMode() == PublicGame::kTRAINING)
-                                loopTraining(*game);
-                            else if (game->getMode() == PublicGame::kFREEGAME)
-                                loopFreegame(*game);
-                            else if (game->getMode() == PublicGame::kDUPLICATE)
-                                loopDuplicate(*game);
-                            else if (game->getMode() == PublicGame::kARBITRATION)
-                                loopArbitration(*game);
-                            else if (game->getMode() == PublicGame::kTOPPING)
-                                loopTopping(*game);
-                            delete game;
-                        }
-                        catch (const std::exception &e)
-                        {
-                            printf("Error loading the game: %s\n", e.what());
-                        }
-                    }
-                    break;
                 case L'e':
                     {
                         // New training game
@@ -1045,4 +1008,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-

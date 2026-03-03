@@ -4,7 +4,7 @@ dnl --------------------------------------------------------------
 dnl configure.ac for Eliot
 dnl --------------------------------------------------------------
 AC_INIT([eliot],[2.3-git])
-AC_CONFIG_SRCDIR(qt/main.cpp)
+AC_CONFIG_SRCDIR(utils/eliottxt.cpp)
 dnl See http://www.flameeyes.eu/autotools-mythbuster/automake/nonrecursive.html
 dnl for the subdir-objets arguments (used at the moment for game/cmd/)
 AM_INIT_AUTOMAKE([subdir-objects])
@@ -88,7 +88,6 @@ AM_CONDITIONAL([WIN32_BUILD], [test "${CXX}" = "i586-mingw32msvc-g++"])
 dnl --------------------------------------------------------------
 dnl Checks for header files.
 dnl --------------------------------------------------------------
-AC_HEADER_STDC
 AC_CHECK_HEADERS(fcntl.h unistd.h sys/stats.h sys/types.h)
 AC_CHECK_HEADERS(arpa/inet.h netinet/in.h)
 AC_CHECK_HEADERS([readline/readline.h], [has_readline=1], [has_readline=0])
@@ -140,72 +139,6 @@ AS_IF([test "${want_logging}" = "1"],
 # Conditional, to avoid a useless dependency (in the case of shared library)
 AM_CONDITIONAL([WITH_LOGGING], [test "${with_logging}" = "1"])
 
-dnl Check for Expat
-AX_LIB_EXPAT([2.0.1])
-
-dnl Check for arabica and libxml2
-PKG_CHECK_MODULES(ARABICA, [arabica], [],
-                  [AC_MSG_ERROR([Could not find Arabica on your system (using pkg-config)])])
-
-dnl PKG_CHECK_MODULES(LIBXML2, [libxml-2.0], [],
-dnl                   [AC_MSG_ERROR([Could not find libxml2 on your system (using pkg-config)])])
-
-dnl Check for ncurses
-dnl We enable it if asked by the user, or if ncursesw is found
-AC_ARG_ENABLE([ncurses],AS_HELP_STRING([--enable-ncurses],
-              [ncurses interface support (default enabled if ncursesw found on your system)]))
-AX_WITH_CURSES([--without-ncurses --with-ncursesw])
-if test "${enable_ncurses}" != "no" -a "${ax_cv_ncursesw}" = "yes"; then
-    want_ncurses=1
-else
-    want_ncurses=0
-    if test "${enable_ncurses}" = "yes"; then
-        AC_MSG_ERROR([Could not find the ncursesw library on your system])
-    fi
-fi
-AM_CONDITIONAL([BUILD_NCURSES], [test "${want_ncurses}" = "1"])
-
-dnl Check for Qt4
-AC_ARG_ENABLE([qt],AS_HELP_STRING([--enable-qt4],
-              [Qt4 interface support (default disabled)]))
-qt4_ok=0
-AS_IF([test "${enable_qt4}" = "yes"],
-      [PKG_CHECK_MODULES(QT, [QtCore QtGui QtNetwork >= 4.2.0],
-                         [qt4_ok=1
-                          dnl Check for the qt4 suffix first (useful on Archlinux, which uses qt5 by default)
-                          AC_PATH_PROGS(MOC, [moc-qt4 moc], moc,`$PKG_CONFIG --variable=exec_prefix QtCore`/bin)
-                          AC_PATH_PROGS(UIC, [uic-qt4 uic], uic,`$PKG_CONFIG --variable=exec_prefix QtCore`/bin)
-                          AC_PATH_PROGS(RCC, [rcc-qt4 rcc], rcc,`$PKG_CONFIG --variable=exec_prefix QtCore`/bin)
-                          QT4LOCALEDIR="$($PKG_CONFIG --variable=prefix QtCore)/share/qt4/translations/"
-                          AC_SUBST(QT4LOCALEDIR)
-                         ],
-                         [AC_MSG_ERROR([Could not find Qt on your system (using pkg-config)])]
-                        )
-      ])
-dnl Check for Qt
-AC_ARG_ENABLE([qt5],AS_HELP_STRING([--enable-qt],
-              [Qt5 interface support (default enabled)]))
-qt5_ok=0
-AS_IF([test "${enable_qt}" != "no"],
-      [PKG_CHECK_MODULES([QT], [Qt5PrintSupport Qt5Widgets Qt5Gui Qt5Core Qt5Network >= 5.1.0],
-                         [qt5_ok=1
-                          AC_PATH_PROGS(MOC, moc, moc,`$PKG_CONFIG --variable=exec_prefix Qt5Core`/bin)
-                          AC_PATH_PROGS(UIC, uic, uic,`$PKG_CONFIG --variable=exec_prefix Qt5Core`/bin)
-                          AC_PATH_PROGS(RCC, rcc, rcc,`$PKG_CONFIG --variable=exec_prefix Qt5Core`/bin)
-                          QT4LOCALEDIR="$($PKG_CONFIG --variable=prefix QtCore)/share/qt4/translations/"
-                          AC_SUBST(QT4LOCALEDIR)
-                          dnl FIXME: hack
-                          CXXFLAGS="${CXXFLAGS} -fPIC"
-                         ],
-                         [AC_MSG_ERROR([Could not find Qt5 on your system (using pkg-config)])]
-                        )
-      ])
-dnl We build either with Qt4 or Qt5, but not both
-if test "${qt5_ok}" = "1" && "${qt4_ok}" = "1"; then
-    AC_MSG_ERROR([Please deactivate Qt4 explicitly if you want to build with Qt5])
-fi
-AM_CONDITIONAL([BUILD_QT], [test "${qt4_ok}" = "1" -o "${qt5_ok}" = "1" ])
-
 dnl Enable/disable text version
 AC_ARG_ENABLE([text],AS_HELP_STRING([--enable-text],[text interface support (default enabled)]))
 AM_CONDITIONAL([BUILD_TEXT], [test "${enable_text}" != "no"])
@@ -246,7 +179,6 @@ AC_CONFIG_FILES(po/Makefile.in
 dic/Makefile
 game/Makefile
 utils/Makefile
-qt/Makefile
 extras/Makefile
 extras/innosetup/eliot-setup.iss
 Makefile)

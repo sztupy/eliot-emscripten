@@ -26,6 +26,7 @@
 #include <string>
 #include <fstream>
 #include <exception>
+#include <iostream>
 
 #if ENABLE_NLS
 #   include <libintl.h>
@@ -34,6 +35,7 @@
 #   define _(String) String
 #endif
 
+#include "logging.h"
 #include "game_factory.h"
 #include "game_params.h"
 #include "game.h"
@@ -46,8 +48,6 @@
 #include "ai_percent.h"
 #include "dic.h"
 #include "encoding.h"
-#include "xml_reader.h"
-
 
 INIT_LOGGER(game, GameFactory);
 
@@ -240,13 +240,6 @@ Game *GameFactory::createFromCmdLine(int argc, char **argv)
     return game;
 }
 
-
-Game* GameFactory::load(const string &iFileName, const Dictionary &iDic)
-{
-    return XmlReader::read(iFileName, iDic);
-}
-
-
 void GameFactory::printUsage(const string &iBinaryName) const
 {
     cout << "Usage: " << iBinaryName << " [options]" << endl
@@ -270,4 +263,3 @@ void GameFactory::printVersion() const
          << "GNU General Public License;" << endl
          << "see the file named COPYING for details." << endl;
 }
-

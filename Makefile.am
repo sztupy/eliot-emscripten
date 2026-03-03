@@ -1,4 +1,4 @@
-SUBDIRS = dic game utils qt po extras
+SUBDIRS = dic game utils po extras
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -147,4 +147,3 @@ package-macosx:
 package-macosx-dmg: package-macosx
 	rm -f $(DMG_FILE)
 	hdiutil create "$(DMG_FILE)" -verbose -scrub -srcfolder "$(top_builddir)/eliot-$(VERSION)"
-
