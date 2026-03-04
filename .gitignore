@@ -107,3 +107,9 @@ eliottxt.data
 eliottxt.html
 eliottxt.js
 eliottxt.wasm.map
+
+website/eliotweb
+website/eliotweb.data
+website/eliotweb.html
+website/eliotweb.js
+website/eliotweb.wasm.map
