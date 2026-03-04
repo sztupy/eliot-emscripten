@@ -169,6 +169,8 @@ int main(int argc, char* argv[])
     // Set locale via LC_ALL
     setlocale(LC_ALL, "");
 #endif
+    std::setlocale(LC_ALL, "");
+    std::locale::global(std::locale(""));
 
 #if ENABLE_NLS
     // Set the message domain
@@ -270,4 +272,3 @@ int main(int argc, char* argv[])
     }
     return 1;
 }
-

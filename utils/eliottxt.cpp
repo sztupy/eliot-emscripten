@@ -973,6 +973,7 @@ int main(int argc, char *argv[])
 {
     // Let the user choose the locale
     setlocale(LC_ALL, "");
+    std::locale::global(std::locale(""));
 
     if (argc != 2 && argc != 3)
     {

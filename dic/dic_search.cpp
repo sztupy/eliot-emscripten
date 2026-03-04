@@ -467,4 +467,3 @@ bool Dictionary::searchRegExp(const wstring &iRegexp,
     else
         return true;
 }
-

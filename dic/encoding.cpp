@@ -308,7 +308,7 @@ unsigned int readFromUTF8(wchar_t *oString, unsigned int iWideSize,
                           const char *iBuffer, unsigned int iBufSize,
                           const string &iContext)
 {
-    iconv_t handle = iconv_open("WCHAR_T", "UTF-8");
+    iconv_t handle = iconv_open("UTF-32LE", "UTF-8");
     if (handle == (iconv_t)(-1))
         throw DicException("readFromUTF8: iconv_open failed");
     size_t inChars = iBufSize;
@@ -356,7 +356,7 @@ wstring readFromUTF8(const string &iString, const string &iContext)
 unsigned int writeInUTF8(const wstring &iWString, char *oBuffer,
                          unsigned int iBufSize, const string &iContext)
 {
-    iconv_t handle = iconv_open("UTF-8", "WCHAR_T");
+    iconv_t handle = iconv_open("UTF-8", "UTF-32LE");
     if (handle == (iconv_t)(-1))
         throw DicException("writeInUTF8: iconv_open failed");
     size_t length = iWString.size();
@@ -403,4 +403,3 @@ string writeInUTF8(const wstring &iWString, const string &iContext)
     delete[] buf;
     return res;
 }
-

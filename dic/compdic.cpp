@@ -36,6 +36,7 @@
 #include <cstdio>
 #include <cerrno>
 #include <cstring>
+#include <iostream>
 
 #include "compdic.h"
 #include "encoding.h"
@@ -398,4 +399,3 @@ Header CompDic::generateDawg(const string &iWordListFile,
 
     return finalHeader;
 }
-

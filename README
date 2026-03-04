@@ -1,7 +1,5 @@
 This is a fork of Eliot to built it under Emscripten for web usage
 
-QT and XML features have been removed
-
 Old readme below:
 
 ------------------------------------------------------------

@@ -236,7 +236,7 @@ Header::Header(const DictHeaderInfo &iInfo)
     }
 
     m_compressDate = time(NULL);
-    m_userHost = wfl(ELIOT_COMPILE_BY + string("@") + ELIOT_COMPILE_HOST);
+    m_userHost = wfl("user@localhost");
     m_root = iInfo.root;
     m_nbWords = iInfo.nwords;
     m_nodesUsed = iInfo.nodesused;
