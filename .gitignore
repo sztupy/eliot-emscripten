@@ -100,3 +100,8 @@ game/cmd/.dirstamp
 game/libgame.a
 po/stamp-po
 *.wasm
+
+eliottxt.data
+eliottxt.html
+eliottxt.js
+eliottxt.wasm.map

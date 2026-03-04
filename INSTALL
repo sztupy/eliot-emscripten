@@ -19,6 +19,12 @@ brew install emscripten
 brew install boost
 
 ./bootstrap
-CPPFLAGS="-I/opt/homebrew/include" LDFLAGS="-L/opt/homebrew/lib" emconfigure ./configure
+CPPFLAGS="-I/opt/homebrew/include -fexceptions" LDFLAGS="-L/opt/homebrew/lib" LIBS="-lnodefs.js -fexceptions" emconfigure ./configure
 emmake make
+```
+
+Generate website full example code with dictionary preload file. Run from `utils` directory:
+
+```bash
+/opt/homebrew/Cellar/emscripten/5.0.2/libexec/em++  -g3 -O2 -Wall -Wextra  -L/opt/homebrew/lib -o eliottxt.html game_io.o eliottxt.o ../game/libgame.a ../dic/libdic.a -fexceptions -gsource-map --preload-file twl06.dawg
 ```
