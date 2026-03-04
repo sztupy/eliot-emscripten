@@ -58,21 +58,23 @@ using boost::wformat;
 INIT_LOGGER(dic, Header);
 
 
-// #if defined(WORDS_BIGENDIAN)
-// // Nothing to do on big-endian machines
-// #   define ntohll(x) (x)
-// #   define htonll(x) (x)
-// #else
-// static inline uint64_t htonll(uint64_t host64)
-// {
-//     return (((uint64_t)htonl((host64 << 32) >> 32)) << 32) | htonl(host64 >> 32);
-// }
+#if defined(WORDS_BIGENDIAN)
+// Nothing to do on big-endian machines
+#   define ntohll(x) (x)
+#   define htonll(x) (x)
+#else
+#if !defined(htonll)
+static inline uint64_t htonll(uint64_t host64)
+{
+    return (((uint64_t)htonl((host64 << 32) >> 32)) << 32) | htonl(host64 >> 32);
+}
 
-// static inline uint64_t ntohll(uint64_t net64)
-// {
-//     return htonll(net64);
-// }
-// #endif
+static inline uint64_t ntohll(uint64_t net64)
+{
+    return htonll(net64);
+}
+#endif
+#endif
 
 
 /**

@@ -99,3 +99,4 @@ dic/libdic.a
 game/cmd/.dirstamp
 game/libgame.a
 po/stamp-po
+*.wasm

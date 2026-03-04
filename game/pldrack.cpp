@@ -22,6 +22,7 @@
 #include <boost/foreach.hpp>
 
 #include <algorithm>
+#include <random>
 #include "pldrack.h"
 #include "rack.h"
 
@@ -185,7 +186,9 @@ bool PlayedRack::checkRack(unsigned int cMin, unsigned int vMin) const
 
 void PlayedRack::shuffleNew()
 {
-    std::random_shuffle(m_newTiles.begin(), m_newTiles.end());
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(m_newTiles.begin(), m_newTiles.end(), g);
 }
 
 
@@ -224,4 +227,3 @@ wstring PlayedRack::toString(display_mode mode) const
 
     return s;
 }
-

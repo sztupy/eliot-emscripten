@@ -223,11 +223,10 @@ class Turn
         void dropFrom(unsigned iFirstToDrop);
 
         template<typename T>
-        struct TruePred : public unary_function<T, bool>
+        struct TruePred : public function<bool(T)>
         {
             bool operator()(const T &) const { return true; }
         };
 };
 
 #endif
-

@@ -1,139 +1,24 @@
-Summary
-=======
+Build instructions on OSX (ARM), using homebrew as the package manager
 
-This file contains instructions on how to buid Eliot on various platforms.
-In case of compilation problem, you can send a mail to the eliot-dev@nongnu.org
-mailing-list.
+## Native build
 
-1) General information: useful information for any platform
-2) Linux/Unix build
-3) Windows build
-4) Mac OS X build
+```bash
+brew install boost
 
+./bootstrap
+CPPFLAGS="-I/opt/homebrew/include" LDFLAGS="-L/opt/homebrew/lib" ./configure
+make
+```
 
+Run `utils/eliottxt` as the app
 
-1) General information
-======================
+## Emscripten build
 
-If you build Eliot from a CVS snapshot, you need to run ./bootstrap to generate
-the configure script. This is not needed when building from a release tarball.
+```bash
+brew install emscripten
+brew install boost
 
-In the following, do not forget that the ./configure command can take options.
-Run ./configure --help to have the list of available options.
-
-Here are the external dependencies of Eliot, with a link to the relevant website.
-You need to install them (at least the mandatory ones) before building Eliot.
-Note that the OS-specific instructions may contain hints on how to install them easily.
-
- - libboost (mandatory): http://www.boost.org/
-   --> Used for many things
-
- - libarabica (mandatory): http://www.jezuk.co.uk/cgi-bin/view/arabica
-   --> Used for saving/loading games
-   You can use any XML back-end supported by Arabica (like expat, or libxml2)
-
- - libconfig++ (optional): http://www.hyperrealm.com/libconfig/
-   --> Used for saving/loading preferences
-
- - Qt (optional, but strongly recommended): http://qt.nokia.com/
-   --> Used for the graphical interface (see below)
-
- - libncursesw (optional): http://www.gnu.org/software/ncurses/
-   --> Used for the ncurses interface (see below)
-
-There are in fact several interfaces to Eliot:
- - a Qt interface: the best interface to use, it supports all the features.
-   This one is enabled by default if Qt development files are detected, but
-   you can force it with --enable-qt
- - one in text mode: mostly useful to debug Eliot
- - one using the ncursesw library: nice and almost complete, but not really
-   graphical
-
-These interfaces can be enabled or disabled at configuration time. Example:
-    ./configure --disable-text --enable-ncurses --enable-qt
-
-
-
-2) Linux/Unix build
-===================
-
-* Install the dependencies
-On Debian-based systems (like Ubuntu), the following command should install
-the needed dependencies (you may need to adjust the version numbers):
-    sudo apt-get install libboost-dev libqt4-dev libconfig++-dev libncursesw5-dev libexpat-dev
-On RPM-based systems, the command should be the following (as root):
-    yum install boost-devel qt-devel expat-devel libconfig-devel
-
-* Download and build libarabica (unless it is packaged for your distribution):
-    a) Download the latest release (see link above) and extract the archive
-    b) Build with the following line:
-       ./configure --enable-static --disable-shared --with-parser=expat && make
-    c) Install it, as root:
-       make install
-
-* Build Eliot, with the following command:
-    ./configure && make
-
-* Install it, as root:
-    make install
-
-
-
-3) Windows build
-================
-
-There are 2 ways to proceed:
-* cross-compilation from a Linux host, using the mingw32 cross-compiler
-* directly on Windows, using Cygwin (http://www.cygwin.com/)
-Only the cross-compilation is officially supported (but adapting these
-instructions for Cygwin shouldn't be too hard; patches welcome!).
-
-Here are the steps for the cross-compilation:
-
-* install the build environment (this step is not documented here,
-  as it is out of the scope of this document)
-
-* build and install dependencies:
-  The Makefile in the 'extras/contrib' directory should be able to do it for you:
-
-    cd extras/contrib && make all
-
-  Eliot dependencies will be downloaded and cross-compiled.
-  The dependencies are installed in 'extras/contrib/inst'
-
-* build Eliot:
-
-    - if you don't have the 'configure' script, generate it:
-            ./bootstrap
-
-    - configure with the following command:
-            export INST=`pwd`/extras/contrib/inst && \
-            PKG_CONFIG_PATH="${INST}/lib/pkgconfig:${PKG_CONFIG_PATH}" \
-            CPPFLAGS=-I${INST}/include LDFLAGS=-L${INST}/lib CXX=i586-mingw32msvc-g++ \
-            ./configure --host=i586-mingw32msvc --build=i386-linux \
-            --with-boost=${INST} --with-expat=${INST}
-
-    - to compile, run 'make'
-
-    - run 'make package-win32-zip' to get everything packed up in a nice .zip
-
-
-
-4) Mac OS X build
-=================
-
-* Installing dependencies can be done easily using MacPorts (http://www.macports.org/):
-    sudo port install libconfig-hr
-    sudo port install boost
-    sudo port install arabica
-    sudo port install qt4-mac
-
-* Configure: you can use the following command (assuming the dependencies are installed in /opt/local):
-    CPPFLAGS="-I/opt/local/include/libxml2 -I/opt/local/include" \
-    LDFLAGS="-L/opt/local/lib" \
-    LIBS="-lxml2" \
-    ./configure --enable-qt --disable-text
-
-* To compile, run 'make'
-
-* Then, to get a ready to use .dmg file, run 'make package-macosx-dmg'
+./bootstrap
+CPPFLAGS="-I/opt/homebrew/include" LDFLAGS="-L/opt/homebrew/lib" emconfigure ./configure
+emmake make
+```

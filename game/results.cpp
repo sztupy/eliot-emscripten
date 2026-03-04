@@ -1,8 +1,8 @@
 /*****************************************************************************
  * Eliot
- * Copyright (C) 2005-2012 Antoine Fraboulet & Olivier Teulière
+ * Copyright (C) 2005-2012 Antoine Fraboulet & Olivier Teuliï¿½re
  * Authors: Antoine Fraboulet <antoine.fraboulet @@ free.fr>
- *          Olivier Teulière <ipkiss @@ gmail.com>
+ *          Olivier Teuliï¿½re <ipkiss @@ gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ bool tileCompare(const Tile &t1, const Tile &t2)
     return t1.toCode() < t2.toCode();
 }
 
-struct less_points : public binary_function<const Round&, const Round&, bool>
+struct less_points : public function<bool(const Round&, const Round&)>
 {
     bool operator()(const Round &r1, const Round &r2)
     {
@@ -343,5 +343,3 @@ void MasterResults::clear()
     m_rounds.clear();
     m_bestResults.clear();
 }
-
-

@@ -196,7 +196,7 @@ void Duplicate::tryEndTurn()
 }
 
 
-struct MatchingPlayer : public unary_function<PlayerMoveCmd, bool>
+struct MatchingPlayer : public function<bool(PlayerMoveCmd)>
 {
     MatchingPlayer(unsigned iPlayerId) : m_playerId(iPlayerId) {}
 
@@ -460,7 +460,7 @@ void Duplicate::setSoloAuto(unsigned int minNbPlayers, int iSoloValue)
 
 
 /// Predicate to help retrieving commands
-struct MatchingPlayerAndEventType : public unary_function<PlayerEventCmd, bool>
+struct MatchingPlayerAndEventType : public function<bool(PlayerEventCmd)>
 {
     MatchingPlayerAndEventType(unsigned iPlayerId, int iEventType)
         : m_playerId(iPlayerId), m_eventType(iEventType) {}
@@ -484,5 +484,3 @@ const PlayerEventCmd * Duplicate::getPlayerEvent(unsigned iPlayerId,
     const Turn &currTurn = getNavigation().getCurrentTurn();
     return currTurn.findMatchingCmd<PlayerEventCmd>(predicate);
 }
-
-

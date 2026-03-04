@@ -1,3 +1,11 @@
+This is a fork of Eliot to built it under Emscripten for web usage
+
+QT and XML features have been removed
+
+Old readme below:
+
+------------------------------------------------------------
+
 Eliot is a Scrabble game.
 
 It offers 3 different game modes (standard game, duplicate mode and training
@@ -26,4 +34,3 @@ Here are some key features of "Eliot":
 Enjoy!
 
 http://www.nongnu.org/eliot/index.html
-
