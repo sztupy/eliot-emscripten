@@ -19,7 +19,7 @@ brew install emscripten
 brew install boost
 
 ./bootstrap
-CPPFLAGS="-I/opt/homebrew/include -fexceptions" LDFLAGS="-L/opt/homebrew/lib" LIBS="-lnodefs.js -fexceptions" emconfigure ./configure
+CPPFLAGS="-I/opt/homebrew/include" LDFLAGS="-L/opt/homebrew/lib" emconfigure ./configure
 emmake make
 ```
 

@@ -102,6 +102,7 @@ AC_C_BIGENDIAN
 AC_C_INLINE
 dnl AC_CHECK_SIZEOF(char, 1)
 dnl AC_CHECK_SIZEOF(short, 2)
+dnl AC_CHECK_SIZEOF(wchar_t, 4)
 dnl AC_CHECK_SIZEOF(int *, 4)
 dnl AC_CHECK_SIZEOF(int, 4)
 dnl AC_CHECK_SIZEOF(long, 4)
@@ -152,7 +153,6 @@ AM_ICONV
 AS_IF([test "$am_cv_func_iconv" != "yes"],
       [AC_MSG_ERROR([libiconv is needed for Eliot to work properly])])
 
-
 dnl Information about who built eliot (useful for the dictionary)
 AC_DEFINE_UNQUOTED(ELIOT_COMPILE_BY, "`whoami`", [user who ran configure])
 AC_DEFINE_UNQUOTED(ELIOT_COMPILE_HOST, "`hostname`", [host which ran configure])
@@ -172,6 +172,17 @@ if test "$SYS" = "mingw32"; then
     LIBS="${LIBS} -lws2_32"
 fi
 
+dnl Check for emscripten
+AC_CHECK_DECL(__EMSCRIPTEN__,
+    has_emscripten=1; AM_CONDITIONAL([EMSCRIPTEN_BUILD], [true]),
+    AM_CONDITIONAL([EMSCRIPTEN_BUILD], [false])
+)
+
+if test "$has_emscripten" = "1"; then
+    CPPFLAGS="${CPPFLAGS} -fexceptions"
+    LIBS="${LIBS} -lnodefs.js -fexceptions"
+fi
+
 dnl --------------------------------------------------------------
 dnl Output
 dnl --------------------------------------------------------------
@@ -180,15 +191,7 @@ dic/Makefile
 game/Makefile
 utils/Makefile
 extras/Makefile
+website/Makefile
 extras/innosetup/eliot-setup.iss
 Makefile)
 AC_OUTPUT
-
-if test "$has_libconfig" != "1"; then
-    echo
-    echo "@@@@@@@@@@@"
-    echo "Warning!"
-    echo "libconfig++ was not detected on your system: saving and loading the configuration will be impossible!"
-    echo "libconfig++ can be downloaded here: http://www.hyperrealm.com/main.php?s=libconfig"
-    echo "@@@@@@@@@@@"
-fi
