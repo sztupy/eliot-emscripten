@@ -72,6 +72,8 @@ po/en@boldquot.header
 po/en@quot.header
 po/en@boldquot.po
 po/en@quot.po
+po/en@boldquot.insert-header
+po/en@quot.insert-header
 po/*.gmo
 po/*.mo
 po/insert-header.sin

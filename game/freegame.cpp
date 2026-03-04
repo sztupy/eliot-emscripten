@@ -342,4 +342,3 @@ bool FreeGame::allPlayersPassedThreeTimesInARow() const
     }
     return result;
 }
-

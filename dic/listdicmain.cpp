@@ -141,7 +141,8 @@ int main(int argc, char *argv[])
     // Set locale via LC_ALL
     setlocale(LC_ALL, "");
 #endif
-    std::setlocale(LC_ALL, "en_US.utf8");
+    std::setlocale(LC_ALL, "");
+    std::locale::global(std::locale(""));
 
 #if ENABLE_NLS
     // Set the message domain
