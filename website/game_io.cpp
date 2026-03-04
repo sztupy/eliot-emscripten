@@ -39,104 +39,45 @@
 #include "turn_data.h"
 #include "move.h"
 #include "round.h"
+#include <emscripten.h>
 
 using namespace std;
 
 using boost::format;
 using boost::wformat;
 
-
 INIT_LOGGER(utils, GameIO);
 
+EM_JS(void, setBoardLetter, (int row, int col, const char* text), {
+    letters[`${row-1};${col-1}`] = UTF8ToString(text);
+});
+
+EM_JS(void, callRedrawBoard, (), {
+    redrawBoard();
+});
+
+EM_JS(void, resetBoard, (), {
+    letters = {};
+});
 
 void GameIO::printBoard(ostream &out, const PublicGame &iGame)
 {
+    resetBoard();
+
     int nbRows = iGame.getBoard().getLayout().getRowCount();
     int nbCols = iGame.getBoard().getLayout().getColCount();
 
-    out << "   ";
-    for (int col = 1; col <= nbCols; ++col)
-        out << setw(3) << col;
-    out << endl;
     for (int row = 1; row <= nbRows; ++row)
     {
-        out << " " << (char)(row + 'A' - 1) << "  ";
-        for (int col = 1; col <= nbCols; ++col)
-        {
-            if (iGame.getBoard().isVacant(row, col))
-                out << " - ";
-            else
-                out << centerAndConvert(iGame.getBoard().getDisplayStr(row, col), 3);
-        }
-        out << endl;
-    }
-}
-
-
-/* this mode is used for regression tests */
-void GameIO::printBoardDebug(ostream &out, const PublicGame &iGame)
-{
-    int nbRows = iGame.getBoard().getLayout().getRowCount();
-    int nbCols = iGame.getBoard().getLayout().getColCount();
-
-    /* first printf row cell contents */
-    for (int row = 1; row <= nbRows; ++row)
-    {
-        out << " " << (char)(row + 'A' - 1) << "r ";
-        for (int col = 1; col <= nbCols; ++col)
-        {
-            out << iGame.getBoard().getCellContent_row(row, col);
-        }
-        out << endl;
-    }
-    out << " -" << endl;
-    for (int row = 1; row <= nbRows; ++row)
-    {
-        out << " " << (char)(row + 'A' - 1) << "c ";
-        for (int col = 1; col <= nbCols; ++col)
-        {
-            out << iGame.getBoard().getCellContent_col(row, col);
-        }
-        out << endl;
-    }
-}
-
-
-void GameIO::printBoardMultipliers(ostream &out, const PublicGame &iGame)
-{
-    int nbRows = iGame.getBoard().getLayout().getRowCount();
-    int nbCols = iGame.getBoard().getLayout().getColCount();
-
-    out << "   ";
-    for (int col = 1; col <= nbCols; ++col)
-        out << setw(3) << col;
-    out << endl;
-
-    const BoardLayout & boardLayout = iGame.getBoard().getLayout();
-    for (int row = 1; row <= nbRows; ++row)
-    {
-        out << " " << (char)(row + 'A' - 1) << " ";
         for (int col = 1; col <= nbCols; ++col)
         {
             if (!iGame.getBoard().isVacant(row, col))
-                out << padAndConvert(iGame.getBoard().getDisplayStr(row, col), 3);
-            else
-            {
-                int wm = boardLayout.getWordMultiplier(row, col);
-                int tm = boardLayout.getLetterMultiplier(row, col);
-
-                if (wm > 1)
-                    out << "  " << ((wm == 3) ? '@' : '#');
-                else if (tm > 1)
-                    out << "  " << ((tm == 3) ? '*' : '+');
-                else
-                    out << "  -";
-            }
+                setBoardLetter(row, col, lfw(iGame.getBoard().getDisplayStr(row, col)).c_str());
         }
-        out << endl;
     }
-}
 
+    callRedrawBoard();
+}
 
 void GameIO::printNonPlayed(ostream &out, const PublicGame &iGame)
 {

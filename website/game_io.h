@@ -45,8 +45,6 @@ class GameIO
     DEFINE_LOGGER();
 public:
     static void printBoard(ostream &out, const PublicGame &iGame);
-    static void printBoardDebug(ostream &out, const PublicGame &iGame);
-    static void printBoardMultipliers(ostream &out, const PublicGame &iGame);
 
     static void printNonPlayed(ostream &out, const PublicGame &iGame);
     static void printPlayedRack(ostream &out, const PublicGame &iGame);
@@ -63,4 +61,3 @@ private:
 };
 
 #endif
-

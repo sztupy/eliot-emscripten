@@ -1,0 +1,47 @@
+const board = document.getElementById('board');
+const specialSquares = {
+  '0;0': 'tw', '0;7': 'tw', '0;14': 'tw',
+  '7;0': 'tw', '7;14': 'tw',
+  '14;0': 'tw', '14;7': 'tw', '14;14': 'tw',
+  '1;1': 'dw', '2;2': 'dw', '3;3': 'dw', '4;4': 'dw',
+  '1;13': 'dw', '2;12': 'dw', '3;11': 'dw', '4;10': 'dw',
+  '10;4': 'dw', '11;3': 'dw', '12;2': 'dw', '13;1': 'dw',
+  '10;10': 'dw', '11;11': 'dw', '12;12': 'dw', '13;13': 'dw',
+  '7;7': 'star',
+  '0;3': 'dl', '0;11': 'dl', '2;6': 'dl', '2;8': 'dl',
+  '3;0': 'dl', '3;7': 'dl', '3;14': 'dl',
+  '6;2': 'dl', '6;6': 'dl', '6;8': 'dl', '6;12': 'dl',
+  '7;3': 'dl', '7;11': 'dl',
+  '8;2': 'dl', '8;6': 'dl', '8;8': 'dl', '8;12': 'dl',
+  '11;0': 'dl', '11;7': 'dl', '11;14': 'dl',
+  '12;6': 'dl', '12;8': 'dl', '14;3': 'dl', '14;11': 'dl',
+  '1;5': 'tl', '1;9': 'tl', '5;1': 'tl', '5;5': 'tl',
+  '5;9': 'tl', '5;13': 'tl', '9;1': 'tl', '9;5': 'tl',
+  '9;9': 'tl', '9;13': 'tl', '13;5': 'tl', '13;9': 'tl'
+};
+
+let letters = {
+}
+
+function redrawBoard() {
+  board.replaceChildren();
+  for (let row = 0; row < 15; row++) {
+    for (let col = 0; col < 15; col++) {
+      const cell = document.createElement('div');
+      const key = `${row};${col}`;
+      const type = letters[key] ? 'letter' : (specialSquares[key] || 'normal');
+      cell.className = `cell ${type}`;
+
+      if (type === 'letter') cell.textContent = letters[key];
+      else if (type === 'star') cell.textContent = '★';
+      else if (type === 'tw') cell.textContent = '3F';
+      else if (type === 'dw') cell.textContent = '2F';
+      else if (type === 'tl') cell.textContent = '3L';
+      else if (type === 'dl') cell.textContent = '2L';
+
+      board.appendChild(cell);
+    }
+  }
+}
+
+redrawBoard();
