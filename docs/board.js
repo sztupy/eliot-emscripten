@@ -50,6 +50,17 @@ const specialSquares = {
 };
 
 let letters = {
+  '7;2': 'L',
+  '7;3': 'U',
+  '7;4': 'C',
+  '7;5': 'H',
+  '7;6': 'D',
+  '7;7': 'A',
+  '7;8': 'D',
+  '7;9': 'H',
+  '7;10': '.',
+  '7;11': '.',
+  '7;12': '.',
 };
 
 let history = [];
@@ -59,9 +70,6 @@ let players = [];
 let gameData = {};
 
 function initBoard() {
-  boardDom.replaceChildren();
-  letters = {};
-
   boardDom.replaceChildren();
   for (let row = 0; row < 15; row++) {
     for (let col = 0; col < 15; col++) {
@@ -97,24 +105,31 @@ function redrawBoard() {
   for (let row = 0; row < 15; row++) {
     for (let col = 0; col < 15; col++) {
       const key = `${row};${col}`;
-      if (letters[key]) {
-        let cell = document.getElementById(`board_${row}_${col}`);
-        if (!cell)
-          continue;
+      const type = letters[key] ? 'letter' : (specialSquares[key] || 'normal');
+      const cell = document.getElementById(`board_${row}_${col}`);
+      if (!cell)
+        continue;
 
-        if (!cell.classList.contains('letter')) {
-          cell.classList.add('letter');
-          cell.textContent = letters[key].toUpperCase();
+      cell.className = `cell ${type}`;
+      cell.id = `board_${row}_${col}`;
+      cell.textContent = '';
 
-          if (letterValues[letters[key]]) {
-            const value = document.createElement('span');
-            value.textContent = letterValues[letters[key]];
-            cell.appendChild(value);
-          } else {
-            cell.className += " joker";
-          }
+      if (type === 'letter') {
+        cell.textContent = letters[key].toUpperCase();
+
+        if (letterValues[letters[key]]) {
+          const value = document.createElement('span');
+          value.textContent = letterValues[letters[key]];
+          cell.appendChild(value);
+        } else {
+          cell.className += " joker";
         }
       }
+      else if (type === 'star') cell.textContent = '★';
+      else if (type === 'tw') cell.textContent = '3F';
+      else if (type === 'dw') cell.textContent = '2F';
+      else if (type === 'tl') cell.textContent = '3L';
+      else if (type === 'dl') cell.textContent = '2L';
     }
   }
 
@@ -194,12 +209,15 @@ function play() {
   _free(data2);
 
   if (!gameData.isFinished) {
-    setTimeout(play, (Math.floor(Math.random() * 15) + 1) * 250);
+    setTimeout(play, 3000 + (Math.floor(Math.random() * 10) + 1) * 250);
   }
 }
 
 function init() {
   if (Module && Module.calledRun) {
+    letters = {};
+    redrawBoard();
+
     _startGame(0, 3);
 
     data = stringToNewUTF8("a g");
@@ -210,13 +228,13 @@ function init() {
     _gameAction(data2);
     _free(data2);
 
-    play();
+    setTimeout(play, 5000);
   } else {
-    setTimeout(init, 100);
+    setTimeout(init, 1000);
   }
 }
 
-setTimeout(init, 100);
+setTimeout(init, 1000);
 
 document.getElementById('cookie').onclick = () => {
   document.getElementById('silktide-cookie-icon').click();
