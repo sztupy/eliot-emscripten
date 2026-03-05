@@ -164,7 +164,7 @@ function play() {
 }
 
 function init() {
-  if (Module.calledRun) {
+  if (Module && Module.calledRun) {
     _startGame(0, 3);
 
     data = stringToNewUTF8("a g");
