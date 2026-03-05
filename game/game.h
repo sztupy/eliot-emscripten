@@ -153,6 +153,11 @@ public:
     virtual int play(const wstring &iCoord, const wstring &iWord) = 0;
 
     /**
+     * if current player is an AI make sure they play
+     */
+    virtual int makeAIMove() = 0;
+
+    /**
      * Shuffle the rack of the current player.
      *
      * Note that this is persistent only until the player gets a new rack.
@@ -344,4 +349,3 @@ protected:
 };
 
 #endif /* _GAME_H_ */
-

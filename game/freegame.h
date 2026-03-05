@@ -65,6 +65,13 @@ public:
     virtual int play(const wstring &iCoord, const wstring &iWord);
 
     /**
+     * Make the AI play a move.
+     * This method is called when it's the turn of an AI player to play.
+     * Returns 1 if there was a move, 0 if it's the human's turn
+     */
+    virtual int makeAIMove();
+
+    /**
      * Pass the turn, changing the letters listed in iToChange.
      * If you simply want to pass the turn without changing any letter,
      * provide an empty string.
@@ -113,4 +120,3 @@ private:
 };
 
 #endif /* _FREEGAME_H_ */
-

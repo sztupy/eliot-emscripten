@@ -205,11 +205,11 @@ void displayData(const PublicGame &iGame, const vector<wstring> &tokens)
         GameIO::printSearchResults(cout, iGame.trainingGetResults(), limit);
     }
     else if (displayType == L"s")
-        GameIO::printPoints(cout, iGame);
+        GameIO::printAllPoints(cout, iGame);
     else if (displayType == L"S")
         GameIO::printAllPoints(cout, iGame);
     else if (displayType == L"t")
-        GameIO::printPlayedRack(cout, iGame);
+        GameIO::printAllRacks(cout, iGame);
     else if (displayType == L"T")
         GameIO::printAllRacks(cout, iGame);
     else
@@ -432,6 +432,11 @@ void loopFreegame(PublicGame &iGame, char* command)
             int res = iGame.freeGamePass(letters);
             if (res != 0)
                 printf("Cannot pass (%d)\n", res);
+        }
+        else if (command == L's') {
+            if (!iGame.isFinished()) {
+                iGame.makeAIMove();
+            }
         }
         else
             commonCommands(iGame, tokens);

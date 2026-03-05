@@ -47,10 +47,8 @@ public:
     static void printBoard(ostream &out, const PublicGame &iGame);
 
     static void printNonPlayed(ostream &out, const PublicGame &iGame);
-    static void printPlayedRack(ostream &out, const PublicGame &iGame);
     static void printAllRacks(ostream &out, const PublicGame &iGame);
     static void printSearchResults(ostream &out, const Results &iResults, int);
-    static void printPoints(ostream &out, const PublicGame &iGame);
     static void printAllPoints(ostream &out, const PublicGame &iGame);
 
     static void printGameDebug(ostream &out, const PublicGame &iGame);

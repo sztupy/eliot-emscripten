@@ -1,4 +1,6 @@
-const board = document.getElementById('board');
+const boardDom = document.getElementById('board');
+const playerDom = document.getElementById('players');
+const historyDom = document.getElementById('history');
 
 const letterValues = {
   'A': 1,
@@ -52,8 +54,12 @@ let letters = {
 
 let history = [];
 
+let players = [];
+
+let gameData = {};
+
 function redrawBoard() {
-  board.replaceChildren();
+  boardDom.replaceChildren();
   for (let row = 0; row < 15; row++) {
     for (let col = 0; col < 15; col++) {
       const cell = document.createElement('div');
@@ -78,12 +84,84 @@ function redrawBoard() {
       else if (type === 'tl') cell.textContent = '3L';
       else if (type === 'dl') cell.textContent = '2L';
 
-      board.appendChild(cell);
+      boardDom.appendChild(cell);
     }
+  }
+
+  playerDom.replaceChildren();
+  for (let i = 0; i < players.length; i++) {
+    const player = players[i];
+    const playerElement = document.createElement('div');
+    playerElement.className = 'player';
+    playerElement.innerHTML = `
+      <div class="name">Player ${i + 1}</div>
+      <div class="score">${player.score || 0}</div>
+      <div class="rack">${player.rack || ''}</div>
+    `;
+    playerDom.appendChild(playerElement);
+  }
+
+  historyDom.replaceChildren();
+  for (let i = 0; i < history.length; i++) {
+    const [playerId, rack, solution, row, col, direction, points, bonus] = history[i];
+    const historyElement = document.createElement('div');
+    historyElement.className = 'history-item';
+    if (row >= 0) {
+      historyElement.innerHTML = `
+        <div class="player-id">Player ${playerId + 1}</div>
+        <div class="move">${rack} → <a href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${solution.toLowerCase()}" target="_blank">${solution}</a> @ ${String.fromCharCode('A'.charCodeAt(0) + row)}${col + 1}${direction ? '↕' : '↔'}</div>
+        <div class="points">${points} (${bonus})</div>
+      `;
+    } else {
+      historyElement.innerHTML = `
+        <div class="player-id">Player ${playerId + 1}</div>
+        <div class="move">${rack} → ${solution}</div>
+        <div class="points">${points} (${bonus})</div>
+      `;
+    }
+    historyDom.appendChild(historyElement);
   }
 }
 
+function addHistory(n, playerId, rack, solution, row, col, direction, points, bonus) {
+  history[n] = [playerId, rack, solution, row, col, direction, points, bonus];
+}
+
+function setRack(playerId, rack, extended) {
+  players[playerId] ||= {}
+  players[playerId].rack = rack;
+  players[playerId].extended = extended;
+}
+
+function setScore(playerId, score) {
+  players[playerId] ||= {}
+  players[playerId].score = score;
+}
+
+function setGameState(currentPlayer, isFinished) {
+  gameData.currentPlayer = currentPlayer;
+  gameData.isFinished = isFinished;
+}
+
 redrawBoard();
+
+function play() {
+  data = stringToNewUTF8("s");
+  _gameAction(data);
+  _free(data);
+
+  data = stringToNewUTF8("a g");
+  _gameAction(data);
+  _free(data);
+
+  data2 = stringToNewUTF8("a p");
+  _gameAction(data2);
+  _free(data2);
+
+  if (!gameData.isFinished) {
+    setTimeout(play, (Math.floor(Math.random() * 15) + 1) * 250);
+  }
+}
 
 function init() {
   if (Module.calledRun) {
@@ -96,6 +174,8 @@ function init() {
     data2 = stringToNewUTF8("a p");
     _gameAction(data2);
     _free(data2);
+
+    play();
   } else {
     setTimeout(init, 100);
   }

@@ -84,6 +84,13 @@ public:
     virtual int play(const wstring &iCoord, const wstring &iWord);
 
     /**
+     * Make the AI play a move.
+     * This method is called when it's the turn of an AI player to play.
+     * Returns 1 if there was a move, 0 if it's the human's turn
+     */
+    virtual int makeAIMove() { return 0; };
+
+    /**
      * Set the current player, given its ID.
      * The given player ID must correspond to a human player, who did not
      * play yet for this turn.
@@ -182,4 +189,3 @@ private:
 };
 
 #endif /* _DUPLICATE_H_ */
-

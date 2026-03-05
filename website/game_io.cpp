@@ -60,6 +60,22 @@ EM_JS(void, resetBoard, (), {
     letters = {};
 });
 
+EM_JS(void, addHistoryData, (int n, int playerId, const char* rack, const char* solution, int row, int col, int direction, int points, int bonus), {
+    addHistory(n, playerId, UTF8ToString(rack), UTF8ToString(solution), row, col, direction, points, bonus);
+});
+
+EM_JS(void, setScoreData, (int playerId, int score), {
+    setScore(playerId, score);
+});
+
+EM_JS(void, setRackData, (int playerId, const char* rack, const char* extended), {
+    setRack(playerId, UTF8ToString(rack), UTF8ToString(extended));
+});
+
+EM_JS(void, setGameStateData, (int currentPlayer, int isFinished), {
+    setGameState(currentPlayer, isFinished);
+});
+
 void GameIO::printBoard(ostream &out, const PublicGame &iGame)
 {
     resetBoard();
@@ -76,6 +92,10 @@ void GameIO::printBoard(ostream &out, const PublicGame &iGame)
         }
     }
 
+    setGameStateData(
+        iGame.getCurrentPlayer().getId(),
+        iGame.isFinished() ? 1 : 0
+    );
     callRedrawBoard();
 }
 
@@ -97,22 +117,22 @@ void GameIO::printNonPlayed(ostream &out, const PublicGame &iGame)
     out << endl;
 }
 
-
-void GameIO::printPlayedRack(ostream &out, const PublicGame &iGame)
-{
-    out << lfw(iGame.getCurrentRack().toString(PlayedRack::RACK_SIMPLE)) << endl;
-}
-
-
 void GameIO::printAllRacks(ostream &out, const PublicGame &iGame)
 {
     for (unsigned int j = 0; j < iGame.getNbPlayers(); j++)
     {
-        out << "Rack " << j << ": ";
-        out << lfw(iGame.getPlayer(j).getCurrentRack().toString(PlayedRack::RACK_EXTRA)) << endl;
+        setRackData(j,
+            lfw(iGame.getPlayer(j).getCurrentRack().toString(PlayedRack::RACK_SIMPLE)).c_str(),
+            lfw(iGame.getPlayer(j).getCurrentRack().toString(PlayedRack::RACK_EXTRA)).c_str()
+        );
     }
-}
 
+    setGameStateData(
+        iGame.getCurrentPlayer().getId(),
+        iGame.isFinished() ? 1 : 0
+    );
+    callRedrawBoard();
+}
 
 static void searchResultLine(ostream &out, const Results &iResults, int num)
 {
@@ -137,83 +157,124 @@ void GameIO::printSearchResults(ostream &out, const Results &iResults, int num)
     }
 }
 
-
-void GameIO::printPoints(ostream &out, const PublicGame &iGame)
-{
-    out << iGame.getPlayer(0).getTotalScore() << endl;
-}
-
-
 void GameIO::printAllPoints(ostream &out, const PublicGame &iGame)
 {
     for (unsigned int i = 0; i < iGame.getNbPlayers(); i++)
     {
-        out << "Score " << i << ": "
-            << setw(4) << iGame.getPlayer(i).getTotalScore() << endl;
+        setScoreData(i, iGame.getPlayer(i).getTotalScore());
     }
+
+    setGameStateData(
+        iGame.getCurrentPlayer().getId(),
+        iGame.isFinished() ? 1 : 0
+    );
+    callRedrawBoard();
 }
 
 
 void GameIO::printGameDebug(ostream &out, const PublicGame &iGame)
 {
-    out << "Game: player " << iGame.getCurrentPlayer().getId() + 1
-        << " out of " << iGame.getNbPlayers() << endl;
-    if (iGame.getParams().getMode() == GameParams::kDUPLICATE)
-        out << "Game: mode=Duplicate" << endl;
-    else if (iGame.getParams().getMode() == GameParams::kFREEGAME)
-        out << "Game: mode=Free game" << endl;
-    else if (iGame.getParams().getMode() == GameParams::kTRAINING)
-        out << "Game: mode=Training" << endl;
-    else if (iGame.getParams().getMode() == GameParams::kARBITRATION)
-        out << "Game: mode=Arbitration" << endl;
-    else if (iGame.getParams().getMode() == GameParams::kTOPPING)
-        out << "Game: mode=Topping" << endl;
-    if (iGame.getParams().hasVariant(GameParams::kJOKER))
-        out << "Game: variant=joker" << endl;
-    if (iGame.getParams().hasVariant(GameParams::kEXPLOSIVE))
-        out << "Game: variant=explosive" << endl;
-    if (iGame.getParams().hasVariant(GameParams::k7AMONG8))
-        out << "Game: variant=7among8" << endl;
-    out << "Game: history:" << endl;
-    out << "    N |   RACK   |    SOLUTION    | REF | PTS | BONUS" << endl;
-    out << "   ===|==========|================|=====|=====|======" << endl;
+    // out << "Game: player " << iGame.getCurrentPlayer().getId() + 1
+    //     << " out of " << iGame.getNbPlayers() << endl;
+    // if (iGame.getParams().getMode() == GameParams::kDUPLICATE)
+    //     out << "Game: mode=Duplicate" << endl;
+    // else if (iGame.getParams().getMode() == GameParams::kFREEGAME)
+    //     out << "Game: mode=Free game" << endl;
+    // else if (iGame.getParams().getMode() == GameParams::kTRAINING)
+    //     out << "Game: mode=Training" << endl;
+    // else if (iGame.getParams().getMode() == GameParams::kARBITRATION)
+    //     out << "Game: mode=Arbitration" << endl;
+    // else if (iGame.getParams().getMode() == GameParams::kTOPPING)
+    //     out << "Game: mode=Topping" << endl;
+    // if (iGame.getParams().hasVariant(GameParams::kJOKER))
+    //     out << "Game: variant=joker" << endl;
+    // if (iGame.getParams().hasVariant(GameParams::kEXPLOSIVE))
+    //     out << "Game: variant=explosive" << endl;
+    // if (iGame.getParams().hasVariant(GameParams::k7AMONG8))
+    //     out << "Game: variant=7among8" << endl;
+    // out << "Game: history:" << endl;
+    // out << "    N |   RACK   |    SOLUTION    | REF | PTS | BONUS" << endl;
+    // out << "   ===|==========|================|=====|=====|======" << endl;
     for (unsigned int i = 0; i < iGame.getHistory().getSize(); ++i)
     {
         const TurnData &turn = iGame.getHistory().getTurn(i);
         const Move &move = turn.getMove();
-        format fmter("%1% | %2% | %3% | %4% | %5% | %6%");
-        fmter % padAndConvert(str(wformat(L"%1%") % (i + 1)), 5);
-        fmter % padAndConvert(turn.getPlayedRack().toString(), 8);
+
+        const int players = iGame.getNbPlayers();
         if (move.isValid())
         {
             const Round &round = move.getRound();
-            fmter % padAndConvert(round.getWord(), 14, false);
-            fmter % padAndConvert(round.getCoord().toString(), 3);
-            fmter % padAndConvert(str(wformat(L"%1%") % round.getPoints()), 3);
-            fmter % padAndConvert(round.getBonus() ? L"*": L"", 1, false);
+            addHistoryData(i,
+                i%players,
+                lfw(turn.getPlayedRack().toString()).c_str(),
+                lfw(round.getWord()).c_str(),
+                round.getCoord().getRow() - 1,
+                round.getCoord().getCol() - 1,
+                round.getCoord().getDir() == Coord::HORIZONTAL ? 0 : 1,
+                round.getPoints(),
+                round.getBonus() ? 50 : 0
+            );
         }
         else
         {
             if (move.isInvalid())
             {
-                fmter % padAndConvert(L"#" + move.getBadWord() + L"#", 14, false);
-                fmter % padAndConvert(move.getBadCoord(), 3);
+                addHistoryData(i,
+                    i%players,
+                    lfw(turn.getPlayedRack().toString()).c_str(),
+                    lfw(L"#" + move.getBadWord() + L"#").c_str(),
+                    -1,
+                    -1,
+                    -1,
+                    0,
+                    0
+                );
             }
             else if (move.isChangeLetters())
             {
-                fmter % padAndConvert(L"[" + move.getChangedLetters() + L"]", 14, false) % " - ";
+                addHistoryData(i,
+                    i%players,
+                    lfw(turn.getPlayedRack().toString()).c_str(),
+                    lfw(L"[" + move.getChangedLetters() + L"]").c_str(),
+                    -1,
+                    -1,
+                    -1,
+                    0,
+                    0
+                );
             }
             else if (move.isPass())
             {
-                fmter % padAndConvert(L"(PASS)", 14, false) % " - ";
+                addHistoryData(i,
+                    i%players,
+                    lfw(turn.getPlayedRack().toString()).c_str(),
+                    "(PASS)",
+                    -1,
+                    -1,
+                    -1,
+                    0,
+                    0
+                );
             }
             else
             {
-                fmter % padAndConvert(L"(NO MOVE)", 14, false) % " - ";
+                addHistoryData(i,
+                    i%players,
+                    lfw(turn.getPlayedRack().toString()).c_str(),
+                    "(NO MOVE)",
+                    -1,
+                    -1,
+                    -1,
+                    0,
+                    0
+                );
             }
-            fmter % "  0" % " ";
         }
-        out << fmter.str() << endl;
     }
-    out << endl << endl;
+
+    setGameStateData(
+        iGame.getCurrentPlayer().getId(),
+        iGame.isFinished() ? 1 : 0
+    );
+    callRedrawBoard();
 }

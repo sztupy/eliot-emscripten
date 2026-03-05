@@ -58,6 +58,8 @@ public:
     /// See description of Game::play()
     virtual int play(const wstring &iCoord, const wstring &iWord);
 
+    virtual int makeAIMove() { return 0; };
+
     void search();
     const Results& getResults() const { return m_results; }
     int playResult(unsigned int iResultIndex);
@@ -96,4 +98,3 @@ private:
 };
 
 #endif /* _TRAINING_H_ */
-

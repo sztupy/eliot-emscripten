@@ -162,6 +162,11 @@ public:
      */
     int play(const wstring &iWord, const wstring &iCoord);
 
+    /**
+     * If the current player is an AI make sure they do their moves
+     */
+    int makeAIMove();
+
     // TODO: doc
     // Ignores the word validity and connexion with the rest
     int checkPlayedWord(const wstring &iWord, const wstring &iCoord,

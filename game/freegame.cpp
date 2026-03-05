@@ -121,14 +121,17 @@ void FreeGame::start()
     // Set the game rack to the rack of the current player
     Command *pCmd = new GameRackCmd(*this, getPlayer(0).getCurrentRack());
     accessNavigation().addAndExecute(pCmd);
+}
 
-    // If the first player is an AI, make it play now
+int FreeGame::makeAIMove() {
     if (!m_players[m_currPlayer]->isHuman())
     {
         playAI(m_currPlayer);
+        return 1;
     }
-}
 
+    return 0;
+}
 
 bool FreeGame::isFinished() const
 {
@@ -189,12 +192,6 @@ int FreeGame::endTurn()
     accessNavigation().addAndExecute(pCmd3);
 
     accessNavigation().newTurn();
-
-    // If this player is an AI, make it play now
-    if (!getCurrentPlayer().isHuman())
-    {
-        playAI(m_currPlayer);
-    }
 
     return 0;
 }

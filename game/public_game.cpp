@@ -166,6 +166,10 @@ int PublicGame::play(const wstring &iWord, const wstring &iCoord)
     return m_game.play(iCoord, iWord);
 }
 
+int PublicGame::makeAIMove()
+{
+    return m_game.makeAIMove();
+}
 
 int PublicGame::checkPlayedWord(const wstring &iWord, const wstring &iCoord, Move &oMove) const
 {

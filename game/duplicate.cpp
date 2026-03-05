@@ -110,7 +110,6 @@ void Duplicate::playAI(unsigned int p)
     recordPlayerMove(*player, move);
 }
 
-
 void Duplicate::start()
 {
     ASSERT(getNPlayers(), "Cannot start a game without any player");

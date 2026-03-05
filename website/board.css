@@ -1,10 +1,12 @@
 body {
-  font-family: Arial, sans-serif;
-  display: flex;
+  display: grid;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+  font-family: Arial, sans-serif;
+  gap: 20px;
   min-height: 100vh;
-  margin: 0;
+  margin: 10px;
   background-color: #f0f0f0;
 }
 
@@ -74,4 +76,94 @@ body {
   right: min(0.25vw, 0.25vh);
   bottom: 0;
   font-size: min(2vw, 2vh);
+}
+
+.history {
+  flex-basis: 33%;
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-height: 70vh;
+  overflow-y: auto;
+  min-width: 300px;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.player-id {
+  font-weight: bold;
+  color: #666;
+  min-width: 70px;
+}
+
+.move {
+  flex: 1;
+  margin: 0 12px;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.points {
+  font-weight: bold;
+  color: #2c5aa0;
+  text-align: right;
+  min-width: 60px;
+}
+
+.players {
+  flex-basis: 33%;
+
+  border-spacing: 5px;
+  display: table;
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.player {
+  display: table-row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.player div {
+  display: table-cell;
+  white-space: pre;
+}
+
+.player:last-child {
+  border-bottom: none;
+}
+
+.player .name {
+  font-weight: bold;
+  color: #333;
+}
+
+.player .score {
+  font-weight: bold;
+  color: #2c5aa0;
+  font-size: 18px;
+}
+
+.player .rack {
+  font-family: monospace;
+  background: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
 }

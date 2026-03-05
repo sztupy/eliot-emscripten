@@ -55,6 +55,8 @@ public:
     /// See description of Game::play()
     virtual int play(const wstring &iCoord, const wstring &iWord);
 
+    virtual int makeAIMove() { return 0; };
+
     /**
      * Override the default behaviour of addPlayer(), because in topping
      * mode we only want a human player
@@ -110,4 +112,3 @@ private:
 };
 
 #endif
-
