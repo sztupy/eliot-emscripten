@@ -58,7 +58,10 @@ let players = [];
 
 let gameData = {};
 
-function redrawBoard() {
+function initBoard() {
+  boardDom.replaceChildren();
+  letters = {};
+
   boardDom.replaceChildren();
   for (let row = 0; row < 15; row++) {
     for (let col = 0; col < 15; col++) {
@@ -66,6 +69,7 @@ function redrawBoard() {
       const key = `${row};${col}`;
       const type = letters[key] ? 'letter' : (specialSquares[key] || 'normal');
       cell.className = `cell ${type}`;
+      cell.id = `board_${row}_${col}`;
 
       if (type === 'letter') {
         cell.textContent = letters[key].toUpperCase();
@@ -87,17 +91,45 @@ function redrawBoard() {
       boardDom.appendChild(cell);
     }
   }
+}
+
+function redrawBoard() {
+  for (let row = 0; row < 15; row++) {
+    for (let col = 0; col < 15; col++) {
+      const key = `${row};${col}`;
+      if (letters[key]) {
+        let cell = document.getElementById(`board_${row}_${col}`);
+        if (!cell)
+          continue;
+
+        if (!cell.classList.contains('letter')) {
+          cell.classList.add('letter');
+          cell.textContent = letters[key].toUpperCase();
+
+          if (letterValues[letters[key]]) {
+            const value = document.createElement('span');
+            value.textContent = letterValues[letters[key]];
+            cell.appendChild(value);
+          } else {
+            cell.className += " joker";
+          }
+        }
+      }
+    }
+  }
 
   playerDom.replaceChildren();
   for (let i = 0; i < players.length; i++) {
     const player = players[i];
     const playerElement = document.createElement('div');
     playerElement.className = 'player';
-    playerElement.innerHTML = `
-      <div class="name">Player ${i + 1}</div>
-      <div class="score">${player.score || 0}</div>
-      <div class="rack">${player.rack || ''}</div>
-    `;
+
+    let text = `<div class="name">Player ${i + 1}</div>`;
+    text += `<div class="score">${player.score || 0}</div>`;
+    if (gameData.isFinished)
+      text += `<div class="rack">${player.rack || ''}</div>`;
+
+    playerElement.innerHTML = text;
     playerDom.appendChild(playerElement);
   }
 
@@ -106,19 +138,22 @@ function redrawBoard() {
     const [playerId, rack, solution, row, col, direction, points, bonus] = history[i];
     const historyElement = document.createElement('div');
     historyElement.className = 'history-item';
+    let text = `<div class="player-id">Player ${playerId + 1}</div>`;
     if (row >= 0) {
-      historyElement.innerHTML = `
-        <div class="player-id">Player ${playerId + 1}</div>
-        <div class="move">${rack} → <a href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${solution.toLowerCase()}" target="_blank">${solution}</a> @ ${String.fromCharCode('A'.charCodeAt(0) + row)}${col + 1}${direction ? '↕' : '↔'}</div>
-        <div class="points">${points} (${bonus})</div>
-      `;
+      if (gameData.isFinished) {
+        text += `<div class="move">${rack} → <a href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${solution.toLowerCase()}" target="_blank">${solution}</a> @ ${String.fromCharCode('A'.charCodeAt(0) + row)}${col + 1}${direction ? '↕' : '↔'}</div>`;
+      } else {
+        text += `<div class="move"><a href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${solution.toLowerCase()}" target="_blank">${solution}</a> @ ${String.fromCharCode('A'.charCodeAt(0) + row)}${col + 1}${direction ? '↕' : '↔'}</div>`;
+      }
     } else {
-      historyElement.innerHTML = `
-        <div class="player-id">Player ${playerId + 1}</div>
-        <div class="move">${rack} → ${solution}</div>
-        <div class="points">${points} (${bonus})</div>
-      `;
+      if (gameData.isFinished) {
+        text += `<div class="move">${rack} → ${solution}</div>`;
+      } else {
+        text += `<div class="move">${solution}</div>`;
+      }
     }
+    text += `<div class="points">${points}${bonus > 0 ? ` (${points - bonus}+${bonus})` : ''}</div>`;
+    historyElement.innerHTML = text;
     historyDom.appendChild(historyElement);
   }
 }
@@ -143,7 +178,7 @@ function setGameState(currentPlayer, isFinished) {
   gameData.isFinished = isFinished;
 }
 
-redrawBoard();
+initBoard();
 
 function play() {
   data = stringToNewUTF8("s");
@@ -182,3 +217,7 @@ function init() {
 }
 
 setTimeout(init, 100);
+
+document.getElementById('cookie').onclick = () => {
+  document.getElementById('silktide-cookie-icon').click();
+}

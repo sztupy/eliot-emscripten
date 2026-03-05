@@ -838,8 +838,6 @@ class SilktideCookieBanner {
   }
 })();
 
-
-
 silktideCookieBannerManager.updateCookieBannerConfig({
   background: {
     showBackground: false
@@ -901,7 +899,7 @@ silktideCookieBannerManager.updateCookieBannerConfig({
   ],
   text: {
     banner: {
-      description: "<p>We use cookies on our site to enhance your user experience, provide personalized content, and analyze our traffic. <a href=\"https://your-website.com/cookie-policy\" target=\"_blank\">Cookie Policy.</a></p>",
+      description: "<p>We use cookies on our site to enhance your user experience, provide personalized content, and analyze our traffic. Please see our <a href=\"https://scrabble.raven.scot/cookies.html\" target=\"_blank\">Cookie Policy</a>, and <a href=\"https://scrabble.raven.scot/privacy.html\" target=\"_blank\">Privacy Policy.</a></p>",
       acceptAllButtonText: "Accept all",
       acceptAllButtonAccessibleLabel: "Accept all cookies",
       rejectNonEssentialButtonText: "Reject non-essential",
@@ -911,7 +909,7 @@ silktideCookieBannerManager.updateCookieBannerConfig({
     },
     preferences: {
       title: "Customize your cookie preferences",
-      description: "<p>We respect your right to privacy. You can choose not to allow some types of cookies. Your cookie preferences will apply across our website.</p>",
+      description: "<p>We respect your right to privacy. You can choose not to allow some types of cookies. Your cookie preferences will apply across our website. Please see our <a href=\"https://scrabble.raven.scot/cookies.html\" target=\"_blank\">Cookie Policy</a>, and <a href=\"https://scrabble.raven.scot/privacy.html\" target=\"_blank\">Privacy Policy.</a></p>",
       creditLinkText: "Get this banner for free",
       creditLinkAccessibleLabel: "Get this banner for free"
     }
