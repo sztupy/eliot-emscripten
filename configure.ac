@@ -191,7 +191,7 @@ dic/Makefile
 game/Makefile
 utils/Makefile
 extras/Makefile
-website/Makefile
+docs/Makefile
 extras/innosetup/eliot-setup.iss
 Makefile)
 AC_OUTPUT
