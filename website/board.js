@@ -1,4 +1,31 @@
 const board = document.getElementById('board');
+
+const letterValues = {
+  'A': 1,
+  'À': 4,
+  'B': 2,
+  'C': 2,
+  'D': 1,
+  'E': 1,
+  'È': 6,
+  'F': 4,
+  'G': 2,
+  'H': 1,
+  'I': 1,
+  'Ì': 8,
+  'L': 2,
+  'M': 2,
+  'N': 2,
+  'O': 2,
+  'Ò': 8,
+  'P': 8,
+  'R': 1,
+  'S': 1,
+  'T': 4,
+  'U': 3,
+  'Ù': 6
+};
+
 const specialSquares = {
   '0;0': 'tw', '0;7': 'tw', '0;14': 'tw',
   '7;0': 'tw', '7;14': 'tw',
@@ -21,7 +48,9 @@ const specialSquares = {
 };
 
 let letters = {
-}
+};
+
+let history = [];
 
 function redrawBoard() {
   board.replaceChildren();
@@ -32,7 +61,17 @@ function redrawBoard() {
       const type = letters[key] ? 'letter' : (specialSquares[key] || 'normal');
       cell.className = `cell ${type}`;
 
-      if (type === 'letter') cell.textContent = letters[key];
+      if (type === 'letter') {
+        cell.textContent = letters[key].toUpperCase();
+
+        if (letterValues[letters[key]]) {
+          const value = document.createElement('span');
+          value.textContent = letterValues[letters[key]];
+          cell.appendChild(value);
+        } else {
+          cell.className += " joker";
+        }
+      }
       else if (type === 'star') cell.textContent = '★';
       else if (type === 'tw') cell.textContent = '3F';
       else if (type === 'dw') cell.textContent = '2F';
@@ -45,3 +84,21 @@ function redrawBoard() {
 }
 
 redrawBoard();
+
+function init() {
+  if (Module.calledRun) {
+    _startGame(0, 3);
+
+    data = stringToNewUTF8("a g");
+    _gameAction(data);
+    _free(data);
+
+    data2 = stringToNewUTF8("a p");
+    _gameAction(data2);
+    _free(data2);
+  } else {
+    setTimeout(init, 100);
+  }
+}
+
+setTimeout(init, 100);

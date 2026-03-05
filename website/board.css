@@ -61,4 +61,17 @@ body {
   background-color: #ffd7aa;
   color: #333;
   font-size: min(4.5vw, 4.5vh);
+  position: relative;
+}
+
+.letter.joker {
+  color: #933;
+}
+
+.letter span {
+  display: block;
+  position: absolute;
+  right: min(0.25vw, 0.25vh);
+  bottom: 0;
+  font-size: min(2vw, 2vh);
 }
