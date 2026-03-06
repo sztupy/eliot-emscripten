@@ -342,6 +342,7 @@ public:
      */
     void printTurns() const;
 
+    void saveGame(std::ostream& out) const;
 private:
     /// Wrapped game
     Game &m_game;

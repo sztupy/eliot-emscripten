@@ -29,7 +29,7 @@ var ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIR
 
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
-// include: /var/folders/qt/k2w2bz616690bv1n7wps6t_00000gn/T/tmp8fcb50sv.js
+// include: /var/folders/qt/k2w2bz616690bv1n7wps6t_00000gn/T/tmpdyaxx5c9.js
 
   if (!Module['expectedDataFileDownloads']) Module['expectedDataFileDownloads'] = 0;
   Module['expectedDataFileDownloads']++;
@@ -161,7 +161,7 @@ var ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIR
 
   })();
 
-// end include: /var/folders/qt/k2w2bz616690bv1n7wps6t_00000gn/T/tmp8fcb50sv.js
+// end include: /var/folders/qt/k2w2bz616690bv1n7wps6t_00000gn/T/tmpdyaxx5c9.js
 
 
 var arguments_ = [];
@@ -4898,11 +4898,13 @@ function addHistoryData(n,playerId,rack,solution,row,col,direction,points,bonus)
 function setScoreData(playerId,score) { setScore(playerId, score); }
 function setRackData(playerId,rack,extended) { setRack(playerId, UTF8ToString(rack), UTF8ToString(extended)); }
 function setGameStateData(currentPlayer,isFinished) { setGameState(currentPlayer, isFinished); }
+function saveGameData(data) { localStorage.setItem('save', UTF8ToString(data)); }
 
 // Imports from the Wasm binary.
 var ___cxa_free_exception,
   _stopGame,
   _startGame,
+  _loadGame,
   _gameAction,
   _malloc,
   _free,
@@ -4925,6 +4927,7 @@ function assignWasmExports(wasmExports) {
   ___cxa_free_exception = wasmExports['__cxa_free_exception'];
   _stopGame = Module['_stopGame'] = wasmExports['stopGame'];
   _startGame = Module['_startGame'] = wasmExports['startGame'];
+  _loadGame = Module['_loadGame'] = wasmExports['loadGame'];
   _gameAction = Module['_gameAction'] = wasmExports['gameAction'];
   _malloc = wasmExports['malloc'];
   _free = Module['_free'] = wasmExports['free'];
@@ -5055,6 +5058,8 @@ var wasmImports = {
   /** @export */
   resetBoard,
   /** @export */
+  saveGameData,
+  /** @export */
   setBoardLetter,
   /** @export */
   setGameStateData,
@@ -5130,6 +5135,17 @@ function invoke_v(index) {
   }
 }
 
+function invoke_vi(index,a1) {
+  var sp = stackSave();
+  try {
+    getWasmTableEntry(index)(a1);
+  } catch(e) {
+    stackRestore(sp);
+    if (e !== e+0) throw e;
+    _setThrew(1, 0);
+  }
+}
+
 function invoke_viiiiiiiii(index,a1,a2,a3,a4,a5,a6,a7,a8,a9) {
   var sp = stackSave();
   try {
@@ -5145,17 +5161,6 @@ function invoke_iiiiiii(index,a1,a2,a3,a4,a5,a6) {
   var sp = stackSave();
   try {
     return getWasmTableEntry(index)(a1,a2,a3,a4,a5,a6);
-  } catch(e) {
-    stackRestore(sp);
-    if (e !== e+0) throw e;
-    _setThrew(1, 0);
-  }
-}
-
-function invoke_vi(index,a1) {
-  var sp = stackSave();
-  try {
-    getWasmTableEntry(index)(a1);
   } catch(e) {
     stackRestore(sp);
     if (e !== e+0) throw e;

@@ -103,7 +103,7 @@ void Game::reorderRack(const PlayedRack &iNewRack)
     // Make sure the new rack uses the same letters
     ASSERT(pld.getRack() == iNewRack.getRack(),
            "The old and new racks have different letters" <<
-           "(old=" << lfw(pld.toString()) << 
+           "(old=" << lfw(pld.toString()) <<
            " new=" << lfw(iNewRack.toString()) << ")");
 
     m_players[currPlayer()]->setCurrentRack(iNewRack);
@@ -260,7 +260,7 @@ PlayedRack Game::helperSetRackRandom(const PlayedRack &iPld,
             throw EndGameException(_("The bag is empty"));
         else if (reason == 2)
             throw EndGameException(_("Not enough vowels or consonants to complete the rack"));
-        ASSERT(false, "Error code not handled")
+        ASSERT(false, "Error code not handled");
     }
 
     // When iCheck is true, we must make sure that there are at least 2 vowels
@@ -593,7 +593,6 @@ void Game::addPlayer(Player *iPlayer)
 void Game::nextPlayer()
 {
     ASSERT(getNPlayers() != 0, "Expected at least one player");
-
     unsigned int newPlayerId;
     if (m_currPlayer == getNPlayers() - 1)
         newPlayerId = 0;
@@ -751,4 +750,3 @@ wstring Game::CurrentPlayerCmd::toString() const
     oss << L")";
     return oss.str();
 }
-

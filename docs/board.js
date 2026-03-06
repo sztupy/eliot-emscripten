@@ -218,7 +218,15 @@ function init() {
     letters = {};
     redrawBoard();
 
-    _startGame(0, 3);
+
+    const saveData = localStorage.getItem("save");
+    if (saveData) {
+      saveDataPtr = stringToNewUTF8(saveData);
+      _loadGame(saveDataPtr);
+      _free(saveDataPtr);
+    } else {
+      _startGame(0, 3);
+    }
 
     data = stringToNewUTF8("a g");
     _gameAction(data);

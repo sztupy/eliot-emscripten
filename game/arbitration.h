@@ -80,4 +80,3 @@ private:
 };
 
 #endif /* ARBITRATION_H_ */
-

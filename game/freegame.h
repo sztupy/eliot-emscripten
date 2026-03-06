@@ -45,6 +45,7 @@ class FreeGame: public Game
 {
     DEFINE_LOGGER();
     friend class GameFactory;
+    friend class JsonReader;
 public:
 
     /*************************

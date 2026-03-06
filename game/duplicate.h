@@ -60,6 +60,7 @@ class Duplicate: public Game
     friend class GameFactory;
     friend class MarkPlayedCmd;
     friend class MasterMoveCmd;
+    friend class JsonReader;
 public:
 
     /*************************

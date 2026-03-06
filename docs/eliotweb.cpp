@@ -198,6 +198,7 @@ void displayData(const PublicGame &iGame, const vector<wstring> &tokens)
         GameIO::printGameDebug(cout, iGame);
         GameIO::printAllRacks(cout, iGame);
         GameIO::printAllPoints(cout, iGame);
+        GameIO::printSaveGame(cout, iGame);
     }
     else if (displayType == L"r")
     {
@@ -690,6 +691,25 @@ extern "C" void startGame(int nbHuman, int nbAI) {
         for (int i = 0; i < nbAI; i++)
             g_game->addPlayer(new AIPercent(1));
         g_game->start();
+    } catch (std::exception &e)
+    {
+        cerr << e.what() << endl;
+    }
+}
+
+extern "C" void loadGame(char* saveData) {
+    try {
+       stopGame();
+
+        if (!g_dic) {
+            setlocale(LC_ALL, "");
+            std::locale::global(std::locale(""));
+            g_dic = new Dictionary("gd.dawg");
+            srand(time(NULL));
+        }
+
+        Game *tmpGame = GameFactory::Instance()->load(saveData, *g_dic);
+        g_game = new PublicGame(*tmpGame);
     } catch (std::exception &e)
     {
         cerr << e.what() << endl;

@@ -48,6 +48,7 @@
 #include "ai_percent.h"
 #include "dic.h"
 #include "encoding.h"
+#include "json_reader.h"
 
 INIT_LOGGER(game, GameFactory);
 
@@ -115,6 +116,9 @@ Game *GameFactory::createGame(const GameParams &iParams, const Game *iMasterGame
     throw GameException("Unknown game type");
 }
 
+Game *GameFactory::load(const string &data, const Dictionary &iDic) {
+    return JsonReader::load(data, iDic);
+}
 
 Game *GameFactory::createFromCmdLine(int argc, char **argv)
 {

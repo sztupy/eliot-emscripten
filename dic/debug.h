@@ -47,8 +47,8 @@ using std::endl;
         } \
     }
 #else
-#   define ASSERT(cond, msg)
+#   include <iostream>
+#   define ASSERT(cond, msg) if (!(cond)) std::cerr << "ASSERTION FAILED: " << msg << std::endl
 #endif
 
 #endif
-

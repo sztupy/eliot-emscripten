@@ -24,6 +24,7 @@
 #include <iomanip>
 #include <string>
 #include <stdlib.h>
+#include <sstream>
 
 #include "game_io.h"
 #include "game_params.h"
@@ -74,6 +75,10 @@ EM_JS(void, setRackData, (int playerId, const char* rack, const char* extended),
 
 EM_JS(void, setGameStateData, (int currentPlayer, int isFinished), {
     setGameState(currentPlayer, isFinished);
+});
+
+EM_JS(void, saveGameData, (const char* data), {
+    localStorage.setItem('save', UTF8ToString(data));
 });
 
 void GameIO::printBoard(ostream &out, const PublicGame &iGame)
@@ -171,6 +176,12 @@ void GameIO::printAllPoints(ostream &out, const PublicGame &iGame)
     callRedrawBoard();
 }
 
+void GameIO::printSaveGame(ostream &out, const PublicGame &iGame)
+{
+    std::ostringstream os;
+    iGame.saveGame(os);
+    saveGameData(os.str().c_str());
+}
 
 void GameIO::printGameDebug(ostream &out, const PublicGame &iGame)
 {

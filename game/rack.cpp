@@ -38,6 +38,7 @@ void Rack::remove(const Tile &t)
 {
     ASSERT(count(t),
            "The rack does not contain the letter " + lfw(t.getDisplayStr()));
+
     m_tiles[t.toCode()]--;
     m_nbTiles--;
 }
@@ -85,5 +86,3 @@ bool Rack::operator==(const Rack &iOther) const
     return m_tiles == iOther.m_tiles
         && m_nbTiles == iOther.m_nbTiles;
 }
-
-

@@ -52,7 +52,7 @@ public:
     Game *createGame(const GameParams &iParams, const Game *iMasterGame = NULL);
 
     /// Return the loaded game, or NULL if there was a problem
-    Game *load(const string &iFileName, const Dictionary &iDic);
+    Game *load(const string &data, const Dictionary &iDic);
 
     Game *createFromCmdLine(int argc, char **argv);
 
@@ -93,4 +93,3 @@ private:
 };
 
 #endif // _GAME_FACTORY_H_
-

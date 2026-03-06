@@ -46,6 +46,7 @@ class Training: public Game
 {
     DEFINE_LOGGER();
     friend class GameFactory;
+    friend class JsonReader;
 public:
 
     /*************************

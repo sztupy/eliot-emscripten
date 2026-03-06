@@ -127,16 +127,9 @@ PKG_CHECK_MODULES(LIBCONFIG, [libconfig++],
                    AC_DEFINE(HAVE_LIBCONFIG, 1, [Define to 1 if you have the libconfig library])],
                   [has_libconfig=0])
 
-dnl Check for liblog4cxx
-PKG_CHECK_MODULES(LOG4CXX, [liblog4cxx],
-                  [has_log4cxx=1
-                   AC_DEFINE(HAVE_LIBLOG4CXX, 1, [Define to 1 if you have the liblog4cxx library])],
-                  [has_log4cxx=0])
 AS_IF([test "${want_logging}" = "1"],
-      [AS_IF([test "${has_log4cxx}" = "1"],
-             [with_logging=1
-              AC_DEFINE(USE_LOGGING, 1, [Define to 1 if you want to enable logging])],
-             [AC_MSG_ERROR([Logging requested, but liblog4cxx could not be found on your system (using pkg-config)])])])
+      [with_logging=1
+      AC_DEFINE(USE_LOGGING, 1, [Define to 1 if you want to enable logging])])
 # Conditional, to avoid a useless dependency (in the case of shared library)
 AM_CONDITIONAL([WITH_LOGGING], [test "${with_logging}" = "1"])
 

@@ -206,6 +206,27 @@ public:
                         bool checkRack = true,
                         bool checkWordAndJunction = true) const;
 
+    /// Command used to keep track of the current player changes
+    class CurrentPlayerCmd: public Command
+    {
+        public:
+            CurrentPlayerCmd(Game &ioGame,
+                             unsigned int iPlayerId);
+
+            virtual wstring toString() const;
+            virtual unsigned int getPlayerId() const { return m_newPlayerId; }
+            virtual unsigned int getOldPlayerId() const { return m_oldPlayerId; }
+
+        protected:
+            virtual void doExecute();
+            virtual void doUndo();
+
+        private:
+            Game &m_game;
+            unsigned int m_newPlayerId;
+            unsigned int m_oldPlayerId;
+    };
+
 private:
     /// Game characteristics
     GameParams m_params;
@@ -225,25 +246,6 @@ private:
 
     /// Change the player who is supposed to play
     void setCurrentPlayer(unsigned int iPlayerId) { m_currPlayer = iPlayerId; }
-
-    /// Command used to keep track of the current player changes
-    class CurrentPlayerCmd: public Command
-    {
-        public:
-            CurrentPlayerCmd(Game &ioGame,
-                             unsigned int iPlayerId);
-
-            virtual wstring toString() const;
-
-        protected:
-            virtual void doExecute();
-            virtual void doUndo();
-
-        private:
-            Game &m_game;
-            unsigned int m_newPlayerId;
-            unsigned int m_oldPlayerId;
-    };
 
 // TODO: check what should be private and what should be protected
 protected:

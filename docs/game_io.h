@@ -50,9 +50,8 @@ public:
     static void printAllRacks(ostream &out, const PublicGame &iGame);
     static void printSearchResults(ostream &out, const Results &iResults, int);
     static void printAllPoints(ostream &out, const PublicGame &iGame);
-
     static void printGameDebug(ostream &out, const PublicGame &iGame);
-
+    static void printSaveGame(ostream &out, const PublicGame &iGame);
 private:
     /// This class is a toolbox, and should not be instanciated
     GameIO();

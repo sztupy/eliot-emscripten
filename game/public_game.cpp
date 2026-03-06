@@ -30,6 +30,7 @@
 #include "game_exception.h"
 #include "player.h"
 #include "pldrack.h"
+#include "json_writer.h"
 
 
 PublicGame::PublicGame(Game &iGame)
@@ -458,4 +459,9 @@ void PublicGame::clearFuture()
 void PublicGame::printTurns() const
 {
     m_game.getNavigation().print();
+}
+
+void PublicGame::saveGame(ostream& out) const
+{
+    JsonWriter::write(m_game, out);
 }

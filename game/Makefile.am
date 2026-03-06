@@ -19,7 +19,7 @@
 
 noinst_LIBRARIES = libgame.a
 
-AM_CPPFLAGS = -I$(top_srcdir)/dic -I../intl -I$(top_srcdir)/intl @LIBCONFIG_CFLAGS@ @LOG4CXX_CFLAGS@
+AM_CPPFLAGS = -I$(top_srcdir)/dic -I../intl -I$(top_srcdir)/intl @LIBCONFIG_CFLAGS@
 
 libgame_a_SOURCES= \
     game_exception.cpp game_exception.h \
@@ -62,4 +62,7 @@ libgame_a_SOURCES= \
     training.cpp training.h \
     topping.cpp topping.h \
     public_game.cpp public_game.h \
-    game_factory.cpp game_factory.h
+    game_factory.cpp game_factory.h \
+    json_writer.cpp json_writer.h \
+    cJSON.c cJSON.h \
+    json_reader.cpp json_reader.h
