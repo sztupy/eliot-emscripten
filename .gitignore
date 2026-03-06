@@ -111,4 +111,6 @@ eliottxt.wasm.map
 eliotweb
 eliotweb.html
 eliotweb.wasm.map
-!eliotweb.wasm
+eliotweb.wasm
+eliotweb.data
+eliotweb.js
