@@ -247,3 +247,8 @@ setTimeout(init, 1000);
 document.getElementById('cookie').onclick = () => {
   document.getElementById('silktide-cookie-icon').click();
 }
+
+document.getElementById('newgame').onclick = () => {
+  localStorage.removeItem('save');
+  window.location.reload();
+}
