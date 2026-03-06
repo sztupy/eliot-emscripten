@@ -1,0 +1,58 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [production]
+  workflow_dispatch:
+
+permissions:
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup emsdk
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 5.0.2
+          actions-cache-folder: "emsdk-cache"
+
+      - uses: actions/checkout@v4
+
+      - name: Set up build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libboost-all-dev gettext autopoint gcc-multilib
+
+      - name: Create output directory
+        run: |
+          cp -a website _site
+          rm _site/*.cpp _site/*.h _site/Makefile.*
+
+      - name: Build project
+        run: |
+          mkdir /tmp/boost
+          cp -a /usr/include/boost /tmp/boost
+          ./bootstrap
+          CPPFLAGS="-I/tmp/boost" emconfigure ./configure --enable-production
+          emmake make
+
+      - name: Copy build artifacts
+        run: |
+          cp website/eliotweb.data _site
+          cp website/eliotweb.wasm _site
+          cp website/eliotweb.js _site
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site/
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -50,7 +50,7 @@ bin_PROGRAMS = \
 	regexp
 
 compdic_SOURCES=compdicmain.cpp
-compdic_CPPFLAGS=$(AM_CPPFLAGS) @BOOST_CPPFLAGS@
+compdic_CPPFLAGS=$(AM_CPPFLAGS)
 compdic_LDADD=libdic.a @LIBINTL@ @LIBICONV@
 
 listdic_SOURCES=listdicmain.cpp
