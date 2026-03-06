@@ -252,3 +252,8 @@ document.getElementById('newgame').onclick = () => {
   localStorage.removeItem('save');
   window.location.reload();
 }
+
+document.getElementById('privacypol').onclick = () => {
+  console.log("click");
+  window.open('privacy.html', '_blank');
+}
