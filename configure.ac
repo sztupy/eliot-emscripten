@@ -53,6 +53,16 @@ if test "${ac_cv_c_Wextra}" != "no"; then
     CXXFLAGS+=" -Wextra"
 fi
 
+dnl Production
+AC_ARG_ENABLE([production],AS_HELP_STRING([--enable-production],[production mode (default disabled)]))
+if test "${enable_production}" = "yes"; then
+    want_production=1
+    CFLAGS+=" -g0 -O3"
+    CXXFLAGS+=" -g0 -O3"
+else
+    want_production=0
+fi
+
 dnl Logging
 AC_ARG_ENABLE([logging],AS_HELP_STRING([--enable-logging],[logging (default disabled)]))
 if test "${enable_logging}" = "yes"; then
@@ -127,10 +137,14 @@ PKG_CHECK_MODULES(LIBCONFIG, [libconfig++],
                    AC_DEFINE(HAVE_LIBCONFIG, 1, [Define to 1 if you have the libconfig library])],
                   [has_libconfig=0])
 
+AS_IF([test "${want_production}" = "1"],
+      [production_build=1
+      AC_DEFINE(USE_PRODUCTION, 1, [Define to 1 if you want to build without debug headers])])
+AM_CONDITIONAL([PRODUCTION_BUILD], [test "${production_build}" = "1"])
+
 AS_IF([test "${want_logging}" = "1"],
       [with_logging=1
       AC_DEFINE(USE_LOGGING, 1, [Define to 1 if you want to enable logging])])
-# Conditional, to avoid a useless dependency (in the case of shared library)
 AM_CONDITIONAL([WITH_LOGGING], [test "${with_logging}" = "1"])
 
 dnl Enable/disable text version
