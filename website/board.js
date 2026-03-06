@@ -2,6 +2,12 @@ const boardDom = document.getElementById('board');
 const playerDom = document.getElementById('players');
 const historyDom = document.getElementById('history');
 
+const sound_human_event = new Audio("sounds/1.ogg");
+const sound_incorrect = new Audio("sounds/2.ogg");
+const sound_endgame = new Audio("sounds/3.ogg");
+const sound_event = new Audio("sounds/4.ogg");
+const sound_start = new Audio("sounds/5.ogg");
+
 const letterValues = {
   'A': 1,
   'À': 4,
@@ -228,8 +234,12 @@ function play() {
   _gameAction(data2);
   _free(data2);
 
+  sound_event.play();
+
   if (!gameData.isFinished) {
     setTimeout(play, 3000 + (Math.floor(Math.random() * 10) + 1) * 250);
+  } else {
+    sound_endgame.play();
   }
 }
 
@@ -237,7 +247,6 @@ function init() {
   if (Module && Module.calledRun) {
     letters = {};
     redrawBoard();
-
 
     const saveData = localStorage.getItem("save");
     if (saveData) {
@@ -255,6 +264,8 @@ function init() {
     data2 = stringToNewUTF8("a p");
     _gameAction(data2);
     _free(data2);
+
+    sound_start.play();
 
     setTimeout(play, 5000);
   } else {

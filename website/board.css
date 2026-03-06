@@ -260,3 +260,7 @@ header#main_header {
 .lang-btn:hover {
   border-color: #f0f0f0;
 }
+
+#about {
+  display: none;
+}
