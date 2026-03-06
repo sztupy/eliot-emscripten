@@ -106,6 +106,12 @@ body {
   border-bottom: none;
 }
 
+.history-id {
+  font-weight: bold;
+  color: #666;
+  min-width: 40px;
+}
+
 .player-id {
   font-weight: bold;
   color: #666;

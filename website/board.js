@@ -49,19 +49,38 @@ const specialSquares = {
   '9;9': 'tl', '9;13': 'tl', '13;5': 'tl', '13;9': 'tl'
 };
 
-let letters = {
-  '7;2': 'L',
-  '7;3': 'U',
-  '7;4': 'C',
-  '7;5': 'H',
-  '7;6': 'D',
-  '7;7': 'A',
-  '7;8': 'D',
-  '7;9': 'H',
-  '7;10': '.',
-  '7;11': '.',
-  '7;12': '.',
-};
+let letters = {};
+
+let language = document.documentElement.lang;
+
+if (language == 'en') {
+  letters = {
+    '7;2': 'L',
+    '7;3': 'O',
+    '7;4': 'A',
+    '7;5': 'D',
+    '7;6': 'I',
+    '7;7': 'N',
+    '7;8': 'G',
+    '7;9': '.',
+    '7;10': '.',
+    '7;11': '.',
+  };
+} else {
+  letters = {
+    '7;2': 'L',
+    '7;3': 'U',
+    '7;4': 'C',
+    '7;5': 'H',
+    '7;6': 'D',
+    '7;7': 'A',
+    '7;8': 'D',
+    '7;9': 'H',
+    '7;10': '.',
+    '7;11': '.',
+    '7;12': '.',
+  };
+}
 
 let history = [];
 
@@ -139,7 +158,7 @@ function redrawBoard() {
     const playerElement = document.createElement('div');
     playerElement.className = 'player';
 
-    let text = `<div class="name">Player ${i + 1}</div>`;
+    let text = `<div class="name">${language == 'en' ? 'Player' : 'Cluicheadair'} ${i + 1}</div>`;
     text += `<div class="score">${player.score || 0}</div>`;
     if (gameData.isFinished)
       text += `<div class="rack">${player.rack || ''}</div>`;
@@ -149,11 +168,12 @@ function redrawBoard() {
   }
 
   historyDom.replaceChildren();
-  for (let i = 0; i < history.length; i++) {
+  for (let i = history.length - 1; i >= 0; i--) {
     const [playerId, rack, solution, row, col, direction, points, bonus] = history[i];
     const historyElement = document.createElement('div');
     historyElement.className = 'history-item';
-    let text = `<div class="player-id">Player ${playerId + 1}</div>`;
+    let text = `<div class="history-id">#${i + 1}</div>`;
+    text += `<div class="player-id">${language == 'en' ? 'Player' : 'Cl.'} ${playerId + 1}</div>`;
     if (row >= 0) {
       if (gameData.isFinished) {
         text += `<div class="move">${rack} → <a href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${solution.toLowerCase()}" target="_blank">${solution}</a> @ ${String.fromCharCode('A'.charCodeAt(0) + row)}${col + 1}${direction ? '↕' : '↔'}</div>`;
