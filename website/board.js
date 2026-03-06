@@ -244,16 +244,16 @@ function init() {
 
 setTimeout(init, 1000);
 
-document.getElementById('cookie').onclick = () => {
+document.getElementById('cookie_settings').onclick = () => {
   document.getElementById('silktide-cookie-icon').click();
 }
 
-document.getElementById('newgame').onclick = () => {
+document.getElementById('reset').onclick = () => {
   localStorage.removeItem('save');
   window.location.reload();
 }
 
-document.getElementById('privacypol').onclick = () => {
+document.getElementById('privacy_policy').onclick = () => {
   console.log("click");
   window.open('privacy.html', '_blank');
 }
