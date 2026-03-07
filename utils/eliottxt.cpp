@@ -31,11 +31,6 @@
 #include <string.h>
 #include <locale.h>
 #include <wctype.h>
-#if HAVE_READLINE_READLINE_H
-#   include <stdio.h>
-#   include <readline/readline.h>
-#   include <readline/history.h>
-#endif
 
 #include "dic.h"
 #include "header.h"
@@ -68,42 +63,6 @@ static wchar_t *wline_read = NULL;
 // Returns NULL on EOF.
 wchar_t *rl_gets()
 {
-#if HAVE_READLINE_READLINE_H
-    // If the buffer has already been allocated, return the memory to the free
-    // pool
-    if (wline_read)
-    {
-        delete[] wline_read;
-    }
-
-    static bool init = true;
-    if (init)
-    {
-        // Initialize readline() explicitly, to help filtering
-        // valgrind results
-        rl_initialize();
-        init = false;
-    }
-
-    // Get a line from the user
-    static char *line_read;
-    line_read = readline("commande> ");
-
-    // If the line has any text in it, save it on the history
-    if (line_read && *line_read)
-        add_history(line_read);
-
-    // Convert the line into wide characters
-    // Get the needed length (we _can't_ use string::size())
-    size_t len = mbstowcs(NULL, line_read, 0);
-    if (len == (size_t)-1)
-        return NULL;
-
-    wline_read = new wchar_t[len + 1];
-    mbstowcs(wline_read, line_read, len + 1);
-
-    free(line_read);
-#else
     if (!cin.good())
         return NULL;
 
@@ -121,7 +80,6 @@ wchar_t *rl_gets()
 
     wline_read = new wchar_t[len + 1];
     mbstowcs(wline_read, line.c_str(), len + 1);
-#endif
 
     return wline_read;
 }
