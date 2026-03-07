@@ -282,10 +282,12 @@ function redrawBoard() {
   if (gameData.isFinished) {
     text += `<button onclick="resetGame()">${language == 'en' ? 'Play again' : 'Cluich a-rithist'}</button>`;
   } else {
+    // only AI - we can watch their hand
     if (gameData.onlyAI) {
       if (currentPlayer) {
         text += getRack(currentPlayer.rack);
       }
+      // single human - always show the human's hand
     } else if (gameData.oneHuman) {
       let player = players.find(p => p.isHuman);
       if (player) {
@@ -296,15 +298,11 @@ function redrawBoard() {
           text += getRack(player.rack, true);
         }
       }
-    } else if (currentPlayer && currentPlayer.isHuman) {
-      if (currentPlayer) {
-        if (currentPlayer.rack == mainRackData) {
-          text += oldRack.outerHTML;
-        } else {
-          mainRackData = currentPlayer.rack;
-          text += getRack(currentPlayer.rack, true);
-        }
-      }
+      // otherwise it's a hot seat, so only show if it's their turn
+    } else if (currentPlayer?.isHuman) {
+      rack = getRack(currentPlayer.rack, true);
+
+      text += `<div><button onclick="document.getElementById('player_rack_hidden').style.display='block';event.currentTarget.parentElement.style.display='none';">${language == 'en' ? `${players[gameData.currentPlayer].name}'s turn. Show tiles.` : `Turas ${players[gameData.currentPlayer].name}. Seall taidhlean.`}</button><br></div><div id="player_rack_hidden" style="display:none;">${rack}</div>`;
     }
 
     if (currentPlayer && currentPlayer.isHuman) {
