@@ -89,10 +89,10 @@ if (language == 'en') {
 }
 
 let history = [];
-
 let players = [];
-
-let gameData = {};
+let gameData = {
+  onlyAI: true
+};
 
 function initBoard() {
   boardDom.replaceChildren();
@@ -164,16 +164,40 @@ function redrawBoard() {
     const playerElement = document.createElement('div');
     playerElement.className = 'player';
 
+    if (gameData.currentPlayer == i) {
+      playerElement.classList.add('current');
+    }
+
     let text = `<div class="name">${language == 'en' ? 'Player' : 'Cluicheadair'} ${i + 1}</div>`;
     text += `<div class="score">${player.score || 0}</div>`;
-    if (gameData.isFinished)
-      text += `<div class="rack">${player.rack || ''}</div>`;
+    if (gameData.isFinished || gameData.onlyAI) {
+      text += `<div class="rack">`;
+      for (let j = 0; j < player.rack.length; j++) {
+        let key = player.rack[j];
+        if (letterValues[key]) {
+          text += `<div class="cell letter">${key}<span>${letterValues[key]}</span></div>`;
+        } else {
+          text += `<div class="cell letter joker">${key}</div>`;
+        }
+      }
+      text += `</div>`;
+    }
 
     playerElement.innerHTML = text;
     playerDom.appendChild(playerElement);
   }
 
   historyDom.replaceChildren();
+  if (gameData.isFinished) {
+    historyDom.innerHTML = `<div class="history-item">
+      <div class="history-id">#${history.length + 1}</div>
+      <div class="player-id">----</div>
+      <div class="move">${language == 'en' ? 'Game over' : 'An geam seachad'}</div>
+      <div class="points">----</div>
+    </div>`;
+  } else {
+
+  }
   for (let i = history.length - 1; i >= 0; i--) {
     const [playerId, rack, solution, row, col, direction, points, bonus] = history[i];
     const historyElement = document.createElement('div');
@@ -181,13 +205,13 @@ function redrawBoard() {
     let text = `<div class="history-id">#${i + 1}</div>`;
     text += `<div class="player-id">${language == 'en' ? 'Player' : 'Cl.'} ${playerId + 1}</div>`;
     if (row >= 0) {
-      if (gameData.isFinished) {
+      if (gameData.isFinished || gameData.onlyAI) {
         text += `<div class="move">${rack} → <a href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${solution.toLowerCase()}" target="_blank">${solution}</a> @ ${String.fromCharCode('A'.charCodeAt(0) + row)}${col + 1}${direction ? '↕' : '↔'}</div>`;
       } else {
         text += `<div class="move"><a href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${solution.toLowerCase()}" target="_blank">${solution}</a> @ ${String.fromCharCode('A'.charCodeAt(0) + row)}${col + 1}${direction ? '↕' : '↔'}</div>`;
       }
     } else {
-      if (gameData.isFinished) {
+      if (gameData.isFinished || gameData.onlyAI) {
         text += `<div class="move">${rack} → ${solution}</div>`;
       } else {
         text += `<div class="move">${solution}</div>`;
