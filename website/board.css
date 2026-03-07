@@ -76,6 +76,11 @@ body {
   position: relative;
 }
 
+.placeholder {
+  border: 1px solid #cccccc;
+  border-radius: 3px;
+}
+
 .letter.joker {
   color: #933;
 }
@@ -209,6 +214,10 @@ body {
   min-width: 40vw;
 }
 
+#main_rack .rack {
+  grid-template-columns: repeat(8, 1fr);
+}
+
 .player.current .rack {
   background-color: #c0ebba;
 }
@@ -310,6 +319,9 @@ header#main_header {
   display: none;
 }
 
+#dragged-letter {
+  opacity: 0.4;
+}
 
 @media (min-aspect-ratio: 3/2) {
   #main {
@@ -348,5 +360,6 @@ header#main_header {
   #main_rack .rack .letter {
     max-width: 4vw;
     font-size: min(4vw, 4vh);
+    cursor: pointer;
   }
 }

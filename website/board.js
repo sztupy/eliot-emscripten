@@ -56,6 +56,8 @@ const specialSquares = {
   '9;9': 'tl', '9;13': 'tl', '13;5': 'tl', '13;9': 'tl'
 };
 
+let mainRackData = null;
+
 let letters = {};
 
 let language = document.documentElement.lang;
@@ -128,14 +130,14 @@ function initBoard() {
   }
 }
 
-function getRack(rack) {
+function getRack(rack, mainRack = false) {
   let text = `<div class="rack">`;
   for (let j = 0; j < rack.length; j++) {
     let key = rack[j];
     if (letterValues[key]) {
-      text += `<div class="cell letter">${key}<span>${letterValues[key]}</span></div>`;
+      text += `<div class="cell letter" ${mainRack ? ' draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)"' : ''}>${key}<span>${letterValues[key]}</span></div>`;
     } else {
-      text += `<div class="cell letter joker">${key}</div>`;
+      text += `<div class="cell letter joker" ${mainRack ? ' draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)"' : ''}>${key}</div>`;
     }
   }
   text += `</div>`;
@@ -258,6 +260,8 @@ function redrawBoard() {
     historyDom.appendChild(historyElement);
   }
 
+  let oldRack = mainRackDom.getElementsByClassName('rack')[0];
+
   mainRackDom.replaceChildren();
   let currentPlayer = players[gameData.currentPlayer];
 
@@ -276,11 +280,21 @@ function redrawBoard() {
     } else if (gameData.oneHuman) {
       let player = players.find(p => p.isHuman);
       if (player) {
-        text += getRack(player.rack);
+        if (player.rack == mainRackData) {
+          text += oldRack.outerHTML;
+        } else {
+          mainRackData = player.rack;
+          text += getRack(player.rack, true);
+        }
       }
     } else if (currentPlayer && currentPlayer.isHuman) {
       if (currentPlayer) {
-        text += getRack(currentPlayer.rack);
+        if (currentPlayer.rack == mainRackData) {
+          text += oldRack.outerHTML;
+        } else {
+          mainRackData = currentPlayer.rack;
+          text += getRack(currentPlayer.rack, true);
+        }
       }
     }
 
@@ -293,6 +307,17 @@ function redrawBoard() {
   }
 
   mainRackDom.innerHTML = text;
+  for (let element of mainRackDom.getElementsByClassName("rack")) {
+    element.addEventListener("dragover", movePlaceholder);
+    element.addEventListener("dragleave", (event) => {
+      let column = event.currentTarget;
+
+      if (column.contains(event.relatedTarget)) return;
+      const placeholder = column.querySelector(".placeholder");
+      placeholder?.remove();
+    })
+    element.addEventListener("drop", dragDrop);
+  }
 }
 
 function pass() {
@@ -305,6 +330,74 @@ function pass() {
   _free(data);
 
   sound_human_event.play();
+}
+
+function makePlaceholder(draggedTask) {
+  const placeholder = document.createElement("div");
+  placeholder.classList.add("cell");
+  placeholder.classList.add("letter");
+  placeholder.classList.add("placeholder");
+  placeholder.style.height = `${draggedTask.offsetHeight}px`;
+  return placeholder;
+}
+
+function movePlaceholder(event) {
+  event.preventDefault();
+  // Must exist because the ID is added for all drag events with a "task" data entry
+  const draggedTask = document.getElementById("dragged-letter");
+  const column = event.currentTarget;
+  const tasks = column;
+  const existingPlaceholder = column.querySelector(".placeholder");
+  if (existingPlaceholder) {
+    const placeholderRect = existingPlaceholder.getBoundingClientRect();
+    if (
+      placeholderRect.left <= event.clientX &&
+      placeholderRect.right >= event.clientX
+    ) {
+      return;
+    }
+  }
+  for (const task of tasks.children) {
+    if (task.getBoundingClientRect().right >= event.clientX) {
+      if (task === existingPlaceholder) return;
+      existingPlaceholder?.remove();
+      if (task === draggedTask || task.previousElementSibling === draggedTask)
+        return;
+      tasks.insertBefore(
+        existingPlaceholder ?? makePlaceholder(draggedTask),
+        task,
+      );
+      return;
+    }
+  }
+
+  existingPlaceholder?.remove();
+  if (tasks.lastElementChild === draggedTask) return;
+  tasks.append(existingPlaceholder ?? makePlaceholder(draggedTask));
+}
+
+function drag(event) {
+  event.currentTarget.id = 'dragged-letter';
+  event.dataTransfer.effectAllowed = "move";
+  event.dataTransfer.setData("task", "");
+}
+
+function dragEnd(_event) {
+  document.getElementById('dragged-letter').removeAttribute('id');
+}
+
+function dragDrop(event) {
+  event.preventDefault();
+
+  const column = event.currentTarget;
+
+  const draggedTask = document.getElementById("dragged-letter");
+  const placeholder = column.querySelector(".placeholder");
+  if (!placeholder) return;
+
+  draggedTask.remove();
+  column.insertBefore(draggedTask, placeholder);
+  placeholder.remove();
 }
 
 function addHistory(n, playerId, rack, solution, row, col, direction, points, bonus) {
