@@ -55,15 +55,9 @@
 
 class Game;
 
-
-// Use a more friendly type name for the tokenizer
 typedef boost::tokenizer<boost::char_separator<wchar_t>,
         std::wstring::const_iterator,
         std::wstring> Tokenizer;
-
-// A static variable for holding the line
-static wchar_t *wline_read = NULL;
-
 
 class ParsingException : public BaseException
 {
@@ -187,32 +181,9 @@ PublicGame * readGame(const Dictionary &iDic,
 void displayData(const PublicGame &iGame, const vector<wstring> &tokens)
 {
     const wstring &displayType = parseAlpha(tokens, 1);
-    if (displayType == L"g")
-        GameIO::printBoard(cout, iGame);
-    else if (displayType == L"j")
-        cout << "Joueur " << iGame.getCurrentPlayer().getId() << endl;
-    else if (displayType == L"l")
-        GameIO::printNonPlayed(cout, iGame);
-    else if (displayType == L"p")
-    {
-        GameIO::printGameDebug(cout, iGame);
-        GameIO::printAllRacks(cout, iGame);
-        GameIO::printAllPoints(cout, iGame);
-        GameIO::printSaveGame(cout, iGame);
+    if (displayType == L"g") {
+        GameIO::sendData(iGame);
     }
-    else if (displayType == L"r")
-    {
-        int limit = parseNum(tokens, 2, true, 10);
-        GameIO::printSearchResults(cout, iGame.trainingGetResults(), limit);
-    }
-    else if (displayType == L"s")
-        GameIO::printAllPoints(cout, iGame);
-    else if (displayType == L"S")
-        GameIO::printAllPoints(cout, iGame);
-    else if (displayType == L"t")
-        GameIO::printAllRacks(cout, iGame);
-    else if (displayType == L"T")
-        GameIO::printAllRacks(cout, iGame);
     else
         throw ParsingException("Invalid command");
 }

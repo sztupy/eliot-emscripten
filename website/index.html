@@ -38,10 +38,10 @@
 
       language = localStorage.getItem('language') || window.navigator.userLanguage || window.navigator.language;
 
-      if (language.indexOf('gd') > -1) {
-        window.location = "gd.html"
-      } else {
+      if (language.indexOf('en') > -1) {
         window.location = "en.html"
+      } else {
+        window.location = "gd.html"
       };
     })();
   </script>

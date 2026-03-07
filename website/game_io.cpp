@@ -65,23 +65,19 @@ EM_JS(void, addHistoryData, (int n, int playerId, const char* rack, const char* 
     addHistory(n, playerId, UTF8ToString(rack), UTF8ToString(solution), row, col, direction, points, bonus);
 });
 
-EM_JS(void, setScoreData, (int playerId, int score), {
-    setScore(playerId, score);
+EM_JS(void, setPlayerData, (int playerId, int score, const char* rack, const char* extended, int isHuman), {
+    setPlayer(playerId, score, UTF8ToString(rack), UTF8ToString(extended), isHuman);
 });
 
-EM_JS(void, setRackData, (int playerId, const char* rack, const char* extended), {
-    setRack(playerId, UTF8ToString(rack), UTF8ToString(extended));
-});
-
-EM_JS(void, setGameStateData, (int currentPlayer, int isFinished), {
-    setGameState(currentPlayer, isFinished);
+EM_JS(void, setGameStateData, (int currentPlayer, int isFinished, int aiCount, int humanCount), {
+    setGameState(currentPlayer, isFinished, aiCount, humanCount);
 });
 
 EM_JS(void, saveGameData, (const char* data), {
     localStorage.setItem('save', UTF8ToString(data));
 });
 
-void GameIO::printBoard(ostream &out, const PublicGame &iGame)
+void printBoard(const PublicGame &iGame)
 {
     resetBoard();
 
@@ -96,116 +92,31 @@ void GameIO::printBoard(ostream &out, const PublicGame &iGame)
                 setBoardLetter(row, col, lfw(iGame.getBoard().getDisplayStr(row, col)).c_str());
         }
     }
-
-    setGameStateData(
-        iGame.getCurrentPlayer().getId(),
-        iGame.isFinished() ? 1 : 0
-    );
-    callRedrawBoard();
 }
 
-void GameIO::printNonPlayed(ostream &out, const PublicGame &iGame)
-{
-    const Bag &bag = iGame.getBag();
-    BOOST_FOREACH(const Tile &tile, iGame.getDic().getAllTiles())
-    {
-        if (bag.count(tile) > 9)
-            out << " ";
-        out << setw(2) << lfw(tile.getDisplayStr());
-    }
-    out << endl;
-
-    BOOST_FOREACH(const Tile &tile, iGame.getDic().getAllTiles())
-    {
-        out << " " << bag.count(tile);
-    }
-    out << endl;
-}
-
-void GameIO::printAllRacks(ostream &out, const PublicGame &iGame)
-{
-    for (unsigned int j = 0; j < iGame.getNbPlayers(); j++)
-    {
-        setRackData(j,
-            lfw(iGame.getPlayer(j).getCurrentRack().toString(PlayedRack::RACK_SIMPLE)).c_str(),
-            lfw(iGame.getPlayer(j).getCurrentRack().toString(PlayedRack::RACK_EXTRA)).c_str()
-        );
-    }
-
-    setGameStateData(
-        iGame.getCurrentPlayer().getId(),
-        iGame.isFinished() ? 1 : 0
-    );
-    callRedrawBoard();
-}
-
-static void searchResultLine(ostream &out, const Results &iResults, int num)
-{
-    const Round &r = iResults.get(num);
-    const wstring &word = r.getWord();
-    if (word.empty())
-        return;
-    out << lfw(word) << string(16 - word.size(), ' ')
-        << (r.getBonus() ? '*' : ' ')
-        << setw(4) << r.getPoints()
-        << ' ' << lfw(r.getCoord().toString());
-}
-
-
-void GameIO::printSearchResults(ostream &out, const Results &iResults, int num)
-{
-    for (int i = 0; i < num && i < (int)iResults.size(); i++)
-    {
-        out << setw(3) << i + 1 << ": ";
-        searchResultLine(out, iResults, i);
-        out << endl;
-    }
-}
-
-void GameIO::printAllPoints(ostream &out, const PublicGame &iGame)
+void printPlayerData(const PublicGame &iGame)
 {
     for (unsigned int i = 0; i < iGame.getNbPlayers(); i++)
     {
-        setScoreData(i, iGame.getPlayer(i).getTotalScore());
+        const Player& player = iGame.getPlayer(i);
+        setPlayerData(i,
+            player.getTotalScore(),
+            lfw(player.getCurrentRack().toString(PlayedRack::RACK_SIMPLE)).c_str(),
+            lfw(player.getCurrentRack().toString(PlayedRack::RACK_EXTRA)).c_str(),
+            player.isHuman() ? 1 : 0
+        );
     }
-
-    setGameStateData(
-        iGame.getCurrentPlayer().getId(),
-        iGame.isFinished() ? 1 : 0
-    );
-    callRedrawBoard();
 }
 
-void GameIO::printSaveGame(ostream &out, const PublicGame &iGame)
+void printSaveGame(const PublicGame &iGame)
 {
     std::ostringstream os;
     iGame.saveGame(os);
     saveGameData(os.str().c_str());
 }
 
-void GameIO::printGameDebug(ostream &out, const PublicGame &iGame)
+void printGameDebug(const PublicGame &iGame)
 {
-    // out << "Game: player " << iGame.getCurrentPlayer().getId() + 1
-    //     << " out of " << iGame.getNbPlayers() << endl;
-    // if (iGame.getParams().getMode() == GameParams::kDUPLICATE)
-    //     out << "Game: mode=Duplicate" << endl;
-    // else if (iGame.getParams().getMode() == GameParams::kFREEGAME)
-    //     out << "Game: mode=Free game" << endl;
-    // else if (iGame.getParams().getMode() == GameParams::kTRAINING)
-    //     out << "Game: mode=Training" << endl;
-    // else if (iGame.getParams().getMode() == GameParams::kARBITRATION)
-    //     out << "Game: mode=Arbitration" << endl;
-    // else if (iGame.getParams().getMode() == GameParams::kTOPPING)
-    //     out << "Game: mode=Topping" << endl;
-    // if (iGame.getParams().hasVariant(GameParams::kJOKER))
-    //     out << "Game: variant=joker" << endl;
-    // if (iGame.getParams().hasVariant(GameParams::kEXPLOSIVE))
-    //     out << "Game: variant=explosive" << endl;
-    // if (iGame.getParams().hasVariant(GameParams::k7AMONG8))
-    //     out << "Game: variant=7among8" << endl;
-    // out << "Game: history:" << endl;
-    // out << "    N |   RACK   |    SOLUTION    | REF | PTS | BONUS" << endl;
-    // out << "   ===|==========|================|=====|=====|======" << endl;
     for (unsigned int i = 0; i < iGame.getHistory().getSize(); ++i)
     {
         const TurnData &turn = iGame.getHistory().getTurn(i);
@@ -282,10 +193,31 @@ void GameIO::printGameDebug(ostream &out, const PublicGame &iGame)
             }
         }
     }
+}
+
+void GameIO::sendData(const PublicGame &iGame) {
+    int aiCount = 0;
+    int humanCount = 0;
+    for (unsigned int i = 0; i < iGame.getNbPlayers(); i++)
+    {
+        const Player& player = iGame.getPlayer(i);
+        if (player.isHuman())
+            humanCount++;
+        else
+            aiCount++;
+    }
 
     setGameStateData(
         iGame.getCurrentPlayer().getId(),
-        iGame.isFinished() ? 1 : 0
+        iGame.isFinished() ? 1 : 0,
+        aiCount,
+        humanCount
     );
+
+    printBoard(iGame);
+    printGameDebug(iGame);
+    printPlayerData(iGame);
+    printSaveGame(iGame);
+
     callRedrawBoard();
 }

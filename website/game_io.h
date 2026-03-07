@@ -44,14 +44,7 @@ class GameIO
 {
     DEFINE_LOGGER();
 public:
-    static void printBoard(ostream &out, const PublicGame &iGame);
-
-    static void printNonPlayed(ostream &out, const PublicGame &iGame);
-    static void printAllRacks(ostream &out, const PublicGame &iGame);
-    static void printSearchResults(ostream &out, const Results &iResults, int);
-    static void printAllPoints(ostream &out, const PublicGame &iGame);
-    static void printGameDebug(ostream &out, const PublicGame &iGame);
-    static void printSaveGame(ostream &out, const PublicGame &iGame);
+    static void sendData(const PublicGame &iGame);
 private:
     /// This class is a toolbox, and should not be instanciated
     GameIO();

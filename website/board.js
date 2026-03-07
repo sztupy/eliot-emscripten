@@ -92,7 +92,8 @@ if (language == 'en') {
 let history = [];
 let players = [];
 let gameData = {
-  onlyAI: true
+  onlyAI: false,
+  oneHuman: false
 };
 
 function initBoard() {
@@ -238,7 +239,7 @@ function redrawBoard() {
     const historyElement = document.createElement('div');
     historyElement.className = 'history-item';
     let text = `<div class="history-id">#${i + 1}</div>`;
-    text += `<div class="player-id">${language == 'en' ? 'Player' : 'Cl.'} ${playerId + 1}</div>`;
+    text += `<div class="player-id">${players[playerId] && players[playerId].shortName}</div>`;
     if (row >= 0) {
       if (gameData.isFinished || gameData.onlyAI) {
         text += `<div class="move">${rack} → <a href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${solution.toLowerCase()}" target="_blank">${solution}</a> @ ${String.fromCharCode('A'.charCodeAt(0) + row)}${col + 1}${direction ? '↕' : '↔'}</div>`;
@@ -246,7 +247,7 @@ function redrawBoard() {
         text += `<div class="move"><a href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${solution.toLowerCase()}" target="_blank">${solution}</a> @ ${String.fromCharCode('A'.charCodeAt(0) + row)}${col + 1}${direction ? '↕' : '↔'}</div>`;
       }
     } else {
-      if (gameData.isFinished || gameData.onlyAI) {
+      if (gameData.isFinished || gameData.onlyAI || (gameData.oneHuman && players[playerId].isHuman)) {
         text += `<div class="move">${rack} → ${solution}</div>`;
       } else {
         text += `<div class="move">${solution}</div>`;
@@ -258,48 +259,44 @@ function redrawBoard() {
   }
 
   mainRackDom.replaceChildren();
+  let currentPlayer = players[gameData.currentPlayer];
+
+  let text = '';
   if (gameData.isFinished) {
-    let text = language == 'en' ? 'Game over! Winner: ' : 'An geam seachad! Buannaiche: ';
+    text += language == 'en' ? 'Game over! Winner: ' : 'An geam seachad! Buannaiche: ';
 
     text += players.filter(p => p.score == maxPoints).map(p => p.name).join(", ");
 
     text += `<br><br><button onclick="resetGame()">${language == 'en' ? 'Play again' : 'Cluich a-rithist'}</button>`;
-    mainRackDom.innerHTML = text;
-  } else if (gameData.onlyAI) {
-    let player = players[gameData.currentPlayer];
-    if (player) {
-      mainRackDom.innerHTML = getRack(player.rack);
+  } else {
+    if (gameData.onlyAI) {
+      if (currentPlayer) {
+        text += getRack(currentPlayer.rack);
+      }
+    } else if (gameData.oneHuman) {
+      let player = players.find(p => p.isHuman);
+      if (player) {
+        text += getRack(player.rack);
+      }
+    } else if (currentPlayer && currentPlayer.isHuman) {
+      if (currentPlayer) {
+        text += getRack(currentPlayer.rack);
+      }
+    }
+
+    if (currentPlayer && currentPlayer.isHuman) {
+      text += '<br>';
+      text += "<button onclick='pass()'>";
+      text += language == 'en' ? "Pass" : "Pasaig";
+      text += "</button>";
     }
   }
+
+  mainRackDom.innerHTML = text;
 }
 
-function addHistory(n, playerId, rack, solution, row, col, direction, points, bonus) {
-  history[n] = [playerId, rack, solution, row, col, direction, points, bonus];
-}
-
-function setRack(playerId, rack, extended) {
-  players[playerId] ||= {}
-  players[playerId].rack = rack;
-  players[playerId].extended = extended;
-}
-
-function setScore(playerId, score) {
-  players[playerId] ||= {}
-  players[playerId].name = (language == 'en' ? 'Player ' : 'Cluicheadair ') + (playerId + 1);
-  players[playerId].score = score;
-}
-
-function setGameState(currentPlayer, isFinished) {
-  gameData.currentPlayer = currentPlayer;
-  gameData.isFinished = isFinished;
-}
-
-initBoard();
-
-function play() {
-  markOld();
-
-  data = stringToNewUTF8("s");
+function pass() {
+  let data = stringToNewUTF8("p");
   _gameAction(data);
   _free(data);
 
@@ -307,11 +304,68 @@ function play() {
   _gameAction(data);
   _free(data);
 
-  data2 = stringToNewUTF8("a p");
-  _gameAction(data2);
-  _free(data2);
+  sound_human_event.play();
+}
 
-  sound_event.play();
+function addHistory(n, playerId, rack, solution, row, col, direction, points, bonus) {
+  history[n] = [playerId, rack, solution, row, col, direction, points, bonus];
+}
+
+let whichAI = 0;
+let whichHuman = 0;
+function setPlayer(playerId, score, rack, extended, isHuman) {
+  if (playerId == 0) {
+    whichAI = 0;
+    whichHuman = 0;
+  }
+
+  let name;
+  if (isHuman) {
+    whichHuman += 1;
+    let id = (gameData.humanCount > 1 ? '#' + whichHuman : '');
+    name = (language == 'en' ? 'Player ' : 'Cluicheadair ') + id;
+    shortName = (language == 'en' ? 'Pl' : 'Cl') + id;
+  } else {
+    whichAI += 1;
+    let id = (gameData.aiCount > 1 ? '#' + whichAI : '');
+    name = (language == 'en' ? 'Computer ' : 'Coimpiutair ') + id;
+    shortName = (language == 'en' ? 'Co' : 'Co') + id;
+  }
+
+  players[playerId] ||= {}
+  players[playerId].name = name;
+  players[playerId].shortName = shortName;
+  players[playerId].score = score;
+  players[playerId].rack = rack;
+  players[playerId].extended = extended;
+  players[playerId].isHuman = isHuman;
+}
+
+function setGameState(currentPlayer, isFinished, aiCount, humanCount) {
+  gameData.currentPlayer = currentPlayer;
+  gameData.isFinished = isFinished;
+  gameData.onlyAI = (aiCount > 0 && humanCount == 0);
+  gameData.oneHuman = (humanCount == 1);
+  gameData.humanCount = humanCount;
+  gameData.aiCount = aiCount;
+}
+
+initBoard();
+
+function play() {
+  if (players[gameData.currentPlayer] && !players[gameData.currentPlayer].isHuman) {
+    markOld();
+
+    data = stringToNewUTF8("s");
+    _gameAction(data);
+    _free(data);
+
+    data = stringToNewUTF8("a g");
+    _gameAction(data);
+    _free(data);
+
+    sound_event.play();
+  }
 
   if (!gameData.isFinished) {
     setTimeout(play, 3000 + (Math.floor(Math.random() * 10) + 1) * 250);
@@ -331,16 +385,12 @@ function init() {
       _loadGame(saveDataPtr);
       _free(saveDataPtr);
     } else {
-      _startGame(0, 3);
+      _startGame(1, 3);
     }
 
     data = stringToNewUTF8("a g");
     _gameAction(data);
     _free(data);
-
-    data2 = stringToNewUTF8("a p");
-    _gameAction(data2);
-    _free(data2);
 
     sound_start.play();
 
