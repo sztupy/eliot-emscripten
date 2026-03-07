@@ -584,7 +584,7 @@ function init() {
       _loadGame(saveDataPtr);
       _free(saveDataPtr);
     } else {
-      _startGame(1, 3);
+      _startGame(2, 0);
     }
 
     data = stringToNewUTF8("a g");

@@ -41,7 +41,15 @@ body {
   color: rgba(51, 51, 51, 0.5);
   aspect-ratio: 1;
 
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
   transition: color 1s ease-in-out, background-color 1s ease-in-out;
+}
+
+#board .cell {
+  cursor: pointer;
 }
 
 .normal {
