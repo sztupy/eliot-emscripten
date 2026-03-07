@@ -141,6 +141,19 @@ function getRack(rack) {
   return text;
 }
 
+function markOld() {
+  for (let row = 0; row < 15; row++) {
+    for (let col = 0; col < 15; col++) {
+      const key = `${row};${col}`;
+      const type = letters[key] ? 'letter' : (specialSquares[key] || 'normal');
+      const cell = document.getElementById(`board_${row}_${col}`);
+      if (type === 'letter') {
+        cell.dataset.old = true;
+      }
+    }
+  }
+}
+
 function redrawBoard() {
   for (let row = 0; row < 15; row++) {
     for (let col = 0; col < 15; col++) {
@@ -155,6 +168,12 @@ function redrawBoard() {
       cell.textContent = '';
 
       if (type === 'letter') {
+        if (cell.dataset.old) {
+          cell.style.removeProperty('background-color');
+        } else {
+          cell.style.backgroundColor = 'white';
+        }
+
         cell.textContent = letters[key].toUpperCase();
 
         if (letterValues[letters[key]]) {
@@ -277,6 +296,8 @@ function setGameState(currentPlayer, isFinished) {
 initBoard();
 
 function play() {
+  markOld();
+
   data = stringToNewUTF8("s");
   _gameAction(data);
   _free(data);
@@ -321,6 +342,9 @@ function init() {
     _free(data2);
 
     sound_start.play();
+
+    markOld();
+    redrawBoard();
 
     setTimeout(play, 5000);
   } else {
