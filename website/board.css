@@ -263,10 +263,16 @@ body {
 
 #main_rack .rack {
   grid-template-columns: repeat(8, 1fr);
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 #main_rack .rack .letter {
   cursor: pointer;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 #dragged-letter {
