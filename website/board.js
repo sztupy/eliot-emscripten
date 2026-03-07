@@ -310,6 +310,9 @@ function redrawBoard() {
 
   mainRackDom.innerHTML = text;
   for (let element of mainRackDom.getElementsByClassName("rack")) {
+    element.addEventListener("dragenter", (event) => {
+      event.preventDefault();
+    });
     element.addEventListener("dragover", movePlaceholder);
     element.addEventListener("dragleave", (event) => {
       let column = event.currentTarget;
@@ -618,3 +621,28 @@ document.getElementById('privacy_policy').onclick = () => {
   console.log("click");
   window.open('privacy.html', '_blank');
 }
+
+// support for drag&drop on mobiles
+(function () {
+  MobileDragDrop.polyfill({
+    dragImageTranslateOverride: true
+  });
+  var supportsPassive = false;
+  try {
+    var opts = Object.defineProperty({}, 'passive', {
+      get: function () {
+        supportsPassive = true;
+      }
+    });
+    window.addEventListener("testPassive", null, opts);
+    window.removeEventListener("testPassive", null, opts);
+  } catch (e) { }
+  setTimeout(() => {
+    if (supportsPassive) {
+      window.addEventListener('touchmove', function () { }, { passive: false });
+    }
+    else {
+      window.addEventListener('touchmove', function () { });
+    }
+  }, 100);
+})();
