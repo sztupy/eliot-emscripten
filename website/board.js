@@ -1,6 +1,7 @@
 const boardDom = document.getElementById('board');
 const playerDom = document.getElementById('players');
 const historyDom = document.getElementById('history');
+const mainRackDom = document.getElementById('main_rack');
 
 const sound_human_event = new Audio("sounds/1.ogg");
 const sound_incorrect = new Audio("sounds/2.ogg");
@@ -126,6 +127,20 @@ function initBoard() {
   }
 }
 
+function getRack(rack) {
+  let text = `<div class="rack">`;
+  for (let j = 0; j < rack.length; j++) {
+    let key = rack[j];
+    if (letterValues[key]) {
+      text += `<div class="cell letter">${key}<span>${letterValues[key]}</span></div>`;
+    } else {
+      text += `<div class="cell letter joker">${key}</div>`;
+    }
+  }
+  text += `</div>`;
+  return text;
+}
+
 function redrawBoard() {
   for (let row = 0; row < 15; row++) {
     for (let col = 0; col < 15; col++) {
@@ -171,16 +186,7 @@ function redrawBoard() {
     let text = `<div class="name">${language == 'en' ? 'Player' : 'Cluicheadair'} ${i + 1}</div>`;
     text += `<div class="score">${player.score || 0}</div>`;
     if (gameData.isFinished || gameData.onlyAI) {
-      text += `<div class="rack">`;
-      for (let j = 0; j < player.rack.length; j++) {
-        let key = player.rack[j];
-        if (letterValues[key]) {
-          text += `<div class="cell letter">${key}<span>${letterValues[key]}</span></div>`;
-        } else {
-          text += `<div class="cell letter joker">${key}</div>`;
-        }
-      }
-      text += `</div>`;
+      text += getRack(player.rack);
     }
 
     playerElement.innerHTML = text;
@@ -220,6 +226,14 @@ function redrawBoard() {
     text += `<div class="points">${points}${bonus > 0 ? ` (${points - bonus}+${bonus})` : ''}</div>`;
     historyElement.innerHTML = text;
     historyDom.appendChild(historyElement);
+  }
+
+  mainRackDom.replaceChildren();
+  if (gameData.onlyAI || gameData.isFinished) {
+    let player = players[gameData.currentPlayer];
+    if (player) {
+      mainRackDom.innerHTML = getRack(player.rack);
+    }
   }
 }
 
