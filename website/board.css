@@ -76,11 +76,6 @@ body {
   position: relative;
 }
 
-.placeholder {
-  border: 1px solid #cccccc;
-  border-radius: 3px;
-}
-
 .letter.joker {
   color: #933;
 }
@@ -97,13 +92,65 @@ body {
 #players,
 #controls,
 #history,
-#ad {
+#ad,
+#errorcontent {
   border-spacing: 5px;
   display: table;
   background: white;
   border-radius: 8px;
   padding: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+@keyframes tilt-shaking {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  12% {
+    transform: rotate(2deg);
+  }
+
+  24% {
+    transform: rotate(0eg);
+  }
+
+  36% {
+    transform: rotate(-2deg);
+  }
+
+  48% {
+    transform: rotate(0deg);
+  }
+
+  60% {
+    transform: rotate(1deg);
+  }
+
+  72% {
+    transform: rotate(0eg);
+  }
+
+  74% {
+    transform: rotate(-1deg);
+  }
+
+  86% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+#errorcontent.real-error {
+  color: #933;
+  background-color: #ffb3ba;
+
+  animation: tilt-shaking 0.5s;
 }
 
 #ad {
@@ -218,6 +265,18 @@ body {
   grid-template-columns: repeat(8, 1fr);
 }
 
+#main_rack .rack .letter {
+  cursor: pointer;
+}
+
+#dragged-letter {
+  opacity: 0.4;
+}
+
+.selected-letter {
+  opacity: 0.4;
+}
+
 .player.current .rack {
   background-color: #c0ebba;
 }
@@ -319,22 +378,19 @@ header#main_header {
   display: none;
 }
 
-#dragged-letter {
-  opacity: 0.4;
-}
-
 @media (min-aspect-ratio: 3/2) {
   #main {
     grid-template-columns: auto 1fr;
   }
 
   #board {
-    grid-row: 1 / span 2;
+    grid-row: 1 / span 3;
     margin-left: 1em;
   }
 
   #players,
-  #main_rack {
+  #main_rack,
+  #errorcontent {
     margin-right: 1em;
   }
 

@@ -402,8 +402,9 @@ void loopFreegame(PublicGame &iGame, char* command)
                 letters = parseLetters(tokens, 1, iGame.getDic());
             }
             int res = iGame.freeGamePass(letters);
-            if (res != 0)
-                printf("Cannot pass (%d)\n", res);
+            if (res != 0) {
+                GameIO::sendError(1, res);
+            }
         }
         else if (command == L's') {
             if (!iGame.isFinished()) {

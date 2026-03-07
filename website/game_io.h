@@ -45,6 +45,7 @@ class GameIO
     DEFINE_LOGGER();
 public:
     static void sendData(const PublicGame &iGame);
+    static void sendError(int category, int errorCode);
 private:
     /// This class is a toolbox, and should not be instanciated
     GameIO();

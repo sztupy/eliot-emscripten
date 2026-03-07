@@ -130,14 +130,16 @@ function initBoard() {
   }
 }
 
-function getRack(rack, mainRack = false) {
+function getRack(rack, mainRack = false, showLetter = true) {
   let text = `<div class="rack">`;
   for (let j = 0; j < rack.length; j++) {
     let key = rack[j];
-    if (letterValues[key]) {
-      text += `<div class="cell letter" ${mainRack ? ' draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)"' : ''}>${key}<span>${letterValues[key]}</span></div>`;
+    if (!showLetter) {
+      text += `<div class="cell letter">&nbsp;</div>`;
+    } else if (letterValues[key]) {
+      text += `<div data-letter="${key}" class="cell letter" ${mainRack ? ' draggable="true" onclick="clickLetter(event)" ondragstart="dragLetter(event)" ondragend="dragLetterEnd(event)"' : ''}>${key}<span>${letterValues[key]}</span></div>`;
     } else {
-      text += `<div class="cell letter joker" ${mainRack ? ' draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)"' : ''}>${key}</div>`;
+      text += `<div data-letter="${key}" class="cell letter joker" ${mainRack ? ' draggable="true" onclick="clickLetter(event)" ondragstart="dragLetter(event)" ondragend="dragLetterEnd(event)"' : ''}>${key}</div>`;
     }
   }
   text += `</div>`;
@@ -217,9 +219,7 @@ function redrawBoard() {
 
     text += `</div>`;
     text += `<div class="score">${player.score || 0}</div>`;
-    if (gameData.isFinished || gameData.onlyAI) {
-      text += getRack(player.rack);
-    }
+    text += getRack(player.rack, false, gameData.isFinished || gameData.onlyAI || (gameData.oneHuman && player.isHuman));
 
     playerElement.innerHTML = text;
     playerDom.appendChild(playerElement);
@@ -267,11 +267,7 @@ function redrawBoard() {
 
   let text = '';
   if (gameData.isFinished) {
-    text += language == 'en' ? 'Game over! Winner: ' : 'An geam seachad! Buannaiche: ';
-
-    text += players.filter(p => p.score == maxPoints).map(p => p.name).join(", ");
-
-    text += `<br><br><button onclick="resetGame()">${language == 'en' ? 'Play again' : 'Cluich a-rithist'}</button>`;
+    text += `<button onclick="resetGame()">${language == 'en' ? 'Play again' : 'Cluich a-rithist'}</button>`;
   } else {
     if (gameData.onlyAI) {
       if (currentPlayer) {
@@ -300,8 +296,14 @@ function redrawBoard() {
 
     if (currentPlayer && currentPlayer.isHuman) {
       text += '<br>';
-      text += "<button onclick='pass()'>";
+      text += "<button id='passbutton' onclick='pass()'>";
       text += language == 'en' ? "Pass" : "Pasaig";
+      text += "</button>";
+
+      text += "&nbsp;"
+
+      text += "<button id='swapbutton' onclick='swap()'>";
+      text += language == 'en' ? "Swap" : "Iomlaid";
       text += "</button>";
     }
   }
@@ -330,6 +332,28 @@ function pass() {
   _free(data);
 
   sound_human_event.play();
+}
+
+function swap() {
+  let lettersToSwap = [];
+  for (let element of [...document.getElementById('main_rack').getElementsByClassName('selected-letter')]) {
+    lettersToSwap.push(element.dataset.letter);
+    element.classList.remove("selected-letter");
+  }
+
+  if (lettersToSwap.length > 0) {
+    let data = stringToNewUTF8(`p ${lettersToSwap.join("")}`);
+    _gameAction(data);
+    _free(data);
+
+    data = stringToNewUTF8("a g");
+    _gameAction(data);
+    _free(data);
+
+    sound_human_event.play();
+  } else {
+    sendError(1, 5);
+  }
 }
 
 function makePlaceholder(draggedTask) {
@@ -376,14 +400,24 @@ function movePlaceholder(event) {
   tasks.append(existingPlaceholder ?? makePlaceholder(draggedTask));
 }
 
-function drag(event) {
+function dragLetter(event) {
   event.currentTarget.id = 'dragged-letter';
   event.dataTransfer.effectAllowed = "move";
   event.dataTransfer.setData("task", "");
 }
 
-function dragEnd(_event) {
+function dragLetterEnd(_event) {
   document.getElementById('dragged-letter').removeAttribute('id');
+}
+
+function clickLetter(event) {
+  const letter = event.currentTarget;
+
+  if (letter.classList.contains("selected-letter")) {
+    letter.classList.remove("selected-letter");
+  } else {
+    letter.classList.add("selected-letter");
+  }
 }
 
 function dragDrop(event) {
@@ -432,6 +466,18 @@ function setPlayer(playerId, score, rack, extended, isHuman) {
   players[playerId].rack = rack;
   players[playerId].extended = extended;
   players[playerId].isHuman = isHuman;
+
+  if (playerId + 1 == gameData.humanCount + gameData.aiCount) {
+    if (gameData.isFinished) {
+      sendError(0, 3);
+    } else {
+      if (players[gameData.currentPlayer]?.isHuman) {
+        sendError(0, 2);
+      } else {
+        sendError(0, 1);
+      }
+    }
+  }
 }
 
 function setGameState(currentPlayer, isFinished, aiCount, humanCount) {
@@ -441,6 +487,62 @@ function setGameState(currentPlayer, isFinished, aiCount, humanCount) {
   gameData.oneHuman = (humanCount == 1);
   gameData.humanCount = humanCount;
   gameData.aiCount = aiCount;
+}
+
+function sendError(category, errorCode) {
+  let error = '';
+  let real = true;
+  let old = true;
+
+  const errorContent = document.getElementById('errorcontent');
+
+  if (category == 0) {
+    real = false;
+    old = false;
+    if (errorCode == 0) {
+      error = language == 'en' ? 'Welcome!' : 'Fàilte a charaid!';
+    } else if (errorCode == 1) {
+      error = language == 'en' ? 'The computer is thinking…' : 'Tha coimpiutair a’ smaoineachadh…';
+    } else if (errorCode == 2) {
+      error = language == 'en' ? 'Your turn!' : 'Do chothrom!';
+    } else if (errorCode == 3) {
+      error = language == 'en' ? 'Game over! Winner: ' : 'An geam seachad! Buannaiche: ';
+
+      let maxPoints = Math.max(...players.map(p => p.score || 0));
+      error += players.filter(p => p.score == maxPoints).map(p => p.name).join(", ");
+    }
+  } else if (category == 1) {
+    if (errorCode == 1) {
+      error = language == 'en' ? 'Changing letters is not allowed if there are less than 7 tiles left in the bag.' : 'Chan eil cead litrichean a iomlaid ma tha nas lugha na 7 taidhlean air fhàgail sa bhaga.';
+    } else if (errorCode == 5) {
+      error = language == 'en' ? 'You need to select at least one letter.' : 'Feumaidh tu co-dhiù aon litir a thaghadh.';
+      old = false;
+    } else {
+      error = language == 'en' ? 'Could not swap letters.' : 'Cha b’ urrainnear litrichean iomlaid.';
+    }
+  } else {
+    error = language == 'en' ? 'Invalid action' : 'Chan urrainn dhut an gluasad sin a dhèanamh.';
+  }
+
+  if (real) {
+    errorContent.innerHTML = error;
+    if (old) {
+      errorContent.classList.add('old-error');
+    }
+
+    errorContent.classList.remove('real-error');
+    void errorContent.offsetWidth;
+    errorContent.classList.add('real-error');
+
+    sound_incorrect.play();
+  } else {
+    if (errorContent.classList.contains('old-error')) {
+      errorContent.classList.remove('old-error');
+    } else {
+      errorContent.classList.remove('real-error');
+      errorContent.innerHTML = error;
+    }
+  }
 }
 
 initBoard();
@@ -463,6 +565,7 @@ function play() {
   if (!gameData.isFinished) {
     setTimeout(play, 3000 + (Math.floor(Math.random() * 10) + 1) * 250);
   } else {
+    sendError(0, 3);
     sound_endgame.play();
   }
 }
@@ -497,6 +600,8 @@ function init() {
 }
 
 setTimeout(init, 1000);
+
+sendError(0, 0);
 
 document.getElementById('cookie_settings').onclick = () => {
   document.getElementById('silktide-cookie-icon').click();

@@ -77,6 +77,10 @@ EM_JS(void, saveGameData, (const char* data), {
     localStorage.setItem('save', UTF8ToString(data));
 });
 
+EM_JS(void, sendErrorData, (int category, int errorCode), {
+    sendError(category, errorCode);
+});
+
 void printBoard(const PublicGame &iGame)
 {
     resetBoard();
@@ -193,6 +197,10 @@ void printGameDebug(const PublicGame &iGame)
             }
         }
     }
+}
+
+void GameIO::sendError(int category, int errorCode) {
+    sendErrorData(category, errorCode);
 }
 
 void GameIO::sendData(const PublicGame &iGame) {
