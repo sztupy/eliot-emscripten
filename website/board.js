@@ -9,6 +9,7 @@ const sound_endgame = new Audio("sounds/3.ogg");
 const sound_event = new Audio("sounds/4.ogg");
 const sound_start = new Audio("sounds/5.ogg");
 
+// Letter values for standard Gaidhlig Scrabble
 const letterValues = {
   'A': 1,
   'À': 4,
@@ -35,6 +36,7 @@ const letterValues = {
   'Ù': 6
 };
 
+// Standard Scrabble layout degtails
 const specialSquares = {
   '0;0': 'tw', '0;7': 'tw', '0;14': 'tw',
   '7;0': 'tw', '7;14': 'tw',
@@ -56,12 +58,22 @@ const specialSquares = {
   '9;9': 'tl', '9;13': 'tl', '13;5': 'tl', '13;9': 'tl'
 };
 
+// Caches the main rack's details. Used to see if it matches the data from Eliot and if we need to reset the displayed values
 let mainRackData = null;
 
+// Main globals. Used as a holding place for the C++ code to send its data
+let history = [];
+let players = [];
+let gameData = {
+  onlyAI: false,
+  oneHuman: false
+};
 let letters = {};
 
+// Check if we're on the `en` or `gd` site
 let language = document.documentElement.lang;
 
+// Initialize a LOADING screen as built-in for the game board grid
 if (language == 'en') {
   letters = {
     '7;2': 'L',
@@ -91,13 +103,7 @@ if (language == 'en') {
   };
 }
 
-let history = [];
-let players = [];
-let gameData = {
-  onlyAI: false,
-  oneHuman: false
-};
-
+// Initialize the board with the standard Scrabble grid layout
 function initBoard() {
   boardDom.replaceChildren();
   for (let row = 0; row < 15; row++) {
@@ -130,6 +136,7 @@ function initBoard() {
   }
 }
 
+// Generates a rack from a set of letters from Eliot. Also adds Drag and drop settings for the main rack
 function getRack(rack, mainRack = false, showLetter = true) {
   let text = `<div class="rack">`;
   for (let j = 0; j < rack.length; j++) {
@@ -146,6 +153,7 @@ function getRack(rack, mainRack = false, showLetter = true) {
   return text;
 }
 
+// Mark anything on the boad as "old". It is used to determine what are the new letters placed by the AI so we can easily highlight it
 function markOld() {
   for (let row = 0; row < 15; row++) {
     for (let col = 0; col < 15; col++) {
@@ -159,7 +167,9 @@ function markOld() {
   }
 }
 
+// Redraws the entire game field including the board, the main rack, the player displays and the history
 function redrawBoard() {
+  // BOARD
   for (let row = 0; row < 15; row++) {
     for (let col = 0; col < 15; col++) {
       const key = `${row};${col}`;
@@ -197,6 +207,7 @@ function redrawBoard() {
     }
   }
 
+  // PLAYER data
   playerDom.replaceChildren();
   let maxPoints = Math.max(...players.map(p => p.score || 0));
   for (let i = 0; i < players.length; i++) {
@@ -225,6 +236,7 @@ function redrawBoard() {
     playerDom.appendChild(playerElement);
   }
 
+  // HISTORY data
   historyDom.replaceChildren();
   if (gameData.isFinished) {
     historyDom.innerHTML = `<div class="history-item">
@@ -260,6 +272,7 @@ function redrawBoard() {
     historyDom.appendChild(historyElement);
   }
 
+  // MAIN rack
   let oldRack = mainRackDom.getElementsByClassName('rack')[0];
 
   mainRackDom.replaceChildren();
@@ -325,6 +338,7 @@ function redrawBoard() {
   }
 }
 
+// Human gameplay actions - Pass
 function pass() {
   let data = stringToNewUTF8("p");
   _gameAction(data);
@@ -337,6 +351,7 @@ function pass() {
   sound_human_event.play();
 }
 
+// Human gameplay actions - Swap
 function swap() {
   let lettersToSwap = [];
   for (let element of [...document.getElementById('main_rack').getElementsByClassName('selected-letter')]) {
@@ -359,6 +374,7 @@ function swap() {
   }
 }
 
+// Main rack drag and drop boilerplate functions
 function makePlaceholder(draggedTask) {
   const placeholder = document.createElement("div");
   placeholder.classList.add("cell");
@@ -368,6 +384,7 @@ function makePlaceholder(draggedTask) {
   return placeholder;
 }
 
+// Main rack drag and drop boilerplate functions
 function movePlaceholder(event) {
   event.preventDefault();
   // Must exist because the ID is added for all drag events with a "task" data entry
@@ -403,26 +420,19 @@ function movePlaceholder(event) {
   tasks.append(existingPlaceholder ?? makePlaceholder(draggedTask));
 }
 
+// Main rack drag and drop boilerplate functions
 function dragLetter(event) {
   event.currentTarget.id = 'dragged-letter';
   event.dataTransfer.effectAllowed = "move";
   event.dataTransfer.setData("task", "");
 }
 
+// Main rack drag and drop boilerplate functions
 function dragLetterEnd(_event) {
   document.getElementById('dragged-letter').removeAttribute('id');
 }
 
-function clickLetter(event) {
-  const letter = event.currentTarget;
-
-  if (letter.classList.contains("selected-letter")) {
-    letter.classList.remove("selected-letter");
-  } else {
-    letter.classList.add("selected-letter");
-  }
-}
-
+// Main rack drag and drop boilerplate functions
 function dragDrop(event) {
   event.preventDefault();
 
@@ -437,10 +447,23 @@ function dragDrop(event) {
   placeholder.remove();
 }
 
+// Allows to select / deselect letters for the Swap button
+function clickLetter(event) {
+  const letter = event.currentTarget;
+
+  if (letter.classList.contains("selected-letter")) {
+    letter.classList.remove("selected-letter");
+  } else {
+    letter.classList.add("selected-letter");
+  }
+}
+
+// Used by Eliot to send history data to JS
 function addHistory(n, playerId, rack, solution, row, col, direction, points, bonus) {
   history[n] = [playerId, rack, solution, row, col, direction, points, bonus];
 }
 
+// Used by Eliot to send player data to JS
 let whichAI = 0;
 let whichHuman = 0;
 function setPlayer(playerId, score, rack, extended, isHuman) {
@@ -470,6 +493,7 @@ function setPlayer(playerId, score, rack, extended, isHuman) {
   players[playerId].extended = extended;
   players[playerId].isHuman = isHuman;
 
+  // All player information has been sent over so we can set up the info screen
   if (playerId + 1 == gameData.humanCount + gameData.aiCount) {
     if (gameData.isFinished) {
       sendError(0, 3);
@@ -483,6 +507,7 @@ function setPlayer(playerId, score, rack, extended, isHuman) {
   }
 }
 
+// Used by Eliot to send game state data to JS
 function setGameState(currentPlayer, isFinished, aiCount, humanCount) {
   gameData.currentPlayer = currentPlayer;
   gameData.isFinished = isFinished;
@@ -492,6 +517,7 @@ function setGameState(currentPlayer, isFinished, aiCount, humanCount) {
   gameData.aiCount = aiCount;
 }
 
+// Used by Eliot to send error information to JS
 function sendError(category, errorCode) {
   let error = '';
   let real = true;
@@ -548,8 +574,10 @@ function sendError(category, errorCode) {
   }
 }
 
+// Set up the Scrabble board
 initBoard();
 
+// Runs the AI. AI run is actually mostly instant, so we add a timer to make them look like they're thinking
 function play() {
   if (players[gameData.currentPlayer] && !players[gameData.currentPlayer].isHuman) {
     markOld();
@@ -573,6 +601,7 @@ function play() {
   }
 }
 
+// Initialize the game. Either load the saved data or start a new game if no saved game present
 function init() {
   if (Module && Module.calledRun) {
     letters = {};
@@ -602,10 +631,11 @@ function init() {
   }
 }
 
+// Setup
 setTimeout(init, 1000);
-
 sendError(0, 0);
 
+// Set up core buttons
 document.getElementById('cookie_settings').onclick = () => {
   document.getElementById('silktide-cookie-icon').click();
 }
@@ -622,7 +652,7 @@ document.getElementById('privacy_policy').onclick = () => {
   window.open('privacy.html', '_blank');
 }
 
-// support for drag&drop on mobiles
+// Support for drag&drop on mobiles
 (function () {
   MobileDragDrop.polyfill({
     dragImageTranslateOverride: true
@@ -646,3 +676,16 @@ document.getElementById('privacy_policy').onclick = () => {
     }
   }, 100);
 })();
+
+// Set up ads
+function resetAds() {
+  const adsDom = document.getElementById("ad");
+  if (Math.random() < 0.5) {
+    adsDom.innerHTML = `<script>atOptions = {'key':'3afe4060d09290c60eb6bb255e880bb6','format':'iframe','height':90,'width':728,'params':{}};</script><script src="https://www.highperformanceformat.com/3afe4060d09290c60eb6bb255e880bb6/invoke.js"></script>`;
+  } else {
+    adsDom.innerHTML = `<script async="async" data-cfasync="false" src="https://pl28868378.effectivegatecpm.com/f2757235c1134d9106cdddaf8c5cd42e/invoke.js"></script><div id="container-f2757235c1134d9106cdddaf8c5cd42e"></div>`;
+  }
+  setTimeout(resetAds, 60000);
+}
+
+resetAds();
