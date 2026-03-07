@@ -12,7 +12,6 @@ body {
 #main {
   background-color: #f0f0f0;
   display: grid;
-  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: 20px;
@@ -29,6 +28,8 @@ body {
   width: min(90vw, 90vh);
   height: min(90vw, 90vh);
   aspect-ratio: 1;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .cell {
