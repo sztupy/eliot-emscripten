@@ -22,12 +22,28 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2984578622114583"
     crossorigin="anonymous"></script>
   <script>
-    var language = localStorage.getItem('language') || window.navigator.userLanguage || window.navigator.language;
-    if (language.indexOf('gd') > -1) {
-      window.location = "index_gd.html"
-    } else {
-      window.location = "index_en.html"
-    };
+    (function () {
+      let language = localStorage.getItem('language');
+      if (!language && navigator.languages) {
+        for (const language of navigator.languages) {
+          if (language.indexOf('gd') > -1) {
+            window.location = "gd.html";
+            return;
+          } else if (language.indexOf('en') > -1) {
+            window.location = "en.html";
+            return;
+          };
+        }
+      }
+
+      language = localStorage.getItem('language') || window.navigator.userLanguage || window.navigator.language;
+
+      if (language.indexOf('gd') > -1) {
+        window.location = "gd.html"
+      } else {
+        window.location = "en.html"
+      };
+    })();
   </script>
 </head>
 

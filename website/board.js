@@ -203,7 +203,8 @@ function redrawBoard() {
     if (gameData.currentPlayer == i) {
       if (!gameData.isFinished) {
         playerElement.classList.add('current');
-        text += `<img class="loading" src="img/thinking.png" alt="${language == 'en' ? 'Thinking...' : 'A’ smaoineachadh'}" title="${language == 'en' ? 'Thinking...' : 'A’ smaoineachadh'}">`;
+        let thinking = language == 'en' ? 'Thinking...' : 'A’ smaoineachadh';
+        text += `<img class="loading" src="img/thinking.png" alt="${thinking}" title="${thinking}">`;
       }
     }
 
