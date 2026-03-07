@@ -249,6 +249,7 @@ footer#main_footer button {
   padding: 8px 16px;
   font-size: 14px;
   font-weight: normal;
+  color: white;
 }
 
 footer#main_footer button:hover {
