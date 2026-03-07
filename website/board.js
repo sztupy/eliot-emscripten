@@ -680,11 +680,26 @@ document.getElementById('privacy_policy').onclick = () => {
 // Set up ads
 function resetAds() {
   const adsDom = document.getElementById("ad");
-  if (Math.random() < 0.5) {
+  if (Math.random() < 0.9) {
     adsDom.innerHTML = `<script>atOptions = {'key':'3afe4060d09290c60eb6bb255e880bb6','format':'iframe','height':90,'width':728,'params':{}};</script><script src="https://www.highperformanceformat.com/3afe4060d09290c60eb6bb255e880bb6/invoke.js"></script>`;
   } else {
     adsDom.innerHTML = `<script async="async" data-cfasync="false" src="https://pl28868378.effectivegatecpm.com/f2757235c1134d9106cdddaf8c5cd42e/invoke.js"></script><div id="container-f2757235c1134d9106cdddaf8c5cd42e"></div>`;
   }
+
+  Array.from(adsDom.querySelectorAll("script"))
+    .forEach(oldScriptEl => {
+      const newScriptEl = document.createElement("script");
+
+      Array.from(oldScriptEl.attributes).forEach(attr => {
+        newScriptEl.setAttribute(attr.name, attr.value)
+      });
+
+      const scriptText = document.createTextNode(oldScriptEl.innerHTML);
+      newScriptEl.appendChild(scriptText);
+
+      oldScriptEl.parentNode.replaceChild(newScriptEl, oldScriptEl);
+    });
+
   setTimeout(resetAds, 60000);
 }
 
