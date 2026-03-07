@@ -159,6 +159,20 @@ body {
   border-bottom: 1px solid #eee;
 }
 
+.player .name {
+  vertical-align: middle;
+}
+
+.player .score {
+  text-align: center;
+}
+
+.loading {
+  display: inline-block;
+  height: min(8vw, 8vh);
+  aspect-ratio: 1;
+}
+
 .player.current {
   background-color: #aeffa2;
 }
@@ -207,17 +221,38 @@ footer#main_footer {
   margin-top: 20px;
 }
 
-footer#main_footer button {
-  background: none;
+button {
+  background: linear-gradient(135deg, #e6d3a3 0%, #ffd7aa 100%);
   border: none;
-  color: #f0f0f0;
+  color: black;
   cursor: pointer;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+footer#main_footer button {
+  background: rgba(255, 255, 255, 0.1);
   padding: 8px 16px;
   font-size: 14px;
+  font-weight: normal;
 }
 
 footer#main_footer button:hover {
-  text-decoration: underline;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 header#main_header {

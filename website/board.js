@@ -174,16 +174,25 @@ function redrawBoard() {
   }
 
   playerDom.replaceChildren();
+  let maxPoints = Math.max(...players.map(p => p.score || 0));
   for (let i = 0; i < players.length; i++) {
     const player = players[i];
     const playerElement = document.createElement('div');
     playerElement.className = 'player';
 
+    let text = `<div class="name">${player.name}`;
     if (gameData.currentPlayer == i) {
       playerElement.classList.add('current');
+      if (!gameData.isFinished) {
+        text += `<img class="loading" src="img/thinking.png" alt="${language == 'en' ? 'Thinking...' : 'A’ smaoineachadh'}" title="${language == 'en' ? 'Thinking...' : 'A’ smaoineachadh'}">`;
+      }
     }
 
-    let text = `<div class="name">${language == 'en' ? 'Player' : 'Cluicheadair'} ${i + 1}</div>`;
+    if (gameData.isFinished && player.score == maxPoints) {
+      text += ` <span title="${language == 'en' ? 'Winner!' : 'Buannaiche!'}">✅</span>`;
+    }
+
+    text += `</div>`;
     text += `<div class="score">${player.score || 0}</div>`;
     if (gameData.isFinished || gameData.onlyAI) {
       text += getRack(player.rack);
@@ -229,7 +238,14 @@ function redrawBoard() {
   }
 
   mainRackDom.replaceChildren();
-  if (gameData.onlyAI || gameData.isFinished) {
+  if (gameData.isFinished) {
+    let text = language == 'en' ? 'Game over! Winner: ' : 'An geam seachad! Buannaiche: ';
+
+    text += players.filter(p => p.score == maxPoints).map(p => p.name).join(", ");
+
+    text += `<br><br><button onclick="resetGame()">${language == 'en' ? 'Play again' : 'Cluich a-rithist'}</button>`;
+    mainRackDom.innerHTML = text;
+  } else if (gameData.onlyAI) {
     let player = players[gameData.currentPlayer];
     if (player) {
       mainRackDom.innerHTML = getRack(player.rack);
@@ -249,6 +265,7 @@ function setRack(playerId, rack, extended) {
 
 function setScore(playerId, score) {
   players[playerId] ||= {}
+  players[playerId].name = (language == 'en' ? 'Player ' : 'Cluicheadair ') + (playerId + 1);
   players[playerId].score = score;
 }
 
@@ -317,10 +334,12 @@ document.getElementById('cookie_settings').onclick = () => {
   document.getElementById('silktide-cookie-icon').click();
 }
 
-document.getElementById('reset').onclick = () => {
+function resetGame() {
   localStorage.removeItem('save');
   window.location.reload();
 }
+
+document.getElementById('reset').onclick = resetGame;
 
 document.getElementById('privacy_policy').onclick = () => {
   console.log("click");
