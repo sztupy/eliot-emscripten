@@ -332,8 +332,6 @@ function redrawBoard() {
       text += language == 'en' ? "⏩ Pass" : "⏩ Pasaig";
       text += "</button>";
 
-      text += "&nbsp;"
-
       text += "<button id='swapbutton' onclick='swap()'>";
       text += language == 'en' ? "🔄 Swap" : "🔄 Iomlaid";
       text += "</button>";
