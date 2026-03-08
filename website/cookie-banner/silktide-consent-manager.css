@@ -81,6 +81,7 @@
 -------------------------------- */
 
 #silktide-wrapper .st-button {
+  background-image: none;
   color: var(--backgroundColor);
   background-color: var(--primaryColor);
   border: 2px solid var(--primaryColor);

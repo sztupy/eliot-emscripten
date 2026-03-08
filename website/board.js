@@ -323,7 +323,7 @@ function redrawBoard() {
     } else if (currentPlayer?.isHuman) {
       rack = getRack(currentPlayer.rack, true);
 
-      text += `<div><button onclick="document.getElementById('player_rack_hidden').style.display='block';event.currentTarget.parentElement.style.display='none';">${language == 'en' ? `${players[gameData.currentPlayer].name}'s turn. Show tiles.` : `Turas ${players[gameData.currentPlayer].name}. Seall taidhlean.`}</button><br></div><div id="player_rack_hidden" style="display:none;">${rack}</div>`;
+      text += `<div><button onclick="document.getElementById('player_rack_hidden').style.display='block';event.currentTarget.parentElement.style.display='none';">${language == 'en' ? `🙈 ${players[gameData.currentPlayer].name}'s turn. Show tiles.` : `🙈 Turas ${players[gameData.currentPlayer].name}. Seall taidhlean.`}</button><br></div><div id="player_rack_hidden" style="display:none;">${rack}</div>`;
     }
 
     if (currentPlayer && currentPlayer.isHuman) {
@@ -787,14 +787,14 @@ function setPlayer(playerId, score, rack, extended, isHuman) {
   let name;
   if (isHuman) {
     whichHuman += 1;
-    let id = (gameData.humanCount > 1 ? '#' + whichHuman : '');
-    name = (language == 'en' ? 'Player ' : 'Cluicheadair ') + id;
-    shortName = (language == 'en' ? 'Pl' : 'Cl') + id;
+    let id = (gameData.humanCount > 1 ? ' #' + whichHuman : '');
+    name = (language == 'en' ? 'Player' : 'Cluicheadair') + id;
+    shortName = (language == 'en' ? 'Pl.' : 'Cl.') + id;
   } else {
     whichAI += 1;
-    let id = (gameData.aiCount > 1 ? '#' + whichAI : '');
-    name = (language == 'en' ? 'Computer ' : 'Coimpiutair ') + id;
-    shortName = (language == 'en' ? 'Co' : 'Co') + id;
+    let id = (gameData.aiCount > 1 ? ' #' + whichAI : '');
+    name = (language == 'en' ? 'Computer' : 'Coimpiutair') + id;
+    shortName = (language == 'en' ? 'Co.' : 'Co.') + id;
   }
 
   players[playerId] ||= {}
@@ -847,11 +847,11 @@ function sendError(category, errorCode) {
     real = false;
     old = false;
     if (errorCode == 0) {
-      error = language == 'en' ? 'Welcome!' : 'Fàilte a charaid!';
+      error = language == 'en' ? 'Welcome!' : 'Fàilte, a charaid!';
     } else if (errorCode == 1) {
       error = language == 'en' ? 'The computer is thinking…' : 'Tha coimpiutair a’ smaoineachadh…';
     } else if (errorCode == 2) {
-      error = language == 'en' ? 'Your turn!' : 'Do chothrom!';
+      error = language == 'en' ? `Your turn ${players[gameData.currentPlayer].name}!` : `Do chothrom ${players[gameData.currentPlayer].name}!`;
     } else if (errorCode == 3) {
       error = language == 'en' ? 'Game over! Winner: ' : 'An geam seachad! Buannaiche: ';
 
@@ -984,7 +984,7 @@ function resetGame() {
   window.location.reload();
 }
 
-document.getElementById('reset').onclick = resetGame;
+document.getElementById('reset_button').onclick = resetGame;
 
 document.getElementById('privacy_policy').onclick = () => {
   console.log("click");
