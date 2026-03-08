@@ -191,7 +191,7 @@ void displayData(const PublicGame &iGame, const vector<wstring> &tokens)
 
 void commonCommands(PublicGame &iGame, const vector<wstring> &tokens)
 {
-    wchar_t command = parseCharInList(tokens, 0, L"#adhjs");
+    wchar_t command = parseCharInList(tokens, 0, L"#adhjsx");
     if (command == L'#')
         // Ignore comments
         return;
@@ -204,6 +204,10 @@ void commonCommands(PublicGame &iGame, const vector<wstring> &tokens)
             printf("le mot -%s- existe\n", lfw(word).c_str());
         else
             printf("le mot -%s- n'existe pas\n", lfw(word).c_str());
+    }
+    else if (command == L'x')
+    {
+        GameIO::printWords(iGame);
     }
     else if (command == L'h')
     {
@@ -310,81 +314,6 @@ vector<wstring> readTokens(char* command) {
     return tokens;
 }
 
-void loopTraining(PublicGame &iGame, char* command)
-{
-    const vector<wstring> &tokens = readTokens(command);
-    if (tokens.empty())
-        return;
-    try
-    {
-        wchar_t command = parseCharInList(tokens, 0, L"#?adhjsbnrt*+q");
-        if (command == L'b')
-        {
-            wchar_t type = parseCharInList(tokens, 1, L"bpr");
-            const wstring &word = parseLetters(tokens, 2, iGame.getDic());
-            if (type == L'b')
-            {
-                vector<wdstring> wordList;
-                iGame.getDic().searchBenj(word, wordList);
-                BOOST_FOREACH(const wdstring &wstr, wordList)
-                {
-                    cout << lfw(wstr) << endl;
-                }
-            }
-            else if (type == L'p')
-            {
-                map<unsigned int, vector<wdstring> > wordMap;
-                iGame.getDic().search7pl1(word, wordMap, false);
-                map<unsigned int, vector<wdstring> >::const_iterator it;
-                for (it = wordMap.begin(); it != wordMap.end(); ++it)
-                {
-                    if (it->first != 0)
-                        cout << "+" << lfw(iGame.getDic().getHeader().getDisplayStr(it->first)) << endl;
-                    BOOST_FOREACH(const wdstring &wstr, it->second)
-                    {
-                        cout << "  " << lfw(wstr) << endl;
-                    }
-                }
-            }
-            else if (type == L'r')
-            {
-                vector<wdstring> wordList;
-                iGame.getDic().searchRacc(word, wordList);
-                BOOST_FOREACH(const wdstring &wstr, wordList)
-                {
-                    cout << lfw(wstr) << endl;
-                }
-            }
-        }
-        else if (command == L'n')
-        {
-            int num = parseNum(tokens, 1);
-            if (num <= 0)
-                printf("mauvais argument\n");
-            iGame.trainingPlayResult(num - 1);
-        }
-        else if (command == L'r')
-            iGame.trainingSearch();
-        else if (command == L't')
-        {
-            const wstring &letters =
-                parseLetters(tokens, 1, iGame.getDic());
-            iGame.trainingSetRackManual(false, letters);
-        }
-        else if (command == L'*')
-            iGame.trainingSetRackRandom(false, PublicGame::kRACK_ALL);
-        else if (command == L'+')
-            iGame.trainingSetRackRandom(false, PublicGame::kRACK_NEW);
-        else
-            commonCommands(iGame, tokens);
-    }
-    catch (std::exception &e)
-    {
-        printf("%s\n", e.what());
-    }
-}
-
-
 void loopFreegame(PublicGame &iGame, char* command)
 {
     const vector<wstring> &tokens = readTokens(command);
@@ -392,7 +321,7 @@ void loopFreegame(PublicGame &iGame, char* command)
         return;
     try
     {
-        wchar_t command = parseCharInList(tokens, 0, L"#?adhjspq");
+        wchar_t command = parseCharInList(tokens, 0, L"#?adhjspqx");
         if (command == L'p')
         {
             wstring letters = L"";
@@ -419,221 +348,6 @@ void loopFreegame(PublicGame &iGame, char* command)
         printf("%s\n", e.what());
     }
 }
-
-
-void loopDuplicate(PublicGame &iGame, char* command)
-{
-    const vector<wstring> &tokens = readTokens(command);
-    if (tokens.empty())
-        return;
-    try
-    {
-        wchar_t command = parseCharInList(tokens, 0, L"#?adhjsnq");
-        if (command == L'n')
-        {
-            unsigned id = parsePlayerId(tokens, 1, iGame);
-            iGame.duplicateSetPlayer(id);
-        }
-        else
-            commonCommands(iGame, tokens);
-    }
-    catch (std::exception &e)
-    {
-        printf("%s\n", e.what());
-    }
-}
-
-
-void loopArbitration(PublicGame &iGame, char* command)
-{
-    const vector<wstring> &tokens = readTokens(command);
-    if (tokens.empty())
-        return;
-    try
-    {
-        wchar_t command = parseCharInList(tokens, 0, L"#?adhjsfjmet*q");
-        if (command == L'f')
-            iGame.arbitrationFinalizeTurn();
-        else if (command == L'j')
-        {
-            unsigned id = parsePlayerId(tokens, 1, iGame);
-            const wstring &word = parseLetters(tokens, 2, iGame.getDic());
-            const wstring &coord = parseAlphaNum(tokens, 3);
-            const Move &move = iGame.arbitrationCheckWord(word, coord);
-            iGame.arbitrationAssign(id, move);
-        }
-        else if (command == L'm')
-        {
-            const wstring &word = parseLetters(tokens, 1, iGame.getDic());
-            const wstring &coord = parseAlphaNum(tokens, 2);
-            const Move &move = iGame.arbitrationCheckWord(word, coord);
-            if (!move.isValid())
-                throw GameException("Incorrect master move: " + lfw(move.toString()));
-            iGame.duplicateSetMasterMove(move);
-        }
-        else if (command == L'e')
-        {
-            unsigned id = parsePlayerId(tokens, 1, iGame);
-            wchar_t type = parseCharInList(tokens, 2, L"wp");
-            if (type == L'w')
-                iGame.arbitrationToggleWarning(id);
-            else if (type == 'p')
-                iGame.arbitrationTogglePenalty(id);
-//                 else if (type == 's')
-//                     iGame.arbitrationSetSolo(id, value);
-        }
-        else if (command == L't')
-        {
-            const wstring &letters =
-                parseLetters(tokens, 1, iGame.getDic());
-            iGame.arbitrationSetRackManual(letters);
-        }
-        else if (command == L'*')
-            iGame.arbitrationSetRackRandom();
-        else
-            commonCommands(iGame, tokens);
-    }
-    catch (std::exception &e)
-    {
-        printf("%s\n", e.what());
-    }
-}
-
-
-void loopTopping(PublicGame &iGame, char* command)
-{
-    const vector<wstring> &tokens = readTokens(command);
-    if (tokens.empty())
-        return;
-    try
-    {
-        wchar_t command = parseCharInList(tokens, 0, L"#?adhjstq");
-        if (command == L't')
-        {
-            int timeout = parseNum(tokens, 1);
-            iGame.toppingTimeOut(timeout);
-        }
-        else if (command == L'j')
-        {
-            const wstring &word = parseLetters(tokens, 1, iGame.getDic());
-            const wstring &coord = parseAlphaNum(tokens, 2);
-            int elapsed = parseNum(tokens, 3);
-            iGame.toppingPlay(word, coord, elapsed);
-        }
-        else
-            commonCommands(iGame, tokens);
-    }
-    catch (std::exception &e)
-    {
-        printf("%s\n", e.what());
-    }
-}
-
-
-// void mainLoop(const Dictionary &iDic, char* command)
-// {
-//     const vector<wstring> &tokens = readTokens(command);
-
-//     if (tokens.empty())
-//         continue;
-//     if (tokens[0].size() > 3)
-//     {
-//         printf("%s\n", "Invalid command");
-//         continue;
-//     }
-
-//     try
-//     {
-//         switch (tokens[0][0])
-//         {
-//             case L'#':
-//                 // Ignore comments
-//                 break;
-//             case L'e':
-//                 {
-//                     // New training game
-//                     PublicGame *game = readGame(iDic, GameParams::kTRAINING, tokens[0]);
-//                     game->addPlayer(new HumanPlayer);
-//                     game->start();
-//                     loopTraining(*game);
-//                     delete game;
-//                 }
-//                 break;
-//             case L'd':
-//                 {
-//                     int nbHuman = parseNum(tokens, 1);
-//                     int nbAI = parseNum(tokens, 2);
-//                     // New duplicate game
-//                     PublicGame *game = readGame(iDic, GameParams::kDUPLICATE, tokens[0]);
-//                     for (int i = 0; i < nbHuman; i++)
-//                         game->addPlayer(new HumanPlayer);
-//                     for (int i = 0; i < nbAI; i++)
-//                         game->addPlayer(new AIPercent(1));
-//                     game->start();
-//                     loopDuplicate(*game);
-//                     delete game;
-//                 }
-//                 break;
-//             case L'l':
-//                 {
-//                     int nbHuman = parseNum(tokens, 1);
-//                     int nbAI = parseNum(tokens, 2);
-//                     // New free game
-//                     PublicGame *game = readGame(iDic, GameParams::kFREEGAME, tokens[0]);
-//                     for (int i = 0; i < nbHuman; i++)
-//                         game->addPlayer(new HumanPlayer);
-//                     for (int i = 0; i < nbAI; i++)
-//                         game->addPlayer(new AIPercent(1));
-//                     game->start();
-//                     loopFreegame(*game);
-//                     delete game;
-//                 }
-//                 break;
-//             case L'a':
-//                 {
-//                     int nbHuman = parseNum(tokens, 1);
-//                     int nbAI = parseNum(tokens, 2);
-//                     // New free game
-//                     PublicGame *game = readGame(iDic, GameParams::kARBITRATION, tokens[0]);
-//                     for (int i = 0; i < nbHuman; i++)
-//                         game->addPlayer(new HumanPlayer);
-//                     for (int i = 0; i < nbAI; i++)
-//                         game->addPlayer(new AIPercent(1));
-//                     game->start();
-//                     loopArbitration(*game);
-//                     delete game;
-//                 }
-//                 break;
-//             case L't':
-//                 {
-//                     // New topping game
-//                     PublicGame *game = readGame(iDic, GameParams::kTOPPING, tokens[0]);
-//                     game->addPlayer(new HumanPlayer);
-//                     game->start();
-//                     loopTopping(*game);
-//                     delete game;
-//                 }
-//                 break;
-//             case L'x':
-//                 // Regular expression tests
-//                 handleRegexp(iDic, tokens);
-//                 break;
-//             case L's':
-//                 setSetting(tokens);
-//                 break;
-//             case L'q':
-//                 quit = true;
-//                 break;
-//             default:
-//                 printf("commande inconnue\n");
-//                 break;
-//         }
-//     }
-//     catch (std::exception &e)
-//     {
-//         printf("%s\n", e.what());
-//     }
-// }
 
 Dictionary *g_dic;
 PublicGame *g_game;

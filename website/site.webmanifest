@@ -1,6 +1,14 @@
 {
-  "name": "",
-  "short_name": "",
+  "name": "Scrabble Gàidhlig",
+  "short_name": "Scrabble Gàidhlig",
+  "description": "Cluich Scrabble Gàidhlig air-loidhne / Play Scrabble Gàidhlig online",
+  "screenshots": [
+    {
+      "src": "/img/social-preview.png",
+      "sizes": "2400x1460",
+      "type": "image/png"
+    }
+  ],
   "icons": [
     {
       "src": "/img/android-chrome-192x192.png",

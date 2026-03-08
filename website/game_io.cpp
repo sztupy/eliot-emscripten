@@ -41,6 +41,9 @@
 #include "move.h"
 #include "round.h"
 #include <emscripten.h>
+#include "listdic.h"
+#include "dic_internals.h"
+#include "header.h"
 
 using namespace std;
 
@@ -81,6 +84,10 @@ EM_JS(void, sendErrorData, (int category, int errorCode), {
     sendError(category, errorCode);
 });
 
+EM_JS(void, sendDictionaryData, (const char* word), {
+    sendDictionaryWord(UTF8ToString(word));
+});
+
 void printBoard(const PublicGame &iGame)
 {
     resetBoard();
@@ -118,6 +125,34 @@ void printSaveGame(const PublicGame &iGame)
     iGame.saveGame(os);
     saveGameData(os.str().c_str());
 }
+
+
+static void printDicRec(const Dictionary &iDic, const wchar_t * const buf, wchar_t *s, DicEdge edge)
+{
+    if (edge.term)  /* edge points at a complete word */
+    {
+        *s = '\0';
+        sendDictionaryData(lfw(buf).c_str());
+    }
+    if (edge.ptr)
+    {           /* Compute index: is it non-zero ? */
+        const DicEdge *p = iDic.getEdgeAt(edge.ptr);
+        do
+        {                         /* for each edge out of this node */
+            *s = iDic.getHeader().getCharFromCode(p->chr);
+            printDicRec(iDic, buf, s + 1, *p);
+        }
+        while (!(*p++).last);
+    }
+}
+
+void GameIO::printWords(const PublicGame &iGame)
+{
+    wchar_t buf[100];
+    const Dictionary &iDic = iGame.getDic();
+    printDicRec(iDic, buf, buf, *iDic.getEdgeAt(iDic.getRoot()));
+}
+
 
 void printGameDebug(const PublicGame &iGame)
 {

@@ -329,31 +329,31 @@ function redrawBoard() {
     if (currentPlayer && currentPlayer.isHuman) {
       text += '<br>';
       text += "<button id='passbutton' onclick='pass()'>";
-      text += language == 'en' ? "Pass" : "Pasaig";
+      text += language == 'en' ? "⏩ Pass" : "⏩ Pasaig";
       text += "</button>";
 
       text += "&nbsp;"
 
       text += "<button id='swapbutton' onclick='swap()'>";
-      text += language == 'en' ? "Swap" : "Iomlaid";
+      text += language == 'en' ? "🔄 Swap" : "🔄 Iomlaid";
       text += "</button>";
 
       text += "&nbsp;"
 
       text += "<button id='undobutton' onclick='undoLetters()'>";
-      text += language == 'en' ? "Undo" : "Cuir às";
+      text += language == 'en' ? "⌫ Undo" : "⌫ Cuir às";
       text += "</button>";
 
       text += "&nbsp;"
 
       text += "<button id='playbutton' onclick='playLetters()'>";
-      text += language == 'en' ? "Play" : "Cluich";
+      text += language == 'en' ? "✅ Play" : "✅ Cluich";
       text += "</button>";
 
       text += "&nbsp;"
 
       text += "<button id='resetbutton' onclick='resetUserActions()'>";
-      text += language == 'en' ? "Reset" : "Ath-shuidhich";
+      text += language == 'en' ? "✖ Reset" : "✖ Ath-shuidhich";
       text += "</button>";
     }
   }
@@ -521,8 +521,8 @@ function calculateValidActions() {
   if (!document.getElementById('passbutton'))
     return;
 
-  document.getElementById('passbutton').disabled = true;
-  document.getElementById('swapbutton').disabled = true;
+  document.getElementById('passbutton').disabled = true; document.getElementById('passbutton').style.display = 'none';
+  document.getElementById('swapbutton').disabled = true; document.getElementById('swapbutton').style.display = 'none';
   document.getElementById('playbutton').disabled = true;
   document.getElementById('undobutton').disabled = true;
 
@@ -534,10 +534,12 @@ function calculateValidActions() {
 
   if (!hasSelected) {
     document.getElementById('passbutton').disabled = false;
+    document.getElementById('passbutton').style.removeProperty('display');
     if (selectedKey) {
       document.getElementById('undobutton').disabled = false;
     }
   } else {
+    document.getElementById('swapbutton').style.removeProperty('display');
     if (Object.keys(temporaryLetters).length == 0) {
       document.getElementById('swapbutton').disabled = false;
     } else {
@@ -829,6 +831,12 @@ function setGameState(currentPlayer, isFinished, aiCount, humanCount) {
   gameData.aiCount = aiCount;
 }
 
+let dictionary = [];
+// Used by Eliot to send over the entire dictionary
+function sendDictionaryWord(word) {
+  dictionary.push(word);
+}
+
 // Used by Eliot to send error information to JS
 function sendError(category, errorCode) {
   let error = '';
@@ -867,6 +875,8 @@ function sendError(category, errorCode) {
   } else if (category == 2) {
     if (errorCode == 3) {
       error = language == 'en' ? 'Word is not valid.' : 'Chan eil am facal ceart.';
+    } else if (errorCode == 7) {
+      error = language == 'en' ? 'Conecting word is not valid.' : 'Chan eil am facal ceangail dligheach ceart.';
     } else if (errorCode == 9) {
       error = language == 'en' ? 'You must place your word next to an existing word.' : 'Feumaidh tu do fhacal a chur ri faclan a tha ann mar-thà.';
     } else if (errorCode == 11) {
@@ -1007,6 +1017,60 @@ document.getElementById('privacy_policy').onclick = () => {
     }
   }, 100);
 })();
+
+// modal boxes
+const aboutBox = document.getElementById("about_box");
+const dictionaryBox = document.getElementById("dictionary_box");
+const newGameBox = document.getElementById("newgame_box");
+
+window.addEventListener("popstate", () => {
+  if (window.location.hash == "" || window.location.hash == "#") {
+    closeModal(false);
+  }
+});
+
+function closeModal(goBack = true) {
+  aboutBox.style.display = "none";
+  dictionaryBox.style.display = "none";
+  newGameBox.style.display = "none";
+  if (goBack)
+    window.history.back();
+}
+
+for (let closeButton of [...document.getElementsByClassName("close")]) {
+  closeButton.onclick = closeModal;
+}
+
+window.onclick = function (event) {
+  if (event.target == aboutBox || event.target == dictionaryBox || event.target == newGameBox) {
+    closeModal();
+  }
+}
+
+document.getElementById("about_button").onclick = () => {
+  window.history.pushState("", "", "");
+  aboutBox.style.display = "block";
+}
+
+// PWA
+let installPrompt = null;
+const installButton = document.getElementById("install_button");
+
+document.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  installPrompt = event;
+  installButton.removeAttribute("hidden");
+})
+
+installButton.addEventListener("click", async () => {
+  if (!installPrompt) {
+    return;
+  }
+  const result = await installPrompt.prompt();
+  console.log(`Install prompt was: ${result.outcome}`);
+  installPrompt = null;
+  installButton.setAttribute("hidden", "");
+});
 
 // Set up ads
 function resetAds() {

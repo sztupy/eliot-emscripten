@@ -40,7 +40,8 @@
     <div class="players" id="players"></div>
 
     <div class="controls" id="controls">
-      <button id="reset">Reset game</button>
+      <button id="reset">♻️ Reset game</button>
+      <button id="install_button" hidden>Install game</button>
     </div>
 
     <div class="ad" id="ad">
@@ -49,13 +50,30 @@
     <div class="history" id="history"></div>
   </div>
   <footer id="main_footer">
-    <button id="about">About</button>
+    <button id="about_button">About</button>
     <button id="privacy_policy">Privacy Policy</button>
     <button id="cookie_settings">Cookie Settings</button>
   </footer>
 
-  <div class="about_box" id="about_box">
-    About this website
+  <div class="modal" id="about_box">
+    <div class="content">
+      <span class="close">&times;</span>
+      About this website
+    </div>
+  </div>
+
+  <div class="modal" id="dictionary_box">
+    <div class="content">
+      <span class="close">&times;</span>
+
+    </div>
+  </div>
+
+  <div class="modal" id="newgame_box">
+    <div class="content">
+      <span class="close">&times;</span>
+
+    </div>
   </div>
 
   <script src="mobile-drag-drop/index.min.js"></script>
