@@ -469,6 +469,12 @@ header#main_header {
   cursor: pointer;
 }
 
+iframe,
+object,
+embed {
+  max-width: 100%;
+}
+
 @media (min-aspect-ratio: 3/2) {
   #main {
     grid-template-columns: auto 1fr;

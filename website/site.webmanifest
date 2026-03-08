@@ -5,8 +5,15 @@
   "screenshots": [
     {
       "src": "/img/social-preview.png",
-      "sizes": "2400x1460",
-      "type": "image/png"
+      "sizes": "2400x1260",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/img/social-preview-mobile.png",
+      "sizes": "998x1426",
+      "type": "image/png",
+      "form_factor": "narrow"
     }
   ],
   "icons": [
@@ -21,6 +28,7 @@
       "type": "image/png"
     }
   ],
+  "start_url": "/",
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
   "display": "standalone"
