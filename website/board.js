@@ -655,6 +655,38 @@ function dragDrop(event) {
   placeholder.remove();
 }
 
+function fillCell(letter, letterToUse, row, column, newKey) {
+  temporaryLetters[selectedKey] = letterToUse;
+  letter.classList.add("selected-letter");
+
+  redrawLetters();
+
+  const oldCell = document.getElementById(`board_${row}_${column}`);
+  if (oldCell) {
+    oldCell.classList.remove("horizontal");
+    oldCell.classList.remove("vertical");
+  }
+
+  while (row < 15 && column < 15 && (letters[newKey] || temporaryLetters[newKey])) {
+    if (selectedDirection == 2)
+      column += 1;
+    else
+      row += 1;
+
+    newKey = `${row};${column}`;
+  }
+
+  const newCell = document.getElementById(`board_${row}_${column}`);
+  if (newCell) {
+    newCell.classList.add("selected-cell");
+    newCell.classList.add(selectedDirection == 1 ? "vertical" : "horizontal");
+  }
+
+  selectedKey = newKey;
+
+  calculateValidActions();
+}
+
 // Allows to select / deselect letters for the Swap button
 function clickLetter(event) {
   const letter = event.currentTarget;
@@ -671,55 +703,19 @@ function clickLetter(event) {
     if (row >= 15 || column >= 15)
       return;
 
-
-    let letterToUse = letter.dataset.letter;
     if (letter.dataset.letter == '?') {
-      letterToUse = prompt(language == 'en' ? "Enter the letter for this joker" : "Cuir a-steach litir airson a’ chairt-chuiridh seo", "")
-
-      if (!letterToUse || letterToUse.length != 1 || !letterValues[letterToUse.toUpperCase()]) {
-        sendError(2, 14);
-        return;
-      }
-
-      letterToUse = letterToUse.toLowerCase();
+      letterSelector(letter, row, column, newKey);
+    } else {
+      fillCell(letter, letter.dataset.letter, row, column, newKey);
     }
-
-    temporaryLetters[selectedKey] = letterToUse;
-    letter.classList.add("selected-letter");
-
-    redrawLetters();
-
-    const oldCell = document.getElementById(`board_${row}_${column}`);
-    if (oldCell) {
-      oldCell.classList.remove("horizontal");
-      oldCell.classList.remove("vertical");
-    }
-
-    while (row < 15 && column < 15 && (letters[newKey] || temporaryLetters[newKey])) {
-      if (selectedDirection == 2)
-        column += 1;
-      else
-        row += 1;
-
-      newKey = `${row};${column}`;
-    }
-
-    const newCell = document.getElementById(`board_${row}_${column}`);
-    if (newCell) {
-      newCell.classList.add("selected-cell");
-      newCell.classList.add(selectedDirection == 1 ? "vertical" : "horizontal");
-    }
-
-    selectedKey = newKey;
   } else {
     if (letter.classList.contains("selected-letter")) {
       letter.classList.remove("selected-letter");
     } else {
       letter.classList.add("selected-letter");
     }
+    calculateValidActions();
   }
-
-  calculateValidActions();
 }
 
 // Removes last letter from board
@@ -780,7 +776,7 @@ let searchTerm = '';
 let searchPage = 0;
 let maxLetters = 15;
 
-function letterList(parent) {
+function letterList(parent, forDictionary = true, clickHandler = null) {
   let cell;
   for (let letter in letterValues) {
     cell = document.createElement('div');
@@ -788,10 +784,12 @@ function letterList(parent) {
     fillLetterCell(cell, letter);
     parent.appendChild(cell);
     cell.onclick = () => {
-      if (searchTerm.length <= maxLetters) {
+      if (forDictionary && searchTerm.length <= maxLetters) {
         searchTerm += letter;
         searchPage = 0;
         loadDictionary();
+      } else if (clickHandler) {
+        clickHandler(letter);
       }
     }
   }
@@ -801,6 +799,9 @@ function letterList(parent) {
   cell.style.height = 0;
 
   parent.appendChild(cell);
+
+  if (!forDictionary)
+    return;
 
   for (let i = 2; i <= 15; i++) {
     cell = document.createElement('div');
@@ -916,6 +917,26 @@ function loadDictionary() {
   searchResult.innerHTML = text;
 
   contents.appendChild(searchResult);
+}
+
+// Joker letter selector
+function letterSelector(letter, row, column, newKey) {
+  const contents = letterBox.getElementsByClassName("text")[0];
+  contents.replaceChildren();
+
+  contents.innerHTML = language == 'en' ? '<h2>Letters</h2>' : '<h2>Litrichean</h2>'
+
+  const alphabet = document.createElement('div');
+  alphabet.className = 'alphabet';
+  contents.appendChild(alphabet);
+
+  letterList(alphabet, false, (newLetter) => {
+    fillCell(letter, newLetter.toLowerCase(), row, column, newKey);
+    closeModal();
+  });
+
+  window.history.pushState("", "", "");
+  letterBox.style.display = "block";
 }
 
 // Used by Eliot to send history data to JS
@@ -1179,6 +1200,7 @@ function closeModal(goBack = true) {
   aboutBox.style.display = "none";
   dictionaryBox.style.display = "none";
   newGameBox.style.display = "none";
+  letterBox.style.display = "none";
   if (goBack)
     window.history.back();
 }
