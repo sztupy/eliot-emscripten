@@ -174,6 +174,18 @@ function markOld() {
   }
 }
 
+function fillLetterCell(cell, letter) {
+  cell.textContent = letter.toUpperCase();
+
+  if (letterValues[letter]) {
+    const value = document.createElement('span');
+    value.textContent = letterValues[letter];
+    cell.appendChild(value);
+  } else {
+    cell.className += " joker";
+  }
+}
+
 // redraw the letter data on the board
 function redrawLetters() {
   for (let row = 0; row < 15; row++) {
@@ -199,15 +211,7 @@ function redrawLetters() {
           }
         }
 
-        cell.textContent = letter.toUpperCase();
-
-        if (letterValues[letter]) {
-          const value = document.createElement('span');
-          value.textContent = letterValues[letter];
-          cell.appendChild(value);
-        } else {
-          cell.className += " joker";
-        }
+        fillLetterCell(cell, letter);
       }
       else if (type === 'star') cell.textContent = '★';
       else if (type === 'tw') cell.textContent = '3F';
@@ -770,6 +774,150 @@ function undoLetters(_event) {
   calculateValidActions();
 }
 
+// Dictionary features
+let dictionary = [];
+let searchTerm = '';
+let searchPage = 0;
+let maxLetters = 15;
+
+function letterList(parent) {
+  let cell;
+  for (let letter in letterValues) {
+    cell = document.createElement('div');
+    cell.className = 'cell letter';
+    fillLetterCell(cell, letter);
+    parent.appendChild(cell);
+    cell.onclick = () => {
+      if (searchTerm.length <= maxLetters) {
+        searchTerm += letter;
+        searchPage = 0;
+        loadDictionary();
+      }
+    }
+  }
+
+  cell = document.createElement('div');
+  cell.style.flexBasis = '100%';
+  cell.style.height = 0;
+
+  parent.appendChild(cell);
+
+  for (let i = 2; i <= 15; i++) {
+    cell = document.createElement('div');
+    cell.className = 'cell letter';
+    fillLetterCell(cell, '' + i);
+    parent.appendChild(cell);
+
+    cell.onclick = () => {
+      maxLetters = i;
+      searchPage = 0;
+      loadDictionary();
+    }
+  }
+
+  cell = document.createElement('div');
+  cell.style.flexBasis = '100%';
+  cell.style.height = 0;
+
+  parent.appendChild(cell);
+
+  cell = document.createElement('div');
+  cell.className = 'cell letter';
+  fillLetterCell(cell, '?');
+  parent.appendChild(cell);
+
+  cell.onclick = () => {
+    searchTerm += '?';
+    searchPage = 0;
+    loadDictionary();
+  }
+
+  cell = document.createElement('div');
+  cell.className = 'cell letter';
+  fillLetterCell(cell, '*');
+  parent.appendChild(cell);
+
+  cell.onclick = () => {
+    searchTerm += '*';
+    searchPage = 0;
+    loadDictionary();
+  }
+
+  cell = document.createElement('div');
+  cell.className = 'cell letter';
+  fillLetterCell(cell, '⌫');
+  parent.appendChild(cell);
+
+  cell.onclick = () => {
+    searchTerm = searchTerm.slice(0, -1);
+    searchPage = 0;
+    loadDictionary();
+  }
+
+  cell = document.createElement('div');
+  cell.className = 'cell letter';
+  fillLetterCell(cell, '✖');
+  parent.appendChild(cell);
+
+  cell.onclick = () => {
+    searchTerm = '';
+    searchPage = 0;
+    loadDictionary();
+  }
+}
+
+function loadDictionary() {
+  if (dictionary.length == 0) {
+    let data = stringToNewUTF8("x");
+    _gameAction(data);
+    _free(data);
+  };
+
+  const contents = dictionaryBox.getElementsByClassName("text")[0];
+  contents.replaceChildren();
+
+  contents.innerHTML = language == 'en' ? '<h2>Dictionary</h2>' : '<h2>Faclair</h2>'
+
+  const alphabet = document.createElement('div');
+  alphabet.className = 'alphabet';
+  contents.appendChild(alphabet);
+
+  letterList(alphabet);
+
+  const searchResult = document.createElement('div');
+  let text = searchTerm == '' ? (language == 'en' ? `Showing all words under ${maxLetters} letters` : `A’ sealltainn a h-uile facal fo ${maxLetters} litrichean`) : (language == 'en' ? `Search: '${searchTerm}' (Max ${maxLetters})` : `Dèan lorg airson '${searchTerm}' (${maxLetters} as àirde)`);
+
+  results = 0;
+  found = 0;
+  text += `<ol start="${searchPage * 50 + 1}">`;
+
+  let searchRegex = RegExp('^' + searchTerm.replace(/\*/g, '.*').replace(/\?/g, '.'), 'i')
+
+  let moreButton = false;
+  for (let word of dictionary) {
+    if (word.length <= maxLetters && word.search(searchRegex) != -1) {
+      if (found >= searchPage * 50) {
+        text += `<li><a href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${word.toLowerCase()}" target="_blank">${word}</a></li>`;
+        results += 1;
+      }
+      found += 1;
+    }
+    if (results >= 50) {
+      moreButton = true;
+      break;
+    }
+  }
+  text += '</ol>';
+
+  if (moreButton) {
+    text += `<button onclick='searchPage+=1;loadDictionary();'>${language == 'en' ? 'Next Page…' : 'An ath dhuilleag…'}</button>`;
+  }
+
+  searchResult.innerHTML = text;
+
+  contents.appendChild(searchResult);
+}
+
 // Used by Eliot to send history data to JS
 function addHistory(n, playerId, rack, solution, row, col, direction, points, bonus) {
   history[n] = [playerId, rack, solution, row, col, direction, points, bonus];
@@ -829,7 +977,6 @@ function setGameState(currentPlayer, isFinished, aiCount, humanCount) {
   gameData.aiCount = aiCount;
 }
 
-let dictionary = [];
 // Used by Eliot to send over the entire dictionary
 function sendDictionaryWord(word) {
   dictionary.push(word);
@@ -1019,6 +1166,7 @@ document.getElementById('privacy_policy').onclick = () => {
 // modal boxes
 const aboutBox = document.getElementById("about_box");
 const dictionaryBox = document.getElementById("dictionary_box");
+const letterBox = document.getElementById("letter_box");
 const newGameBox = document.getElementById("newgame_box");
 
 window.addEventListener("popstate", () => {
@@ -1048,6 +1196,12 @@ window.onclick = function (event) {
 document.getElementById("about_button").onclick = () => {
   window.history.pushState("", "", "");
   aboutBox.style.display = "block";
+}
+
+document.getElementById("dictionary_button").onclick = () => {
+  window.history.pushState("", "", "");
+  loadDictionary();
+  dictionaryBox.style.display = "block";
 }
 
 // PWA

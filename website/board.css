@@ -32,6 +32,83 @@ body {
   margin-right: auto;
 }
 
+.alphabet {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 0.25em;
+  column-gap: 1em;
+  margin-bottom: 1em;
+}
+
+.alphabet .cell {
+  width: min(7vw, 7vh);
+  height: min(7vw, 7vh);
+  aspect-ratio: 1;
+  cursor: pointer;
+}
+
+#dictionary_box ol {
+  columns: 12em;
+}
+
+#dictionary_box li {
+  margin-bottom: 0.5em;
+}
+
+#dictionary_box li a {
+  position: relative;
+  display: inline-block;
+  outline: none;
+  color: black;
+  vertical-align: bottom;
+  text-decoration: none;
+  white-space: nowrap;
+
+  padding: 0 0.25em;
+  font-weight: 500;
+  -webkit-transition: -webkit-transform 0.3s;
+  transition: transform 0.3s;
+  -webkit-transform: translateX(0);
+  transform: translateX(0);
+}
+
+#dictionary_box li a::after {
+  -webkit-transform: translateX(-1em);
+  transform: translateX(-1em);
+}
+
+#dictionary_box li a::before,
+#dictionary_box li a::after {
+  position: absolute;
+  height: 100%;
+  content: '';
+}
+
+#dictionary_box li a::before {
+  left: 0;
+  z-index: -1;
+  width: 100%;
+  background: #fff;
+}
+
+#dictionary_box li a::after {
+  left: 100%;
+  z-index: -2;
+  width: 1em;
+  background: #34495e url(img/arrow_right.svg) no-repeat 50% 50%;
+  background-size: 60% auto;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  -webkit-transition: -webkit-transform 0.3s;
+  transition: transform 0.3s;
+  pointer-events: auto;
+}
+
+#dictionary_box li a:hover::after {
+  -webkit-transform: translateX(0.5em);
+  transform: translateX(0.5em);
+}
+
 .cell {
   display: flex;
   align-items: center;
