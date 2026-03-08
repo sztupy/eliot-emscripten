@@ -232,7 +232,7 @@ void commonCommands(PublicGame &iGame, const vector<wstring> &tokens)
         const wstring &coord = parseAlphaNum(tokens, 2);
         int res = iGame.play(word, coord);
         if (res != 0)
-            printf("Mot incorrect ou mal placé (%i)\n", res);
+            GameIO::sendError(2, res);
     }
 }
 
@@ -646,7 +646,7 @@ extern "C" void stopGame() {
 }
 
 
-extern "C" void startGame(int nbHuman, int nbAI) {
+extern "C" void startGame(int nbHuman, int nbAI, int aiPercent) {
     try {
         stopGame();
 
@@ -658,10 +658,24 @@ extern "C" void startGame(int nbHuman, int nbAI) {
         }
 
         g_game = readGame(*g_dic, GameParams::kFREEGAME, L"");
-        for (int i = 0; i < nbHuman; i++)
-            g_game->addPlayer(new HumanPlayer);
-        for (int i = 0; i < nbAI; i++)
-            g_game->addPlayer(new AIPercent(1));
+
+        while (nbHuman + nbAI > 0) {
+            if (nbHuman > 0 && nbAI > 0) {
+                if (rand()%2) {
+                    g_game->addPlayer(new HumanPlayer);
+                    nbHuman--;
+                } else {
+                    g_game->addPlayer(new AIPercent((float)aiPercent / 100.0));
+                    nbAI--;
+                }
+            } else if (nbHuman > 0) {
+                g_game->addPlayer(new HumanPlayer);
+                nbHuman--;
+            } else {
+                g_game->addPlayer(new AIPercent((float)aiPercent / 100.0));
+                nbAI--;
+            }
+        }
         g_game->start();
     } catch (std::exception &e)
     {

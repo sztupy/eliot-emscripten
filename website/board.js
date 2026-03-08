@@ -70,6 +70,11 @@ let gameData = {
 };
 let letters = {};
 
+// adding letters to the board from the rack
+let temporaryLetters = {};
+let selectedKey = null;
+let selectedDirection = null;
+
 // Check if we're on the `en` or `gd` site
 let language = document.documentElement.lang;
 
@@ -126,10 +131,12 @@ function initBoard() {
         }
       }
       else if (type === 'star') cell.textContent = '★';
-      else if (type === 'tw') cell.textContent = '3F';
-      else if (type === 'dw') cell.textContent = '2F';
+      else if (type === 'tw') cell.textContent = language == 'en' ? '3W' : '3F';
+      else if (type === 'dw') cell.textContent = language == 'en' ? '2W' : '2F';
       else if (type === 'tl') cell.textContent = '3L';
       else if (type === 'dl') cell.textContent = '2L';
+
+      cell.onclick = boardClick;
 
       boardDom.appendChild(cell);
     }
@@ -167,33 +174,36 @@ function markOld() {
   }
 }
 
-// Redraws the entire game field including the board, the main rack, the player displays and the history
-function redrawBoard() {
-  // BOARD
+// redraw the letter data on the board
+function redrawLetters() {
   for (let row = 0; row < 15; row++) {
     for (let col = 0; col < 15; col++) {
       const key = `${row};${col}`;
-      const type = letters[key] ? 'letter' : (specialSquares[key] || 'normal');
+      const type = (letters[key] || temporaryLetters[key]) ? 'letter' : (specialSquares[key] || 'normal');
       const cell = document.getElementById(`board_${row}_${col}`);
       if (!cell)
         continue;
 
-      cell.className = `cell ${type}`;
+      cell.className = `cell ${type} ${temporaryLetters[key] ? 'selected-cell' : ''}`;
       cell.id = `board_${row}_${col}`;
       cell.textContent = '';
 
+      const letter = letters[key] || temporaryLetters[key];
+
       if (type === 'letter') {
-        if (cell.dataset.old) {
-          cell.style.removeProperty('background-color');
-        } else {
-          cell.style.backgroundColor = 'white';
+        if (!temporaryLetters[key]) {
+          if (cell.dataset.old) {
+            cell.style.removeProperty('background-color');
+          } else {
+            cell.style.backgroundColor = 'white';
+          }
         }
 
-        cell.textContent = letters[key].toUpperCase();
+        cell.textContent = letter.toUpperCase();
 
-        if (letterValues[letters[key]]) {
+        if (letterValues[letter]) {
           const value = document.createElement('span');
-          value.textContent = letterValues[letters[key]];
+          value.textContent = letterValues[letter];
           cell.appendChild(value);
         } else {
           cell.className += " joker";
@@ -206,6 +216,17 @@ function redrawBoard() {
       else if (type === 'dl') cell.textContent = '2L';
     }
   }
+}
+
+// Redraws the entire game field including the board, the main rack, the player displays and the history
+function redrawBoard() {
+  // BOARD
+  if (players[gameData.currentPlayer]?.isHuman && !gameData.isFinished) {
+    boardDom.classList.add('active');
+  } else {
+    boardDom.classList.remove('active');
+  }
+  redrawLetters();
 
   // PLAYER data
   playerDom.replaceChildren();
@@ -316,6 +337,24 @@ function redrawBoard() {
       text += "<button id='swapbutton' onclick='swap()'>";
       text += language == 'en' ? "Swap" : "Iomlaid";
       text += "</button>";
+
+      text += "&nbsp;"
+
+      text += "<button id='undobutton' onclick='undoLetters()'>";
+      text += language == 'en' ? "Undo" : "Cuir às";
+      text += "</button>";
+
+      text += "&nbsp;"
+
+      text += "<button id='playbutton' onclick='playLetters()'>";
+      text += language == 'en' ? "Play" : "Cluich";
+      text += "</button>";
+
+      text += "&nbsp;"
+
+      text += "<button id='resetbutton' onclick='resetUserActions()'>";
+      text += language == 'en' ? "Reset" : "Ath-shuidhich";
+      text += "</button>";
     }
   }
 
@@ -334,10 +373,14 @@ function redrawBoard() {
     })
     element.addEventListener("drop", dragDrop);
   }
+
+  calculateValidActions();
 }
 
 // Human gameplay actions - Pass
 function pass() {
+  resetUserActions();
+
   let data = stringToNewUTF8("p");
   _gameAction(data);
   _free(data);
@@ -351,11 +394,18 @@ function pass() {
 
 // Human gameplay actions - Swap
 function swap() {
+  for (let _boardLetter in temporaryLetters) {
+    sendError(1, 6);
+    return;
+  }
+
   let lettersToSwap = [];
   for (let element of [...document.getElementById('main_rack').getElementsByClassName('selected-letter')]) {
     lettersToSwap.push(element.dataset.letter);
     element.classList.remove("selected-letter");
   }
+
+  resetUserActions();
 
   if (lettersToSwap.length > 0) {
     let data = stringToNewUTF8(`p ${lettersToSwap.join("")}`);
@@ -370,6 +420,162 @@ function swap() {
   } else {
     sendError(1, 5);
   }
+}
+
+function getWord(row, column, direction) {
+  let word = '';
+  let coord = '';
+  let oldKey = `${row};${column}`;
+  let start = true;
+
+  while (row >= 0 && column >= 0 && (start || letters[oldKey] || temporaryLetters[oldKey])) {
+    start = false;
+    if (direction == 2)
+      column -= 1;
+    else
+      row -= 1;
+
+    oldKey = `${row};${column}`;
+
+    if (row >= 0 && column >= 0 && (letters[oldKey] || temporaryLetters[oldKey])) {
+      word = (letters[oldKey]?.toUpperCase() || temporaryLetters[oldKey]) + word;
+
+      coord = (direction == 2) ? `${String.fromCharCode('A'.charCodeAt(0) + row)}${column + 1}` : `${column + 1}${String.fromCharCode('A'.charCodeAt(0) + row)}`;
+    }
+  }
+
+  return [word, coord];
+}
+
+function playLetters() {
+  if (selectedKey) {
+    let row = +selectedKey.split(";")[0];
+    let column = +selectedKey.split(";")[1];
+
+    let [newWord, coord] = getWord(row, column, selectedDirection);
+
+    if (newWord.length < 2) {
+      let direction = selectedDirection;
+      if (selectedDirection == 2) {
+        column -= 1;
+        row += 1;
+        direction = 1;
+      } else {
+        row -= 1;
+        column += 1;
+        direction = 2;
+      }
+
+      [newWord, coord] = getWord(row, column, direction);
+    }
+
+    if (newWord.length < 2) {
+      sendError(2, 13);
+      return;
+    }
+
+    resetUserActions();
+
+    console.log(`j ${newWord} ${coord}`);
+    let data = stringToNewUTF8(`j ${newWord} ${coord}`);
+    _gameAction(data);
+    _free(data);
+
+    data = stringToNewUTF8("a g");
+    _gameAction(data);
+    _free(data);
+
+    sound_human_event.play();
+  }
+
+  calculateValidActions();
+}
+
+function resetUserActions() {
+  for (let element of [...document.getElementById('main_rack').getElementsByClassName('selected-letter')]) {
+    element.classList.remove("selected-letter");
+  }
+
+  for (let element of [...document.getElementsByClassName("selected-cell")]) {
+    element.classList.remove("selected-cell");
+  }
+
+  for (let element of [...document.getElementsByClassName("horizontal")]) {
+    element.classList.remove("horizontal");
+  }
+
+  for (let element of [...document.getElementsByClassName("vertical")]) {
+    element.classList.remove("vertical");
+  }
+
+  selectedKey = null;
+  temporaryLetters = {};
+
+  markOld();
+  redrawLetters();
+
+  calculateValidActions();
+}
+
+function calculateValidActions() {
+  if (!document.getElementById('passbutton'))
+    return;
+
+  document.getElementById('passbutton').disabled = true;
+  document.getElementById('swapbutton').disabled = true;
+  document.getElementById('playbutton').disabled = true;
+  document.getElementById('undobutton').disabled = true;
+
+  hasSelected = false;
+  for (let _element of [...document.getElementById('main_rack').getElementsByClassName('selected-letter')]) {
+    hasSelected = true;
+    break;
+  }
+
+  if (!hasSelected) {
+    document.getElementById('passbutton').disabled = false;
+    if (selectedKey) {
+      document.getElementById('undobutton').disabled = false;
+    }
+  } else {
+    if (Object.keys(temporaryLetters).length == 0) {
+      document.getElementById('swapbutton').disabled = false;
+    } else {
+      document.getElementById('undobutton').disabled = false;
+      document.getElementById('playbutton').disabled = false;
+    }
+  }
+}
+
+// click on board
+function boardClick(event) {
+  if (!boardDom.classList.contains('active'))
+    return;
+
+  const cell = event.currentTarget;
+  const data = event.currentTarget.id.split("_");
+  const row = data[1];
+  const column = data[2];
+  const key = `${row};${column}`;
+
+  if (letters[key])
+    return;
+
+  if (!selectedKey || selectedKey != key || Object.keys(temporaryLetters).length > 0) {
+    resetUserActions();
+    selectedKey = key;
+    selectedDirection = 2;
+    cell.classList.add("selected-cell");
+    cell.classList.add("horizontal");
+  } else if (selectedKey == key) {
+    selectedDirection = (selectedDirection == 1 ? 2 : 1);
+    cell.classList.remove("vertical");
+    cell.classList.remove("horizontal");
+
+    cell.classList.add(selectedDirection == 1 ? "vertical" : "horizontal");
+  }
+
+  calculateValidActions();
 }
 
 // Main rack drag and drop boilerplate functions
@@ -449,11 +655,119 @@ function dragDrop(event) {
 function clickLetter(event) {
   const letter = event.currentTarget;
 
-  if (letter.classList.contains("selected-letter")) {
-    letter.classList.remove("selected-letter");
-  } else {
+  if (selectedKey) {
+    let row = +selectedKey.split(";")[0];
+    let column = +selectedKey.split(";")[1];
+    let newKey = `${row};${column}`;
+
+    if (letter.classList.contains("selected-letter")) {
+      return;
+    }
+
+    if (row >= 15 || column >= 15)
+      return;
+
+
+    let letterToUse = letter.dataset.letter;
+    if (letter.dataset.letter == '?') {
+      letterToUse = prompt(language == 'en' ? "Enter the letter for this joker" : "Cuir a-steach litir airson a’ chairt-chuiridh seo", "")
+
+      if (!letterToUse || letterToUse.length != 1 || !letterValues[letterToUse.toUpperCase()]) {
+        sendError(2, 14);
+        return;
+      }
+
+      letterToUse = letterToUse.toLowerCase();
+    }
+
+    temporaryLetters[selectedKey] = letterToUse;
     letter.classList.add("selected-letter");
+
+    redrawLetters();
+
+    const oldCell = document.getElementById(`board_${row}_${column}`);
+    if (oldCell) {
+      oldCell.classList.remove("horizontal");
+      oldCell.classList.remove("vertical");
+    }
+
+    while (row < 15 && column < 15 && (letters[newKey] || temporaryLetters[newKey])) {
+      if (selectedDirection == 2)
+        column += 1;
+      else
+        row += 1;
+
+      newKey = `${row};${column}`;
+    }
+
+    const newCell = document.getElementById(`board_${row}_${column}`);
+    if (newCell) {
+      newCell.classList.add("selected-cell");
+      newCell.classList.add(selectedDirection == 1 ? "vertical" : "horizontal");
+    }
+
+    selectedKey = newKey;
+  } else {
+    if (letter.classList.contains("selected-letter")) {
+      letter.classList.remove("selected-letter");
+    } else {
+      letter.classList.add("selected-letter");
+    }
   }
+
+  calculateValidActions();
+}
+
+// Removes last letter from board
+function undoLetters(_event) {
+  if (Object.keys(temporaryLetters).length == 0) {
+    resetUserActions();
+    return;
+  }
+
+  if (selectedKey) {
+    let row = +selectedKey.split(";")[0];
+    let column = +selectedKey.split(";")[1];
+    let oldKey = `${row};${column}`;
+
+    const oldCell = document.getElementById(`board_${row}_${column}`);
+    if (oldCell) {
+      oldCell.classList.remove("horizontal");
+      oldCell.classList.remove("vertical");
+    }
+
+    while (row >= 0 && column >= 0 && !temporaryLetters[oldKey]) {
+      if (selectedDirection == 2)
+        column -= 1;
+      else
+        row -= 1;
+
+      oldKey = `${row};${column}`;
+    }
+
+    for (let element of [...document.getElementById('main_rack').getElementsByClassName('selected-letter')]) {
+      if (element.dataset.letter == temporaryLetters[oldKey]) {
+        element.classList.remove("selected-letter");
+        break;
+      } else if (element.dataset.letter == '?' && temporaryLetters[oldKey].toLowerCase() == temporaryLetters[oldKey]) {
+        element.classList.remove("selected-letter");
+        break;
+      }
+    }
+    delete temporaryLetters[oldKey];
+
+    redrawLetters();
+
+    const newCell = document.getElementById(`board_${row}_${column}`);
+    if (newCell) {
+      newCell.classList.add("selected-cell");
+      newCell.classList.add(selectedDirection == 1 ? "vertical" : "horizontal");
+    }
+
+    selectedKey = oldKey;
+  }
+
+  calculateValidActions();
 }
 
 // Used by Eliot to send history data to JS
@@ -544,8 +858,27 @@ function sendError(category, errorCode) {
     } else if (errorCode == 5) {
       error = language == 'en' ? 'You need to select at least one letter.' : 'Feumaidh tu co-dhiù aon litir a thaghadh.';
       old = false;
+    } else if (errorCode == 6) {
+      error = language == 'en' ? 'Remove all of your letters from the board first.' : 'Thoir air falbh na litrichean uile bhon bhòrd an toiseach.';
+      old = false;
     } else {
       error = language == 'en' ? 'Could not swap letters.' : 'Cha b’ urrainnear litrichean iomlaid.';
+    }
+  } else if (category == 2) {
+    if (errorCode == 3) {
+      error = language == 'en' ? 'Word is not valid.' : 'Chan eil am facal ceart.';
+    } else if (errorCode == 9) {
+      error = language == 'en' ? 'You must place your word next to an existing word.' : 'Feumaidh tu do fhacal a chur ri faclan a tha ann mar-thà.';
+    } else if (errorCode == 11) {
+      error = language == 'en' ? 'First word must cover centre tile.' : 'Feumaidh a’ chiad fhacal a bhith sa mheadhan.';
+    } else if (errorCode == 13) {
+      error = language == 'en' ? 'Word needs to contain at least two letters.' : 'Feumaidh co-dhiù dà litir a bhith anns an fhacal.';
+      old = false;
+    } else if (errorCode == 14) {
+      error = language == 'en' ? 'Invalid letter.' : 'Chan eil an litir ceart.';
+      old = false;
+    } else {
+      error = language == 'en' ? `Could not play word. (${errorCode})` : `Cha b’ urrainnear am facal a chluich. (${errorCode})`;
     }
   } else {
     error = language == 'en' ? 'Invalid action' : 'Chan urrainn dhut an gluasad sin a dhèanamh.';
@@ -611,7 +944,7 @@ function init() {
       _loadGame(saveDataPtr);
       _free(saveDataPtr);
     } else {
-      _startGame(2, 0);
+      _startGame(1, 3, 25);
     }
 
     data = stringToNewUTF8("a g");

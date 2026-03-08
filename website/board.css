@@ -48,8 +48,31 @@ body {
   transition: color 1s ease-in-out, background-color 1s ease-in-out;
 }
 
-#board .cell {
+#board.active .cell:hover {
+  background-color: white !important;
+  transition: none;
   cursor: pointer;
+}
+
+#board .cell.selected-cell {
+  background-color: white !important;
+}
+
+#board .cell.selected-cell.vertical,
+#board .cell.selected-cell.horizontal {
+  text-indent: -9999px;
+}
+
+#board .cell.selected-cell.vertical::after {
+  text-indent: 0px;
+  content: '↓';
+  color: black;
+}
+
+#board .cell.selected-cell.horizontal::after {
+  text-indent: 0px;
+  content: '→';
+  color: black;
 }
 
 .normal {
@@ -314,6 +337,10 @@ button {
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+}
+
+button:disabled {
+  opacity: 0.3;
 }
 
 button:hover {
