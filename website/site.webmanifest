@@ -28,7 +28,8 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/",
+  "id": "https://scrabble.raven.scot",
+  "start_url": "https://scrabble.raven.scot",
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
   "display": "standalone"
