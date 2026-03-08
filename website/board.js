@@ -1198,6 +1198,11 @@ document.getElementById("about_button").onclick = () => {
   aboutBox.style.display = "block";
 }
 
+document.getElementById("help_button").onclick = () => {
+  window.history.pushState("", "", "");
+  aboutBox.style.display = "block";
+}
+
 document.getElementById("dictionary_button").onclick = () => {
   window.history.pushState("", "", "");
   loadDictionary();
