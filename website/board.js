@@ -151,9 +151,9 @@ function getRack(rack, mainRack = false, showLetter = true) {
     if (!showLetter) {
       text += `<div class="cell letter">&nbsp;</div>`;
     } else if (letterValues[key]) {
-      text += `<div data-letter="${key}" class="cell letter" ${mainRack ? ' draggable="true" onclick="clickLetter(event)" ondragstart="dragLetter(event)" ondragend="dragLetterEnd(event)"' : ''}>${key}<span>${letterValues[key]}</span></div>`;
+      text += `<div data-letter="${key}" class="cell letter" ${mainRack ? ` draggable="true" onclick="clickLetter(this)" ondragstart="dragLetter(event)" ondragend="dragLetterEnd(event)"` : ''}>${key}<span>${letterValues[key]}</span></div>`;
     } else {
-      text += `<div data-letter="${key}" class="cell letter joker" ${mainRack ? ' draggable="true" onclick="clickLetter(event)" ondragstart="dragLetter(event)" ondragend="dragLetterEnd(event)"' : ''}>${key}</div>`;
+      text += `<div data-letter="${key}" class="cell letter joker" ${mainRack ? ` draggable="true" onclick="clickLetter(this)" ondragstart="dragLetter(event)" ondragend="dragLetterEnd(event)"` : ''}>${key}</div>`;
     }
   }
   text += `</div>`;
@@ -520,6 +520,8 @@ function resetUserActions() {
 }
 
 function calculateValidActions() {
+  Object.keys(globalKeyboardFeatures).forEach(key => delete globalKeyboardFeatures[key]);
+
   if (!document.getElementById('passbutton'))
     return;
 
@@ -529,9 +531,14 @@ function calculateValidActions() {
   document.getElementById('undobutton').disabled = true;
 
   hasSelected = false;
-  for (let _element of [...document.getElementById('main_rack').getElementsByClassName('selected-letter')]) {
-    hasSelected = true;
-    break;
+  for (let element of [...document.getElementById('main_rack').getElementsByClassName('letter')]) {
+    if (element.classList.contains("selected-letter")) {
+      hasSelected = true;
+    } else {
+      if (element.dataset.letter) {
+        globalKeyboardFeatures[element.dataset.letter] = () => { clickLetter(element) };
+      }
+    }
   }
 
   if (!hasSelected) {
@@ -539,16 +546,26 @@ function calculateValidActions() {
     document.getElementById('passbutton').style.removeProperty('display');
     if (selectedKey) {
       document.getElementById('undobutton').disabled = false;
+      globalKeyboardFeatures['DELETE'] = document.getElementById('undobutton').onclick;
+      globalKeyboardFeatures['BACKSPACE'] = document.getElementById('undobutton').onclick;
     }
   } else {
     document.getElementById('swapbutton').style.removeProperty('display');
     if (Object.keys(temporaryLetters).length == 0) {
       document.getElementById('swapbutton').disabled = false;
+
+      globalKeyboardFeatures['ENTER'] = document.getElementById('swapbutton').onclick;
     } else {
       document.getElementById('undobutton').disabled = false;
       document.getElementById('playbutton').disabled = false;
+
+      globalKeyboardFeatures['DELETE'] = document.getElementById('undobutton').onclick;
+      globalKeyboardFeatures['BACKSPACE'] = document.getElementById('undobutton').onclick;
+      globalKeyboardFeatures['ENTER'] = document.getElementById('playbutton').onclick;
     }
   }
+
+  globalKeyboardFeatures['ESCAPE'] = document.getElementById('resetbutton').onclick;
 }
 
 // click on board
@@ -688,9 +705,7 @@ function fillCell(letter, letterToUse, row, column, newKey) {
 }
 
 // Allows to select / deselect letters for the Swap button
-function clickLetter(event) {
-  const letter = event.currentTarget;
-
+function clickLetter(letter) {
   if (selectedKey) {
     let row = +selectedKey.split(";")[0];
     let column = +selectedKey.split(";")[1];
@@ -776,7 +791,12 @@ let searchTerm = '';
 let searchPage = 0;
 let maxLetters = 15;
 
+let globalKeyboardFeatures = {};
+let keyboardFeatures = globalKeyboardFeatures;
+
 function letterList(parent, forDictionary = true, clickHandler = null) {
+  keyboardFeatures = {};
+
   let cell;
   for (let letter in letterValues) {
     cell = document.createElement('div');
@@ -792,6 +812,8 @@ function letterList(parent, forDictionary = true, clickHandler = null) {
         clickHandler(letter);
       }
     }
+
+    keyboardFeatures[letter.toUpperCase()] = cell.onclick;
   }
 
   cell = document.createElement('div');
@@ -800,8 +822,10 @@ function letterList(parent, forDictionary = true, clickHandler = null) {
 
   parent.appendChild(cell);
 
-  if (!forDictionary)
+  if (!forDictionary) {
+    keyboardFeatures['ESCAPE'] = closeModal;
     return;
+  }
 
   for (let i = 2; i <= 15; i++) {
     cell = document.createElement('div');
@@ -814,6 +838,8 @@ function letterList(parent, forDictionary = true, clickHandler = null) {
       searchPage = 0;
       loadDictionary();
     }
+
+    keyboardFeatures[('' + i)] = cell.onclick;
   }
 
   cell = document.createElement('div');
@@ -833,6 +859,8 @@ function letterList(parent, forDictionary = true, clickHandler = null) {
     loadDictionary();
   }
 
+  keyboardFeatures['?'] = cell.onclick;
+
   cell = document.createElement('div');
   cell.className = 'cell letter';
   fillLetterCell(cell, '*');
@@ -843,6 +871,8 @@ function letterList(parent, forDictionary = true, clickHandler = null) {
     searchPage = 0;
     loadDictionary();
   }
+
+  keyboardFeatures['*'] = cell.onclick;
 
   cell = document.createElement('div');
   cell.className = 'cell letter';
@@ -855,6 +885,9 @@ function letterList(parent, forDictionary = true, clickHandler = null) {
     loadDictionary();
   }
 
+  keyboardFeatures['BACKSPACE'] = cell.onclick;
+  keyboardFeatures['DELETE'] = cell.onclick;
+
   cell = document.createElement('div');
   cell.className = 'cell letter';
   fillLetterCell(cell, '✖');
@@ -864,6 +897,14 @@ function letterList(parent, forDictionary = true, clickHandler = null) {
     searchTerm = '';
     searchPage = 0;
     loadDictionary();
+  }
+
+  keyboardFeatures['ESCAPE'] = () => {
+    if (searchTerm == '') {
+      closeModal();
+    } else {
+      cell.onclick();
+    }
   }
 }
 
@@ -1197,6 +1238,7 @@ window.addEventListener("popstate", () => {
 });
 
 function closeModal(goBack = true) {
+  keyboardFeatures = globalKeyboardFeatures;
   aboutBox.style.display = "none";
   dictionaryBox.style.display = "none";
   newGameBox.style.display = "none";
@@ -1217,11 +1259,17 @@ window.onclick = function (event) {
 
 document.getElementById("about_button").onclick = () => {
   window.history.pushState("", "", "");
+  keyboardFeatures = {};
+  keyboardFeatures['ESCAPE'] = closeModal;
+
   aboutBox.style.display = "block";
 }
 
 document.getElementById("help_button").onclick = () => {
   window.history.pushState("", "", "");
+  keyboardFeatures = {};
+  keyboardFeatures['ESCAPE'] = closeModal;
+
   aboutBox.style.display = "block";
 }
 
@@ -1230,6 +1278,15 @@ document.getElementById("dictionary_button").onclick = () => {
   loadDictionary();
   dictionaryBox.style.display = "block";
 }
+
+// key handler for dictionary and joker
+document.body.addEventListener('keydown', (event) => {
+  let letter = event.key.toUpperCase();
+
+  if (keyboardFeatures[letter]) {
+    keyboardFeatures[letter]();
+  }
+});
 
 // PWA
 let installPrompt = null;
