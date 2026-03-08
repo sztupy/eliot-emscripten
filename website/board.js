@@ -66,7 +66,8 @@ let history = [];
 let players = [];
 let gameData = {
   onlyAI: false,
-  oneHuman: false
+  oneHuman: false,
+  hasStarted: false
 };
 let letters = {};
 
@@ -214,8 +215,8 @@ function redrawLetters() {
         fillLetterCell(cell, letter);
       }
       else if (type === 'star') cell.textContent = '★';
-      else if (type === 'tw') cell.textContent = '3F';
-      else if (type === 'dw') cell.textContent = '2F';
+      else if (type === 'tw') cell.textContent = language == 'en' ? '3W' : '3F';
+      else if (type === 'dw') cell.textContent = language == 'en' ? '2W' : '2F';
       else if (type === 'tl') cell.textContent = '3L';
       else if (type === 'dl') cell.textContent = '2L';
     }
@@ -234,6 +235,7 @@ function redrawBoard() {
 
   // PLAYER data
   playerDom.replaceChildren();
+  playerDom.innerHTML = `<span class="box_header">${language == 'en' ? 'Score' : 'Sgòr'}</span>`;
   let maxPoints = Math.max(...players.map(p => p.score || 0));
   for (let i = 0; i < players.length; i++) {
     const player = players[i];
@@ -264,14 +266,14 @@ function redrawBoard() {
   // HISTORY data
   historyDom.replaceChildren();
   if (gameData.isFinished) {
-    historyDom.innerHTML = `<div class="history-item">
+    historyDom.innerHTML = `<span class="box_header">${language == 'en' ? 'History' : 'Eachdraidh'}</span><div class="history-item">
       <div class="history-id">#${history.length + 1}</div>
       <div class="player-id">----</div>
       <div class="move">${language == 'en' ? 'Game over' : 'An geam seachad'}</div>
       <div class="points">----</div>
     </div>`;
   } else {
-
+    historyDom.innerHTML = `<span class="box_header">${language == 'en' ? 'History' : 'Eachdraidh'}</span>`;
   }
   for (let i = history.length - 1; i >= 0; i--) {
     const [playerId, rack, solution, row, col, direction, points, bonus] = history[i];
@@ -303,7 +305,7 @@ function redrawBoard() {
   mainRackDom.replaceChildren();
   let currentPlayer = players[gameData.currentPlayer];
 
-  let text = '';
+  let text = `<span class="box_header">${language == 'en' ? 'Player controls' : 'Smachdan cluicheadair'}</span>`;
   if (gameData.isFinished) {
     text += `<button onclick="resetGame()">${language == 'en' ? 'Play again' : 'Cluich a-rithist'}</button>`;
   } else {
@@ -543,7 +545,7 @@ function calculateValidActions() {
 
   if (!hasSelected) {
     document.getElementById('passbutton').disabled = false;
-    document.getElementById('passbutton').style.removeProperty('display');
+    document.getElementById('passbutton').style.removeProperty('display'); passbutton
     if (selectedKey) {
       document.getElementById('undobutton').disabled = false;
       globalKeyboardFeatures['DELETE'] = document.getElementById('undobutton').onclick;
@@ -896,6 +898,7 @@ function letterList(parent, forDictionary = true, clickHandler = null) {
   cell.onclick = () => {
     searchTerm = '';
     searchPage = 0;
+    maxLetters = 15;
     loadDictionary();
   }
 
@@ -939,7 +942,7 @@ function loadDictionary() {
   for (let word of dictionary) {
     if (word.length <= maxLetters && word.search(searchRegex) != -1) {
       if (found >= searchPage * 50) {
-        text += `<li><a href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${word.toLowerCase()}" target="_blank">${word}</a></li>`;
+        text += `<li><a href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${word.toLowerCase()}" target="_blank" draggable="false">${word}</a></li>`;
         results += 1;
       }
       found += 1;
@@ -1033,6 +1036,7 @@ function setPlayer(playerId, score, rack, extended, isHuman) {
 function setGameState(currentPlayer, isFinished, aiCount, humanCount) {
   gameData.currentPlayer = currentPlayer;
   gameData.isFinished = isFinished;
+  gameData.hasStarted = true;
   gameData.onlyAI = (aiCount > 0 && humanCount == 0);
   gameData.oneHuman = (humanCount == 1);
   gameData.humanCount = humanCount;
@@ -1056,7 +1060,7 @@ function sendError(category, errorCode) {
     real = false;
     old = false;
     if (errorCode == 0) {
-      error = language == 'en' ? 'Welcome!' : 'Fàilte, a charaid!';
+      error = language == 'en' ? 'Welcome friend! Please wait for the game to load!' : 'Fàilte, a charaid! Feuch an feith thu gus an luchdaich an geama!';
     } else if (errorCode == 1) {
       error = language == 'en' ? 'The computer is thinking…' : 'Tha coimpiutair a’ smaoineachadh…';
     } else if (errorCode == 2) {
@@ -1066,6 +1070,8 @@ function sendError(category, errorCode) {
 
       let maxPoints = Math.max(...players.map(p => p.score || 0));
       error += players.filter(p => p.score == maxPoints).map(p => p.name).join(", ");
+    } else if (errorCode == 4) {
+      error = language == 'en' ? 'Welcome friend! <button onclick="resetGame()">New game!</button>' : 'Fàilte, a charaid! <button onclick="resetGame()">Geama ùr!</button>';
     }
   } else if (category == 1) {
     if (errorCode == 1) {
@@ -1100,6 +1106,8 @@ function sendError(category, errorCode) {
   } else {
     error = language == 'en' ? 'Invalid action' : 'Chan urrainn dhut an gluasad sin a dhèanamh.';
   }
+
+  error = `<span class="box_header">${language == 'en' ? 'Messages' : 'Teachdaireachdan'}</span>` + error;
 
   if (real) {
     errorContent.innerHTML = error;
@@ -1160,20 +1168,26 @@ function init() {
       saveDataPtr = stringToNewUTF8(saveData);
       _loadGame(saveDataPtr);
       _free(saveDataPtr);
+
+      data = stringToNewUTF8("a g");
+      _gameAction(data);
+      _free(data);
+
+      sound_start.play();
+
+      markOld();
+      redrawBoard();
+
+      setTimeout(play, 5000);
     } else {
-      _startGame(1, 3, 25);
+      window.history.pushState("", "", "");
+      keyboardFeatures = {};
+      keyboardFeatures['ESCAPE'] = closeModal;
+
+      newGameBox.style.display = "block";
+
+      sendError(0, 4);
     }
-
-    data = stringToNewUTF8("a g");
-    _gameAction(data);
-    _free(data);
-
-    sound_start.play();
-
-    markOld();
-    redrawBoard();
-
-    setTimeout(play, 5000);
   } else {
     setTimeout(init, 1000);
   }
@@ -1241,10 +1255,14 @@ function closeModal(goBack = true) {
   keyboardFeatures = globalKeyboardFeatures;
   aboutBox.style.display = "none";
   dictionaryBox.style.display = "none";
-  newGameBox.style.display = "none";
   letterBox.style.display = "none";
-  if (goBack)
-    window.history.back();
+  if (gameData.hasStarted) {
+    newGameBox.style.display = "none";
+    if (goBack)
+      window.history.back();
+  } else {
+    newGameBox.style.display = "block";
+  }
 }
 
 for (let closeButton of [...document.getElementsByClassName("close")]) {
@@ -1265,6 +1283,12 @@ document.getElementById("about_button").onclick = () => {
   aboutBox.style.display = "block";
 }
 
+document.getElementById("newgame_about_link").onclick = () => {
+  window.history.pushState("", "", "");
+  newGameBox.style.display = "none";
+  aboutBox.style.display = "block";
+}
+
 document.getElementById("help_button").onclick = () => {
   window.history.pushState("", "", "");
   keyboardFeatures = {};
@@ -1277,6 +1301,53 @@ document.getElementById("dictionary_button").onclick = () => {
   window.history.pushState("", "", "");
   loadDictionary();
   dictionaryBox.style.display = "block";
+}
+
+function postGameInit() {
+  setTimeout(() => {
+    data = stringToNewUTF8("a g");
+    _gameAction(data);
+    _free(data);
+
+    sound_start.play();
+
+    markOld();
+    redrawBoard();
+
+    setTimeout(play, 5000);
+
+    closeModal();
+  }, 100);
+}
+
+document.getElementById("quick_game_button").onclick = () => {
+  _startGame(1, 2, 25);
+  postGameInit();
+}
+
+document.getElementById("solo_game_button").onclick = () => {
+  _startGame(1, 0, 0);
+  postGameInit();
+}
+
+document.getElementById("duo_game_button").onclick = () => {
+  _startGame(2, 0, 0);
+  postGameInit();
+}
+
+document.getElementById("ai_only_button").onclick = () => {
+  _startGame(0, 4, 100);
+  postGameInit();
+}
+
+document.getElementById("expert_game_button").onclick = () => {
+  _startGame(1, 3, 100);
+  postGameInit();
+}
+
+document.getElementById("custom_game_button").onclick = () => {
+  _startGame(parseInt(document.getElementById("human_players").value, 10), parseInt(document.getElementById("computer_players").value, 10), parseInt(document.getElementById("computer_players").value, 10));
+  postGameInit();
 }
 
 // key handler for dictionary and joker
@@ -1311,10 +1382,10 @@ installButton.addEventListener("click", async () => {
 // Set up ads
 function resetAds() {
   const adsDom = document.getElementById("ad");
-  if (Math.random() < 0.9) {
-    adsDom.innerHTML = `<script>atOptions = {'key':'3afe4060d09290c60eb6bb255e880bb6','format':'iframe','height':90,'width':728,'params':{}};</script><script src="https://www.highperformanceformat.com/3afe4060d09290c60eb6bb255e880bb6/invoke.js"></script>`;
+  if (Math.random() < 0.75) {
+    adsDom.innerHTML = `<span class="box_header">Advertisement</span><script>atOptions = {'key':'3afe4060d09290c60eb6bb255e880bb6','format':'iframe','height':90,'width':728,'params':{}};</script><script src="https://www.highperformanceformat.com/3afe4060d09290c60eb6bb255e880bb6/invoke.js"></script>`;
   } else {
-    adsDom.innerHTML = `<script async="async" data-cfasync="false" src="https://pl28868378.effectivegatecpm.com/f2757235c1134d9106cdddaf8c5cd42e/invoke.js"></script><div id="container-f2757235c1134d9106cdddaf8c5cd42e"></div>`;
+    adsDom.innerHTML = `<span class="box_header">Advertisement</span><a href="https://www.gaelicbooks.org/explore-the-shop/gifts/scrabble-gaidhlig?lang=${language}" target="_blank"><img src="img/ad_scrabble.png"></a>`;
   }
 
   Array.from(adsDom.querySelectorAll("script"))

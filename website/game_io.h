@@ -28,6 +28,7 @@
 
 class PublicGame;
 class Results;
+class Dictionary;
 
 using std::ostream;
 
@@ -46,7 +47,7 @@ class GameIO
 public:
     static void sendData(const PublicGame &iGame);
     static void sendError(int category, int errorCode);
-    static void printWords(const PublicGame &iGame);
+    static void printWords(const Dictionary &iDic);
 private:
     /// This class is a toolbox, and should not be instanciated
     GameIO();

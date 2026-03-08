@@ -191,7 +191,7 @@ void displayData(const PublicGame &iGame, const vector<wstring> &tokens)
 
 void commonCommands(PublicGame &iGame, const vector<wstring> &tokens)
 {
-    wchar_t command = parseCharInList(tokens, 0, L"#adhjsx");
+    wchar_t command = parseCharInList(tokens, 0, L"#adhjs");
     if (command == L'#')
         // Ignore comments
         return;
@@ -204,10 +204,6 @@ void commonCommands(PublicGame &iGame, const vector<wstring> &tokens)
             printf("le mot -%s- existe\n", lfw(word).c_str());
         else
             printf("le mot -%s- n'existe pas\n", lfw(word).c_str());
-    }
-    else if (command == L'x')
-    {
-        GameIO::printWords(iGame);
     }
     else if (command == L'h')
     {
@@ -321,7 +317,7 @@ void loopFreegame(PublicGame &iGame, char* command)
         return;
     try
     {
-        wchar_t command = parseCharInList(tokens, 0, L"#?adhjspqx");
+        wchar_t command = parseCharInList(tokens, 0, L"#?adhjspq");
         if (command == L'p')
         {
             wstring letters = L"";
@@ -399,7 +395,7 @@ extern "C" void startGame(int nbHuman, int nbAI, int aiPercent) {
 
 extern "C" void loadGame(char* saveData) {
     try {
-       stopGame();
+        stopGame();
 
         if (!g_dic) {
             setlocale(LC_ALL, "");
@@ -418,7 +414,18 @@ extern "C" void loadGame(char* saveData) {
 
 extern "C" void gameAction(char* command) {
     try {
-        loopFreegame(*g_game, command);
+        if (!g_dic) {
+            setlocale(LC_ALL, "");
+            std::locale::global(std::locale(""));
+            g_dic = new Dictionary("gd.dawg");
+            srand(time(NULL));
+        }
+
+        if (command[0] == L'x') {
+            GameIO::printWords(*g_dic);
+        } else {
+            loopFreegame(*g_game, command);
+        }
     } catch (std::exception &e)
     {
         cerr << e.what() << endl;

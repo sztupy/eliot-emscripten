@@ -30,7 +30,6 @@
     <div class="language-selector">
       <a href="gd.html" class="lang-btn">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Gàidhlig</a>
     </div>
-    <button class="hamburger" id="hamburger">☰</button>
   </header>
 
   <div class="main" id="main">
@@ -40,6 +39,7 @@
     <div class="players" id="players"></div>
 
     <div class="controls" id="controls">
+      <span class="box_header">Global Controls</span>
       <button id="reset_button">♻️ Reset game</button>
       <button id="dictionary_button">📖 Dictionary</button>
       <button id="help_button">🛟 Help</button>
@@ -86,9 +86,69 @@
 
   <div class="modal" id="newgame_box">
     <div class="content">
-      <span class="close">&times;</span>
       <div class="text">
+        <h2>Welcome friend!</h2>
+        <p>
+          <a href="gd.html">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Briog an seo gus tionndadh gu Gàidhlig</a>
+        </p>
+        <p>
+          On this site you can play Scrabble Gàidhlig online for free. <a href="#about" id="newgame_about_link">Click
+            here for more info!</a>
+        </p>
+        <p class="quick_game_selector">
+          <button id="quick_game_button"><img src="img/new_game_quick.jpg" alt="3 people playing a game">Start quick
+            game<br><span class="game_description">Play against two AI controlled players</span></button>
+        </p>
 
+        <h3>Or try out the following options</h3>
+
+        <p class="game_selector">
+          <button id="solo_game_button"><img src="img/new_game_solo.jpg" alt="A single player playing at a table">Solo
+            game<br><span class="game_description">Play
+              on your own, trying to get the best score possible</span></button>
+          <button id="duo_game_button"><img src="img/new_game_duo.jpg" alt="Two players playing at a table">Hot
+            Seat<br><span class="game_description">Play with a friend sharing your device at each turn</span></button>
+          <button id="ai_only_button"><img src="img/new_game_ai_only.jpg" alt="Two robots playing against each other">AI
+            mode<br><span class="game_description">Watch as four expert computer players compete against each
+              other.</span></button>
+          <button id="expert_game_button"><img src="img/new_game_expert.jpg" alt="Four people playing a game">Expert
+            mode<br><span class="game_description">Play against 3 AI controlled players who know the entire dictionary
+              and always play the best
+              moves</span></button>
+        </p>
+
+        <h3>Or customize your experience</h3>
+
+        <p class="custom_game">
+          <label for="human_players">Human players:</label>
+          <select name="human_players" id="human_players">
+            <option value="0">None</option>
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+
+          <label for="computer_players">Computer players:</label>
+          <select name="computer_players" id="computer_players">
+            <option value="0">None</option>
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+
+          <label for="computer_level">AI proficiency:</label>
+          <select name="computer_level" id="computer_level">
+            <option value="0">Dumb</option>
+            <option value="10">Beginner</option>
+            <option value="25" selected>Intermediate</option>
+            <option value="50">Advanced</option>
+            <option value="100">Expert</option>
+          </select>
+
+          <button id="custom_game_button">Start Game</button>
+        </p>
       </div>
     </div>
   </div>
@@ -106,11 +166,6 @@
 
     gtag('config', 'G-HBQ49MQQ6H');
   </script>
-  <script type="text/javascript">
-    var infolinks_pid = 3444017;
-    var infolinks_wsid = 0;
-  </script>
-  <script type="text/javascript" src="https://resources.infolinks.com/js/infolinks_main.js"></script>
 </body>
 
 </html>

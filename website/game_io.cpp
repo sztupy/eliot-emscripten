@@ -146,10 +146,9 @@ static void printDicRec(const Dictionary &iDic, const wchar_t * const buf, wchar
     }
 }
 
-void GameIO::printWords(const PublicGame &iGame)
+void GameIO::printWords(const Dictionary &iDic)
 {
     wchar_t buf[100];
-    const Dictionary &iDic = iGame.getDic();
     printDicRec(iDic, buf, buf, *iDic.getEdgeAt(iDic.getRoot()));
 }
 

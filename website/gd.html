@@ -30,7 +30,6 @@
     <div class="language-selector">
       <a href="en.html" class="lang-btn">🏴󠁧󠁢󠁥󠁮󠁧󠁿 English</a>
     </div>
-    <button class="hamburger" id="hamburger">☰</button>
   </header>
 
   <div class="main" id="main">
@@ -86,9 +85,67 @@
 
   <div class="modal" id="newgame_box">
     <div class="content">
-      <span class="close">&times;</span>
       <div class="text">
+        <h2>Fàilte, a charaid!</h2>
+        <a href="en.html">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Click here to switch to English.</a>
+        <p>
+          Air an làrach seo faodaidh tu Scrabble Gàidhlig a chluich air-loidhne an-asgaidh! <a href="#about"
+            id="newgame_about_link">Briog an seo airson tuilleadh fiosrachaidh!</a>
+        </p>
+        <p class="quick_game_selector">
+          <button id="quick_game_button"><img src="img/new_game_quick.jpg" alt="3 daoine a’ cluich geama">Tòisich geama
+            luath<br><span class="game_description">Cluich an aghaidh dithis chluicheadair AI</span></button>
+        </p>
 
+        <h3>No feuch na roghainnean a leanas</h3>
+
+        <p class="game_selector">
+          <button id="solo_game_button"><img src="img/new_game_solo.jpg"
+              alt="Cluicheadair singilte a’ cluich aig bòrd">Geama aon-chluicheadair<br><span
+              class="game_description">Cluich leat fhèin, a’ feuchainn ris an sgòr as fheàrr fhaighinn</span></button>
+          <button id="duo_game_button"><img src="img/new_game_duo.jpg"
+              alt="Dithis chluicheadair a’ cluich aig bòrd">Cathair Teth<br><span class="game_description">Cluich le
+              caraid ag iomlaid an inneil agad aig gach tionndadh</span></button>
+          <button id="ai_only_button"><img src="img/new_game_ai_only.jpg"
+              alt="Dà robot a’ cluich an aghaidh a chèile">AI a-mhàin<br><span class="game_description">Coimhead fhad ’s
+              a tha ceathrar AI eòlach a’ cluich an aghaidh a chèile.</span></button>
+          <button id="expert_game_button"><img src="img/new_game_expert.jpg" alt="Ceathrar a’ cluich geama">Geama
+            eòlach<br><span class="game_description">Cluich an aghaidh trì AI aig a bheil eòlas air an fhaclair gu lèir
+              agus a chluicheas na gluasadan as fheàrr an-còmhnaidh</span></button>
+        </p>
+
+        <h3>No gnàthaich an t-eòlas agad</h3>
+
+        <p class="custom_game">
+          <label for="human_players">Daoine:</label>
+          <select name="human_players" id="human_players">
+            <option value="0">None</option>
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+
+          <label for="computer_players">Robotaichean:</label>
+          <select name="computer_players" id="computer_players">
+            <option value="0">None</option>
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+
+          <label for="computer_level">Comas AI:</label>
+          <select name="computer_level" id="computer_level">
+            <option value="0">Balbh</option>
+            <option value="10">Luchd-tòiseachaidh</option>
+            <option value="25" selected>Eadar-mheadhanach</option>
+            <option value="50">Ìre adhartach</option>
+            <option value="100">Ìre eòlaiche</option>
+          </select>
+
+          <button id="custom_game_button">Tòisich a’ gheama</button>
+        </p>
       </div>
     </div>
   </div>
@@ -106,11 +163,6 @@
 
     gtag('config', 'G-HBQ49MQQ6H');
   </script>
-  <script type="text/javascript">
-    var infolinks_pid = 3444017;
-    var infolinks_wsid = 0;
-  </script>
-  <script type="text/javascript" src="https://resources.infolinks.com/js/infolinks_main.js"></script>
 </body>
 
 </html>

@@ -115,6 +115,55 @@ body {
   transform: translateX(0.5em);
 }
 
+.modal a {
+  text-decoration: none;
+}
+
+#newgame_box button img {
+  width: 100%;
+}
+
+.game_description {
+  font-weight: lighter;
+}
+
+.quick_game_selector button {
+  display: block;
+  margin: auto;
+}
+
+#newgame_box .quick_game_selector button {
+  max-width: 500px;
+}
+
+#newgame_box .game_selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+#newgame_box .game_selector button {
+  display: block;
+  margin: auto;
+  max-width: 300px;
+  width: 100%;
+}
+
+#newgame_box .custom_game {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 1em;
+}
+
+#newgame_box .custom_game label {
+  text-align: right;
+}
+
+#newgame_box .custom_game button {
+  grid-column: span 2;
+}
+
 .cell {
   display: flex;
   align-items: center;
@@ -208,6 +257,8 @@ body {
 #history,
 #ad,
 #errorcontent {
+  position: relative;
+
   border-spacing: 5px;
   display: table;
   background: white;
@@ -271,12 +322,31 @@ body {
   max-height: 70vh;
   overflow-y: auto;
   min-width: 300px;
+  position: relative;
+}
+
+.box_header {
+  position: absolute;
+  display: block;
+  top: 2px;
+  left: 2px;
+  opacity: 0.5;
+  font-size: 0.7em;
+}
+
+#ad a {
+  max-width: 100%;
+}
+
+#ad img {
+  max-width: min(700px, 100%);
 }
 
 #history {
   max-height: 70vh;
   overflow-y: auto;
   min-width: 300px;
+  position: relative;
 }
 
 .history-item {
