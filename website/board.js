@@ -1353,7 +1353,7 @@ document.getElementById("expert_game_button").onclick = () => {
 }
 
 document.getElementById("custom_game_button").onclick = () => {
-  _startGame(parseInt(document.getElementById("human_players").value, 10), parseInt(document.getElementById("computer_players").value, 10), parseInt(document.getElementById("computer_players").value, 10));
+  _startGame(parseInt(document.getElementById("human_players").value, 10), parseInt(document.getElementById("computer_players").value, 10), parseInt(document.getElementById("computer_level").value, 10));
   postGameInit();
 }
 
