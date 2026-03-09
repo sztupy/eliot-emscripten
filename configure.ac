@@ -187,7 +187,7 @@ AC_CHECK_DECL(__EMSCRIPTEN__,
 
 if test "$has_emscripten" = "1"; then
     CPPFLAGS="${CPPFLAGS} -fexceptions"
-    LIBS="${LIBS} -lnodefs.js -fexceptions -sMIN_SAFARI_VERSION=120200""
+    LIBS="${LIBS} -lnodefs.js -fexceptions -sMIN_SAFARI_VERSION=120200"
 fi
 
 dnl --------------------------------------------------------------
