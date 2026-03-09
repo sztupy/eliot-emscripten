@@ -1217,6 +1217,10 @@ document.getElementById('coffee_button').onclick = () => {
   window.open('https://ko-fi.com/sztupy', '_blank');
 }
 
+document.getElementById('report_button').onclick = () => {
+  window.open('https://github.com/sztupy/eliot-emscripten/issues', '_blank');
+}
+
 // Support for drag&drop on mobiles
 (function () {
   MobileDragDrop.polyfill({
