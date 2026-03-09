@@ -111,7 +111,7 @@ if (language == 'en') {
 
 // Initialize the board with the standard Scrabble grid layout
 function initBoard() {
-  boardDom.replaceChildren();
+  boardDom.innerHTML = '';
   for (let row = 0; row < 15; row++) {
     for (let col = 0; col < 15; col++) {
       const cell = document.createElement('div');
@@ -234,7 +234,6 @@ function redrawBoard() {
   redrawLetters();
 
   // PLAYER data
-  playerDom.replaceChildren();
   playerDom.innerHTML = `<span class="box_header">${language == 'en' ? 'Score' : 'Sgòr'}</span>`;
   let maxPoints = Math.max(...players.map(p => p.score || 0));
   for (let i = 0; i < players.length; i++) {
@@ -264,7 +263,6 @@ function redrawBoard() {
   }
 
   // HISTORY data
-  historyDom.replaceChildren();
   if (gameData.isFinished) {
     historyDom.innerHTML = `<span class="box_header">${language == 'en' ? 'History' : 'Eachdraidh'}</span><div class="history-item">
       <div class="history-id">#${history.length + 1}</div>
@@ -302,7 +300,7 @@ function redrawBoard() {
   // MAIN rack
   let oldRack = mainRackDom.getElementsByClassName('rack')[0];
 
-  mainRackDom.replaceChildren();
+  mainRackDom.innerHTML = '';
   let currentPlayer = players[gameData.currentPlayer];
 
   let text = `<span class="box_header">${language == 'en' ? 'Player controls' : 'Smachdan cluicheadair'}</span>`;
@@ -923,8 +921,6 @@ function loadDictionary() {
   };
 
   const contents = dictionaryBox.getElementsByClassName("text")[0];
-  contents.replaceChildren();
-
   contents.innerHTML = language == 'en' ? '<h2>Dictionary</h2>' : '<h2>Faclair</h2>'
 
   const alphabet = document.createElement('div');
@@ -970,8 +966,6 @@ function loadDictionary() {
 // Joker letter selector
 function letterSelector(letter, row, column, newKey) {
   const contents = letterBox.getElementsByClassName("text")[0];
-  contents.replaceChildren();
-
   contents.innerHTML = language == 'en' ? '<h2>Letters</h2>' : '<h2>Litrichean</h2>'
 
   const alphabet = document.createElement('div');
