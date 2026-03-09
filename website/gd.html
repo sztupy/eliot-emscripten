@@ -39,6 +39,7 @@
     <div class="players" id="players"></div>
 
     <div class="controls" id="controls">
+      <span class="box_header">Smachdan meadhanach</span>
       <button id="reset_button">♻️ Ath-shuidhich geama</button>
       <button id="dictionary_button">📖 Faclair</button>
       <button id="help_button">🛟 Cuidich</button>
@@ -96,8 +97,10 @@
         </p>
         <p>Once the game is started the two main bits you need to watch for are
         <ul>
-          <li>The main board<br><img src="img/help/main_board.png" alt="Example image of the main board"></li>
-          <li>The letter rack<br><img src="img/help/main_rack.png" alt="Example image of the letter rack"></li>
+          <li>The main board<br><img draggable="false" src="img/help/main_board.png"
+              alt="Example image of the main board"></li>
+          <li>The letter rack<br><img draggable="false" src="img/help/main_rack.png"
+              alt="Example image of the letter rack"></li>
         </ul>
         </p>
         <h3>Actions</h3>
@@ -131,24 +134,24 @@
           another word.
         </p>
         <p>As an example please see the following board:</p>
-        <p><img src="img/help/example_1.png" alt="Example board #1 - Nothing selected yet"></p>
+        <p><img draggable="false" src="img/help/example_1.png" alt="Example board #1 - Nothing selected yet"></p>
         <p>We want to play "<code>LABH</code>" horizontally, from the upper <code>2L</code> tile on this picture. First
           we need to
           select
           the tile</p>
-        <p><img src="img/help/example_2.png" alt="Example board #2 - Tile selection"></p>
+        <p><img draggable="false" src="img/help/example_2.png" alt="Example board #2 - Tile selection"></p>
         <p>Then make sure the direction is correct</p>
-        <p><img src="img/help/example_3.png" alt="Example board #3 - Directional arrows"></p>
+        <p><img draggable="false" src="img/help/example_3.png" alt="Example board #3 - Directional arrows"></p>
         <p>Next we select the "<code>L</code>" tile from our rack either by clicking on it, or by pressing the
           "<code>L</code>"
           key on the keyboard
         </p>
-        <p><img src="img/help/example_4.png" alt="Example board #4 - LAB"></p>
+        <p><img draggable="false" src="img/help/example_4.png" alt="Example board #4 - LAB"></p>
         <p>The cursor will skip "<code>AB</code>", as they are already on the board, so you only need to put down
           "<code>H</code>"</p>
-        <p><img src="img/help/example_5.png" alt="Example board #5 - LABH"></p>
+        <p><img draggable="false" src="img/help/example_5.png" alt="Example board #5 - LABH"></p>
         <p>Once this is done, you can press <strong>✅&nbsp;Play</strong> on your main rack.</p>
-        <p><img src="img/help/example_6.png" alt="Example board #6 - Main rack"></p>
+        <p><img draggable="false" src="img/help/example_6.png" alt="Example board #6 - Main rack"></p>
         <p>For this play you will receive 18 points. 12 for "<a
             href="https://www.faclair.com/index.aspx?Language=en&txtSearch=lì" target="_blank"><code>LÌ</code></a>" (The
           <code>L</code> will count double), and
@@ -159,19 +162,19 @@
             target="_blank">Dwelly dictionary</a>
         </p>
         <p>Your played word will also appear in the History section:</p>
-        <p><img src="img/help/example_7.png" alt="Example board #7 - History"></p>
+        <p><img draggable="false" src="img/help/example_7.png" alt="Example board #7 - History"></p>
         <h4>Playing a joker / wildcard tile</h4>
         <p>Wildcard tiles are marked with a red "<code>?</code>" mark.</p>
-        <p><img src="img/help/example_6.png" alt="Example board #6 - Main rack"></p>
+        <p><img draggable="false" src="img/help/example_6.png" alt="Example board #6 - Main rack"></p>
         <p>These can be used as a replacement for any other
           Gaelic letter. To play a wildcard tile after clicking on them you will also need to select which letter you
           want it to be replaced with.</p>
-        <p><img src="img/help/joker.png" alt="Joker letter list"></p>
+        <p><img draggable="false" src="img/help/joker.png" alt="Joker letter list"></p>
         <p>Once the tile is correctly played on the board this option will persist, and the
           tile will be considered as if it was always the selected letter, and will be marked in red. Wildcard tiles are
           always worth 0 points
           regardless of which letter they replace.</p>
-        <p><img src="img/help/example_1.png" alt="Example board #1 - Nothing selected yet"></p>
+        <p><img draggable="false" src="img/help/example_1.png" alt="Example board #1 - Nothing selected yet"></p>
         <h3>Game end</h3>
         <p>The game ends when one of the following happens:</p>
         <p>
@@ -206,21 +209,21 @@
         <p>As an example let's say the computer has played the word "<a
             href="https://www.faclair.com/index.aspx?Language=en&txtSearch=oirghios"
             target="_blank"><code>OIRGHIOS</code></a>". You can click on the word in the History section:</p>
-        <p><img src="img/help/history_1.png" alt="Example history #1 - OIRGHIOS"></p>
+        <p><img draggable="false" src="img/help/history_1.png" alt="Example history #1 - OIRGHIOS"></p>
         <p>If you click on the link you'll be redirected to the dictionary, where you can see that the word (meaning
           Cheer and Mess) was originally
           compiled in Dwelly:</p>
-        <p><img src="img/help/history_2.png" alt="Example history #2 - Am Faclair Beag"></p>
+        <p><img draggable="false" src="img/help/history_2.png" alt="Example history #2 - Am Faclair Beag"></p>
         <p>Clicking on the word there will give you even more details, including a link to the original source:</p>
-        <p><img src="img/help/history_3.png" alt="Example history #3 - More details"></p>
+        <p><img draggable="false" src="img/help/history_3.png" alt="Example history #3 - More details"></p>
         <p>You can use that link to actually see the word in a scanned version of Dwelly:</p>
-        <p><img src="img/help/history_4.png" alt="Example history #4 - Scanned Dwelly"></p>
+        <p><img draggable="false" src="img/help/history_4.png" alt="Example history #4 - Scanned Dwelly"></p>
         <h2>Dictionary</h2>
         <p>To help play the game, the site also includes a built-in Scrabble Dictionary that you can use to find valid
           words to play. To enter the dictionary click on the <strong>📖&nbsp;Dictionary</strong> button under the
           <strong>Global Controls</strong> section.
         </p>
-        <p><img src="img/help/dictionary.png" alt="Example dictionary"></p>
+        <p><img draggable="false" src="img/help/dictionary.png" alt="Example dictionary"></p>
         <p>The dictionary has the following features:</p>
         <p>
         <ul>
@@ -325,23 +328,25 @@
             id="newgame_about_link">Briog an seo airson tuilleadh fiosrachaidh!</a>
         </p>
         <p class="quick_game_selector">
-          <button id="quick_game_button"><img src="img/new_game_quick.jpg" alt="3 daoine a’ cluich geama">Tòisich geama
+          <button id="quick_game_button"><img draggable="false" src="img/new_game_quick.jpg"
+              alt="3 daoine a’ cluich geama">Tòisich geama
             luath<br><span class="game_description">Cluich an aghaidh dithis chluicheadair AI</span></button>
         </p>
 
         <h3>No feuch na roghainnean a leanas</h3>
 
         <p class="game_selector">
-          <button id="solo_game_button"><img src="img/new_game_solo.jpg"
+          <button id="solo_game_button"><img draggable="false" src="img/new_game_solo.jpg"
               alt="Cluicheadair singilte a’ cluich aig bòrd">Geama aon-chluicheadair<br><span
               class="game_description">Cluich leat fhèin, a’ feuchainn ris an sgòr as fheàrr fhaighinn</span></button>
-          <button id="duo_game_button"><img src="img/new_game_duo.jpg"
+          <button id="duo_game_button"><img draggable="false" src="img/new_game_duo.jpg"
               alt="Dithis chluicheadair a’ cluich aig bòrd">Cathair Teth<br><span class="game_description">Cluich le
               caraid ag iomlaid an inneil agad aig gach tionndadh</span></button>
-          <button id="ai_only_button"><img src="img/new_game_ai_only.jpg"
+          <button id="ai_only_button"><img draggable="false" src="img/new_game_ai_only.jpg"
               alt="Dà robot a’ cluich an aghaidh a chèile">AI a-mhàin<br><span class="game_description">Coimhead fhad ’s
               a tha ceathrar AI eòlach a’ cluich an aghaidh a chèile.</span></button>
-          <button id="expert_game_button"><img src="img/new_game_expert.jpg" alt="Ceathrar a’ cluich geama">Geama
+          <button id="expert_game_button"><img draggable="false" src="img/new_game_expert.jpg"
+              alt="Ceathrar a’ cluich geama">Geama
             eòlach<br><span class="game_description">Cluich an aghaidh trì AI aig a bheil eòlas air an fhaclair gu lèir
               agus a chluicheas na gluasadan as fheàrr an-còmhnaidh</span></button>
         </p>
