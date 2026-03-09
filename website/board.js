@@ -283,9 +283,9 @@ function redrawBoard() {
     text += `<div class="player-id">${players[playerId] && players[playerId].shortName}</div>`;
     if (row >= 0) {
       if (gameData.isFinished || gameData.onlyAI) {
-        text += `<div class="move">${rack} → <a href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${solution.toLowerCase()}" target="_blank">${solution}</a> @ ${String.fromCharCode('A'.charCodeAt(0) + row)}${col + 1}${direction ? '↕' : '↔'}</div>`;
+        text += `<div class="move">${rack} → <a draggable="false" href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${solution.toLowerCase()}" target="_blank">${solution}</a> @ ${String.fromCharCode('A'.charCodeAt(0) + row)}${col + 1}${direction ? '↕' : '↔'}</div>`;
       } else {
-        text += `<div class="move"><a href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${solution.toLowerCase()}" target="_blank">${solution}</a> @ ${String.fromCharCode('A'.charCodeAt(0) + row)}${col + 1}${direction ? '↕' : '↔'}</div>`;
+        text += `<div class="move"><a draggable="false" href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${solution.toLowerCase()}" target="_blank">${solution}</a> @ ${String.fromCharCode('A'.charCodeAt(0) + row)}${col + 1}${direction ? '↕' : '↔'}</div>`;
       }
     } else {
       if (gameData.isFinished || gameData.onlyAI || (gameData.oneHuman && players[playerId].isHuman)) {
@@ -1392,7 +1392,7 @@ function resetAds() {
   if (Math.random() < 0.75) {
     adsDom.innerHTML = `<span class="box_header">Advertisement</span><script>atOptions = {'key':'3afe4060d09290c60eb6bb255e880bb6','format':'iframe','height':90,'width':728,'params':{}};</script><script src="https://www.highperformanceformat.com/3afe4060d09290c60eb6bb255e880bb6/invoke.js"></script>`;
   } else {
-    adsDom.innerHTML = `<span class="box_header">Advertisement</span><a href="https://www.gaelicbooks.org/explore-the-shop/gifts/scrabble-gaidhlig?lang=${language}" target="_blank"><img draggable="false" src="img/ad_scrabble.png"></a>`;
+    adsDom.innerHTML = `<span class="box_header">Advertisement</span><a draggable="false" href="https://www.gaelicbooks.org/explore-the-shop/gifts/scrabble-gaidhlig?lang=${language}" target="_blank"><img draggable="false" src="img/ad_scrabble.png"></a>`;
   }
 
   Array.from(adsDom.querySelectorAll("script"))
