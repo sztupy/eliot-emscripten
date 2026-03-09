@@ -1210,8 +1210,11 @@ function resetGame() {
 document.getElementById('reset_button').onclick = resetGame;
 
 document.getElementById('privacy_policy').onclick = () => {
-  console.log("click");
   window.open('privacy.html', '_blank');
+}
+
+document.getElementById('coffee_button').onclick = () => {
+  window.open('https://ko-fi.com/sztupy', '_blank');
 }
 
 // Support for drag&drop on mobiles

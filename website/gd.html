@@ -54,6 +54,7 @@
     <button id="about_button">Mun làrach-lìn</button>
     <button id="privacy_policy">Prìobhaideachd</button>
     <button id="cookie_settings">Roghainnean briosgaidean</button>
+    <button id="coffee_button">☕ Ceannaich cofaidh dhomh</button>
   </footer>
 
   <div class="modal" id="about_box">
@@ -61,6 +62,231 @@
       <span class="close">&times;</span>
       <div class="text">
         <h2>Mun làrach-lìn</h2>
+        <p>Tha mi duilich, ach chan eil an earrann seo air eadar-theangachadh gu Gàidhlig fhathast!</p>
+        <hr>
+        <p>Welcome to this online version of Scrabble Gàidhlig! This page allows you to play the game on your devices
+          against either the computer, or with your local friends by swapping your device at every turn.</p>
+        <p>If you don't know what Scrabble is <a href="https://en.wikipedia.org/wiki/Scrabble"
+            target="_blank">Wikipedia</a> has a good
+          introduction, where you can also read <a href="https://en.wikipedia.org/wiki/Scrabble#Rules"
+            target="_blank">the rules</a> as
+          well. This page is based on the Scottish Gaelic version of the game
+          produced by <a href="https://www.tinderboxgames.co.uk/" target="_blank">Tinderbox Games</a> for <a
+            href="https://www.taighceilidh.com/" target="_blank">An Taigh Cèilidh</a>. You can buy the official product
+          <a href="https://www.gaelicbooks.org/explore-the-shop/gifts/scrabble-gaidhlig?lang=en">at the Gaelic Books
+            Council's website</a>.
+        </p>
+        <h2>How to play?</h2>
+        <p>When loading the page first you need to select the kind of game you wish to play:
+        <ul>
+          <li>The <strong>Quick Game</strong> button will start a game with 2 computer controlled opponents, each of
+            them playing as an Intermediate level player.</li>
+          <li>Other options include <strong>Solo play</strong>, where you try to get as much points as possible on your
+            own</li>
+          <li><strong>Hot Seat</strong>, where you play with another local friend - giving them your phone or computer
+            after each turn so they can do theirs</li>
+          <li><strong>AI play</strong>, where you can just relax and watch the computer play against themselves.
+          <li>And <strong>Expert mode</strong>, where you compete with three other computer controlled players who not
+            only know the entire dictionary by heart, they also always play the hand that gives them the most points
+            possible</li>
+          <li>Finally, you can also customize the number of human and AI players, including the setting how well the
+            computer players will play the game</li>
+        </ul>
+        </p>
+        <p>Once the game is started the two main bits you need to watch for are
+        <ul>
+          <li>The main board<br><img src="img/help/main_board.png" alt="Example image of the main board"></li>
+          <li>The letter rack<br><img src="img/help/main_rack.png" alt="Example image of the letter rack"></li>
+        </ul>
+        </p>
+        <h3>Actions</h3>
+        <p>You can take the following actions:</p>
+        <h4>Pass</h4>
+        <p>To pass simply press the <strong>⏩&nbsp;Pass</strong> button. This will end your turn and allow the next
+          player to make their
+          move. If all players Pass three times in a row the game will end.</p>
+        <h4>Swap</h4>
+        <p>To swap, you need to select some letters from your rack first by clicking on them, or selecting them using
+          your keyboard. Once you do that these letters will become faded. You can then click on
+          <strong>🔄&nbsp;Swap</strong> after which
+          the selected letters will be returned to the bag, and your turn ends. You will receive new letters as well
+          that you can use once it's your turn again. Swapping is only allowed if there are at least still 7 letters in
+          the bag left, afterwards if you cannot make a move you need to <strong>⏩&nbsp;Pass</strong> instead.
+          If you realize you don't want to swap, but actually put down tiles instead you can use the
+          <strong>✖&nbsp;Reset</strong> button to put all tiles back on the rack allowing them to be used to play a word
+          instead.
+        </p>
+        <h4>Play a word</h4>
+        <p>To play a word you first need to select where you want to start to put down your tiles on the board. Once you
+          do an arrow will show you that you'll be playing letters horizontally. Clicking on the tile again will swap
+          this to vertically instead. Once you selected the location and direction you can click the letters from your
+          main rack to put them down in the appropiate location. If you make a mistake you can either press
+          <strong>⌫&nbsp;Undo</strong> to
+          remove the last placed letter, or <strong>✖&nbsp;Reset</strong> which will remove all letters. Once you
+          finished placing your
+          letters click <strong>✅&nbsp;Play</strong>. If the word(s) you played are correct you'll receive your points
+          and the next player
+          can start their turn. If what you played is incorrect, your board will reset and you can try again with
+          another word.
+        </p>
+        <p>As an example please see the following board:</p>
+        <p><img src="img/help/example_1.png" alt="Example board #1 - Nothing selected yet"></p>
+        <p>We want to play "<code>LABH</code>" horizontally, from the upper <code>2L</code> tile on this picture. First
+          we need to
+          select
+          the tile</p>
+        <p><img src="img/help/example_2.png" alt="Example board #2 - Tile selection"></p>
+        <p>Then make sure the direction is correct</p>
+        <p><img src="img/help/example_3.png" alt="Example board #3 - Directional arrows"></p>
+        <p>Next we select the "<code>L</code>" tile from our rack either by clicking on it, or by pressing the
+          "<code>L</code>"
+          key on the keyboard
+        </p>
+        <p><img src="img/help/example_4.png" alt="Example board #4 - LAB"></p>
+        <p>The cursor will skip "<code>AB</code>", as they are already on the board, so you only need to put down
+          "<code>H</code>"</p>
+        <p><img src="img/help/example_5.png" alt="Example board #5 - LABH"></p>
+        <p>Once this is done, you can press <strong>✅&nbsp;Play</strong> on your main rack.</p>
+        <p><img src="img/help/example_6.png" alt="Example board #6 - Main rack"></p>
+        <p>For this play you will receive 18 points. 12 for "<a
+            href="https://www.faclair.com/index.aspx?Language=en&txtSearch=lì" target="_blank"><code>LÌ</code></a>" (The
+          <code>L</code> will count double), and
+          6 for "<a href="https://www.faclair.com/index.aspx?Language=en&txtSearch=labh"
+            target="_blank"><code>LABH</code></a>" (The <code>L</code> will count double here as well). Both played
+          words are using traditional Gaelic spelling, and are present in the <a
+            href="https://www.gaelicbooks.org/explore-the-shop/non-fiction/gaelic-learning/dwelly-the-illustrated-gaelic-english-dictionary?lang=en"
+            target="_blank">Dwelly dictionary</a>
+        </p>
+        <p>Your played word will also appear in the History section:</p>
+        <p><img src="img/help/example_7.png" alt="Example board #7 - History"></p>
+        <h4>Playing a joker / wildcard tile</h4>
+        <p>Wildcard tiles are marked with a red "<code>?</code>" mark.</p>
+        <p><img src="img/help/example_6.png" alt="Example board #6 - Main rack"></p>
+        <p>These can be used as a replacement for any other
+          Gaelic letter. To play a wildcard tile after clicking on them you will also need to select which letter you
+          want it to be replaced with.</p>
+        <p><img src="img/help/joker.png" alt="Joker letter list"></p>
+        <p>Once the tile is correctly played on the board this option will persist, and the
+          tile will be considered as if it was always the selected letter, and will be marked in red. Wildcard tiles are
+          always worth 0 points
+          regardless of which letter they replace.</p>
+        <p><img src="img/help/example_1.png" alt="Example board #1 - Nothing selected yet"></p>
+        <h3>Game end</h3>
+        <p>The game ends when one of the following happens:</p>
+        <p>
+        <ul>
+          <li>One of the players have played all their letters, and there are no more letters in the bag</li>
+          <li>Each player has <strong>⏩&nbsp;Pass</strong>ed three times in a row</li>
+        </ul>
+        </p>
+        <p>Once the game ends you will be able to see everyone's rack, the final score, and the history will show not
+          only what each player played, but also what their rack was when they did it.</p>
+        <p>If you wish to forfeit the game you can also press <strong>♻️&nbsp;Reset&nbsp;game</strong> on the
+          <strong>Global
+            Controls</strong> panel, which will immediately reset the board back to start and you can start a new
+          game.
+        </p>
+        <h2>Word list</h2>
+        <p>There is no official Gaelic wordlist for Scrabble (yet), this website uses the wordlist originally compiled
+          by <a href="https://github.com/kscanne/hunspell-gd" target="_blank">Kevin Scannell</a> from the database of <a
+            href="https://www.faclair.com" target="_blank">Am Faclair Beag</a>, with <a
+            href="https://github.com/sztupy/hunspell-gd" target="_blank">a
+            few modifications</a>. The wordlist is specifically lenient, and contains words from the traditional <a
+            href="https://www.gaelicbooks.org/explore-the-shop/non-fiction/gaelic-learning/dwelly-the-illustrated-gaelic-english-dictionary?lang=en"
+            target="_blank">Dwelly dictionary</a>, which is now more than a 100 years old, as well as words collected
+          from the modern era adhering to the 1981 Gaelic Orthographic Convention (GOC) and its more recent revisions.
+        </p>
+        <p>The current wordlist contains <strong>122,045 words</strong>. To help both Gaelic learners and people
+          wondering why a word the computer done was accepted, each played word in the History section will have link
+          pointing to <a href="https://www.faclair.com" target="_blank">Am Faclair Beag</a> where you can check the
+          source of the word. For traditional words from Dwelly, the website will also allow you to go back to the
+          original source as well.
+        </p>
+        <p>As an example let's say the computer has played the word "<a
+            href="https://www.faclair.com/index.aspx?Language=en&txtSearch=oirghios"
+            target="_blank"><code>OIRGHIOS</code></a>". You can click on the word in the History section:</p>
+        <p><img src="img/help/history_1.png" alt="Example history #1 - OIRGHIOS"></p>
+        <p>If you click on the link you'll be redirected to the dictionary, where you can see that the word (meaning
+          Cheer and Mess) was originally
+          compiled in Dwelly:</p>
+        <p><img src="img/help/history_2.png" alt="Example history #2 - Am Faclair Beag"></p>
+        <p>Clicking on the word there will give you even more details, including a link to the original source:</p>
+        <p><img src="img/help/history_3.png" alt="Example history #3 - More details"></p>
+        <p>You can use that link to actually see the word in a scanned version of Dwelly:</p>
+        <p><img src="img/help/history_4.png" alt="Example history #4 - Scanned Dwelly"></p>
+        <h2>Dictionary</h2>
+        <p>To help play the game, the site also includes a built-in Scrabble Dictionary that you can use to find valid
+          words to play. To enter the dictionary click on the <strong>📖&nbsp;Dictionary</strong> button under the
+          <strong>Global Controls</strong> section.
+        </p>
+        <p><img src="img/help/dictionary.png" alt="Example dictionary"></p>
+        <p>The dictionary has the following features:</p>
+        <p>
+        <ul>
+          <li><strong>Searching by letters</strong>. Clicking on any of the letters (or typing on the keyboard) will
+            start searching for words that start with the selected letters.</li>
+          <li><strong>Limiting word length</strong>. Clicking on the numbers will limit the search results to words
+            that are only as long as that number. For example clicking on <code>3</code> will print letters 2 or 3
+            characters long.</li>
+          <li><strong>Wildcard search</strong>. Using <code>?</code> and <code>*</code> you can add wildcards into your
+            search query. <code>?</code> will match a single character, while <code>*</code> will match any amount
+            (including zero).<ul>
+              <li>For example if you want to search for words ending in "<code>IBH</code>" you could set a search
+                filter as "<code>*IBH</code>"</li>
+              <li>As another example if you want to search for four letter words starting with "<code>A</code>" and
+                ending with "<code>S</code>", you can use a search filter like "<code>A??S"</code>", and set the maximum
+                word length to <code>4</code></li>
+            </ul>
+          </li>
+          <li><strong>Dictionary link</strong>. After searching you can click on each word which will open up <a
+              href="https://www.faclair.com" target="_blank">Am Faclair Beag</a> with that word selected, so you can
+            check its meaning and whether it's a traditional word, or a more modern one.</li>
+        </ul>
+        </p>
+        <h2>Acknowledgements</h2>
+        <p>This website couldn't have been made possible (among others) without the following contributions:</p>
+        <p>
+        <ul>
+          <li><a href="https://www.tinderboxgames.co.uk/" target="_blank"><strong>Tinderbox Games</strong></a> and <a
+              href="https://www.taighceilidh.com/" target="_blank"><strong>An Taigh Cèilidh</strong></a> for getting the
+            game out. <a href="https://www.gaelicbooks.org/explore-the-shop/gifts/scrabble-gaidhlig?lang=en">Buy one in
+              physical
+              form</a> if you can.</li>
+          <li><a href="https://github.com/kscanne/hunspell-gd" target="_blank"><strong>Kevin Scannell</strong></a> for
+            his work on the Scottish Gaelic spellchecker and the initial Scrabble wordlist</li>
+          <li><a href="https://www.igaidhlig.net" target="_blank"><strong>iGàidhlig</strong></a>, and the people behind
+            <a href="https://www.faclair.com/" target="_blank"><strong>Am Faclair Beag</strong></a>,
+            the most feature complete Scottish Gaelic online dictionary. Hosting isn't cheap, so feel free to <a
+              href="https://www.faclair.com/donate.html" target="_blank"><strong>help them out</strong></a> if you can.
+          </li>
+          <li><a href="https://www.briamason.com/" target="_blank"><strong>Bria Mason</strong></a> for her Scottish
+            Gaelic classes. If you need tutoring she can <a href="https://www.briamason.com/classes"
+              target="_blank">likely help</a>
+          </li>
+          <li>Everyone in the Intermediate Gaelic Learner class in Midlothian. If you live nearby and want to get help
+            learning Scottish Gaelic it's a perfect place to be.
+          </li>
+          <li><a href="https://eliot.nongnu.org/en/index.html" target="_blank"><strong>The eliot project</strong></a>, a
+            free and open-source Scrabble game engine, whose backend is used to power this site, and the AI players.
+          </li>
+          <li>Clipart images for the website are under <a href="https://www.freepik.com" target="_blank">Freepik</a>'s
+            free, attribution based license. Images are from their non-AI generated portfolio.
+          </li>
+          <li>Sound effects for the website are under the <a
+              href="https://creativecommons.org/licenses/by-sa/4.0/deed.en" target="_blank">CC BY-SA 4.0</a> license,
+            and provided by <a href="https://kollumos.itch.io/" target="_blank">Kollumos</a> originally made for the <a
+              href="https://wafrn.net/" target="_blank">Wafrn</a> project
+          </li>
+        </ul>
+        </p>
+        <h2>About</h2>
+        <p>The website was made by <a href="https://sztupy.hu">Zsolt Sz. Sz. Raven</a> for <a href="https://gelion.info"
+            target="_blank">Gelion Pictures</a>.</p>
+        <p>If you like the work you can <a href="https://ko-fi.com/sztupy" target="_blank"><strong>also buy me a
+              coffee</strong></a>.
+        <p>The website is licensed under the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html"
+            target="_blank">GPLv3</a>, and it's source code is available at <a
+            href="https://github.com/sztupy/eliot-emscripten" target="_blank">GitHub</a></p>
       </div>
     </div>
   </div>

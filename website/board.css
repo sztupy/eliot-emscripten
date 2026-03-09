@@ -55,7 +55,8 @@ body {
   margin-bottom: 0.5em;
 }
 
-#dictionary_box li a {
+#dictionary_box li a,
+.modal a {
   position: relative;
   display: inline-block;
   outline: none;
@@ -74,30 +75,36 @@ body {
   transform: translateX(0);
 }
 
-#dictionary_box li a:hover {
+#dictionary_box li a:hover,
+.modal a:hover {
   border-bottom: 1px solid transparent;
 }
 
-#dictionary_box li a::after {
+#dictionary_box li a::after,
+.modal a::after {
   -webkit-transform: translateX(-1em);
   transform: translateX(-1em);
 }
 
 #dictionary_box li a::before,
-#dictionary_box li a::after {
+#dictionary_box li a::after,
+.modal a::before,
+.modal a::after {
   position: absolute;
   height: 100%;
   content: '';
 }
 
-#dictionary_box li a::before {
+#dictionary_box li a::before,
+.modal a::before {
   left: 0;
   z-index: -1;
   width: 100%;
   background: #fff;
 }
 
-#dictionary_box li a::after {
+#dictionary_box li a::after,
+.modal a::after {
   left: 100%;
   z-index: -2;
   width: 1em;
@@ -110,13 +117,10 @@ body {
   pointer-events: auto;
 }
 
-#dictionary_box li a:hover::after {
-  -webkit-transform: translateX(0.5em);
-  transform: translateX(0.5em);
-}
-
-.modal a {
-  text-decoration: none;
+#dictionary_box li a:hover::after,
+.modal a:hover::after {
+  -webkit-transform: translateX(0em);
+  transform: translateX(0em);
 }
 
 #newgame_box button img {
@@ -162,6 +166,12 @@ body {
 
 #newgame_box .custom_game button {
   grid-column: span 2;
+}
+
+#about_box img {
+  display: block;
+  margin: auto;
+  max-width: min(600px, 100%);
 }
 
 .cell {
