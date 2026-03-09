@@ -638,7 +638,7 @@ function movePlaceholder(event) {
       if (task === draggedTask || task.previousElementSibling === draggedTask)
         return;
       tasks.insertBefore(
-        existingPlaceholder ?? makePlaceholder(draggedTask),
+        existingPlaceholder ? existingPlaceholder : makePlaceholder(draggedTask),
         task,
       );
       return;
@@ -648,7 +648,7 @@ function movePlaceholder(event) {
   if (existingPlaceholder)
     existingPlaceholder.remove();
   if (tasks.lastElementChild === draggedTask) return;
-  tasks.append(existingPlaceholder ?? makePlaceholder(draggedTask));
+  tasks.append(existingPlaceholder ? existingPlaceholder : makePlaceholder(draggedTask));
 }
 
 // Main rack drag and drop boilerplate functions
