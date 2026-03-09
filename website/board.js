@@ -1014,7 +1014,9 @@ function setPlayer(playerId, score, rack, extended, isHuman) {
     shortName = (language == 'en' ? 'Co.' : 'Co.') + id;
   }
 
-  players[playerId] ||= {}
+  if (!players[playerId]) {
+    players[playerId] = {}
+  }
   players[playerId].name = name;
   players[playerId].shortName = shortName;
   players[playerId].score = score;
