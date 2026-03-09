@@ -226,7 +226,7 @@ function redrawLetters() {
 // Redraws the entire game field including the board, the main rack, the player displays and the history
 function redrawBoard() {
   // BOARD
-  if (players[gameData.currentPlayer]?.isHuman && !gameData.isFinished) {
+  if (players[gameData.currentPlayer] && players[gameData.currentPlayer].isHuman && !gameData.isFinished) {
     boardDom.classList.add('active');
   } else {
     boardDom.classList.remove('active');
@@ -326,7 +326,7 @@ function redrawBoard() {
         }
       }
       // otherwise it's a hot seat, so only show if it's their turn
-    } else if (currentPlayer?.isHuman) {
+    } else if (currentPlayer && currentPlayer.isHuman) {
       rack = getRack(currentPlayer.rack, true);
 
       text += `<div><button onclick="document.getElementById('player_rack_hidden').style.display='block';event.currentTarget.parentElement.style.display='none';">${language == 'en' ? `🙈 ${players[gameData.currentPlayer].name}'s turn. Show tiles.` : `🙈 Turas ${players[gameData.currentPlayer].name}. Seall taidhlean.`}</button><br></div><div id="player_rack_hidden" style="display:none;">${rack}</div>`;
@@ -373,7 +373,9 @@ function redrawBoard() {
 
       if (column.contains(event.relatedTarget)) return;
       const placeholder = column.querySelector(".placeholder");
-      placeholder?.remove();
+      if (placeholder) {
+        placeholder.remove();
+      }
     })
     element.addEventListener("drop", dragDrop);
   }
@@ -442,7 +444,7 @@ function getWord(row, column, direction) {
     oldKey = `${row};${column}`;
 
     if (row >= 0 && column >= 0 && (letters[oldKey] || temporaryLetters[oldKey])) {
-      word = (letters[oldKey]?.toUpperCase() || temporaryLetters[oldKey]) + word;
+      word = ((letters[oldKey] && letters[oldKey].toUpperCase()) || temporaryLetters[oldKey]) + word;
 
       coord = (direction == 2) ? `${String.fromCharCode('A'.charCodeAt(0) + row)}${column + 1}` : `${column + 1}${String.fromCharCode('A'.charCodeAt(0) + row)}`;
     }
@@ -631,7 +633,8 @@ function movePlaceholder(event) {
   for (const task of tasks.children) {
     if (task.getBoundingClientRect().right >= event.clientX) {
       if (task === existingPlaceholder) return;
-      existingPlaceholder?.remove();
+      if (existingPlaceholder)
+        existingPlaceholder.remove();
       if (task === draggedTask || task.previousElementSibling === draggedTask)
         return;
       tasks.insertBefore(
@@ -642,7 +645,8 @@ function movePlaceholder(event) {
     }
   }
 
-  existingPlaceholder?.remove();
+  if (existingPlaceholder)
+    existingPlaceholder.remove();
   if (tasks.lastElementChild === draggedTask) return;
   tasks.append(existingPlaceholder ?? makePlaceholder(draggedTask));
 }
@@ -1023,7 +1027,7 @@ function setPlayer(playerId, score, rack, extended, isHuman) {
     if (gameData.isFinished) {
       sendError(0, 3);
     } else {
-      if (players[gameData.currentPlayer]?.isHuman) {
+      if (players[gameData.currentPlayer] && players[gameData.currentPlayer].isHuman) {
         sendError(0, 2);
       } else {
         sendError(0, 1);
