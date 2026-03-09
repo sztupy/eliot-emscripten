@@ -247,7 +247,7 @@ function redrawBoard() {
       if (!gameData.isFinished) {
         playerElement.classList.add('current');
         let thinking = language == 'en' ? 'Thinking...' : 'A’ smaoineachadh';
-        text += `<img class="loading" src="img/thinking.png" alt="${thinking}" title="${thinking}">`;
+        text += `<img draggable="false" class="loading" src="img/thinking.png" alt="${thinking}" title="${thinking}">`;
       }
     }
 
@@ -1392,7 +1392,7 @@ function resetAds() {
   if (Math.random() < 0.75) {
     adsDom.innerHTML = `<span class="box_header">Advertisement</span><script>atOptions = {'key':'3afe4060d09290c60eb6bb255e880bb6','format':'iframe','height':90,'width':728,'params':{}};</script><script src="https://www.highperformanceformat.com/3afe4060d09290c60eb6bb255e880bb6/invoke.js"></script>`;
   } else {
-    adsDom.innerHTML = `<span class="box_header">Advertisement</span><a href="https://www.gaelicbooks.org/explore-the-shop/gifts/scrabble-gaidhlig?lang=${language}" target="_blank"><img src="img/ad_scrabble.png"></a>`;
+    adsDom.innerHTML = `<span class="box_header">Advertisement</span><a href="https://www.gaelicbooks.org/explore-the-shop/gifts/scrabble-gaidhlig?lang=${language}" target="_blank"><img draggable="false" src="img/ad_scrabble.png"></a>`;
   }
 
   Array.from(adsDom.querySelectorAll("script"))
