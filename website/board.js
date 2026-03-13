@@ -731,7 +731,7 @@ function boardDrop(event) {
   let col = +cell.id.split('_')[2];
   const key = `${row};${col}`;
 
-  if (!selectedKey) {
+  if (!selectedKey || Object.keys(temporaryLetters).length == 0) {
     selectedKey = key;
     selectedDirection = 2;
     dragSelection = true;
