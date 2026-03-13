@@ -75,6 +75,7 @@ let letters = {};
 let temporaryLetters = {};
 let selectedKey = null;
 let selectedDirection = null;
+let dragSelection = false;
 
 // Check if we're on the `en` or `gd` site
 let language = document.documentElement.lang;
@@ -142,6 +143,17 @@ function initBoard() {
       boardDom.appendChild(cell);
     }
   }
+
+
+  boardDom.addEventListener("dragenter", (event) => {
+    if (boardDom.classList.contains('active')) {
+      boardDom.classList.add("drag");
+      event.preventDefault();
+    }
+  });
+  boardDom.addEventListener("dragover", boardDrag);
+  boardDom.addEventListener("dragleave", boardLeave);
+  boardDom.addEventListener("drop", boardDrop);
 }
 
 // Generates a rack from a set of letters from Eliot. Also adds Drag and drop settings for the main rack
@@ -219,6 +231,37 @@ function redrawLetters() {
       else if (type === 'dw') cell.textContent = language == 'en' ? '2W' : '2F';
       else if (type === 'tl') cell.textContent = '3L';
       else if (type === 'dl') cell.textContent = '2L';
+
+      if (key == selectedKey) {
+        cell.classList.add("selected-cell");
+        cell.classList.add(selectedDirection == 1 ? "vertical" : "horizontal");
+        cell.classList.remove("drag-option");
+      } else {
+        cell.classList.remove("vertical");
+        cell.classList.remove("horizontal");
+        cell.classList.remove("drag-option");
+      }
+    }
+  }
+
+  if (selectedKey && dragSelection && Object.keys(temporaryLetters).length == 1) {
+    let direction = selectedDirection;
+    row = +selectedKey.split(";")[0];
+    col = +selectedKey.split(";")[1];
+    if (selectedDirection == 2) {
+      col -= 1;
+      row += 1;
+      direction = 1;
+    } else {
+      row -= 1;
+      col += 1;
+      direction = 2;
+    }
+    const cell = document.getElementById(`board_${row}_${col}`);
+    if (cell) {
+      cell.classList.add("selected-cell");
+      cell.classList.add("drag-option");
+      cell.classList.add(direction == 1 ? "vertical" : "horizontal");
     }
   }
 }
@@ -410,7 +453,7 @@ function swap() {
   }
 
   let lettersToSwap = [];
-  for (let element of [...document.getElementById('main_rack').getElementsByClassName('selected-letter')]) {
+  for (let element of [...mainRackDom.getElementsByClassName('selected-letter')]) {
     lettersToSwap.push(element.dataset.letter);
     element.classList.remove("selected-letter");
   }
@@ -434,7 +477,7 @@ function swap() {
 
 function getWord(row, column, direction) {
   let word = '';
-  let coord = '';
+  let coord = null;
   let oldKey = `${row};${column}`;
   let start = true;
 
@@ -446,11 +489,24 @@ function getWord(row, column, direction) {
       row -= 1;
 
     oldKey = `${row};${column}`;
+  }
+
+  start = true;
+  while (row < 15 && column < 15 && (start || letters[oldKey] || temporaryLetters[oldKey])) {
+    start = false;
+    if (direction == 2)
+      column += 1;
+    else
+      row += 1;
+
+    oldKey = `${row};${column}`;
 
     if (row >= 0 && column >= 0 && (letters[oldKey] || temporaryLetters[oldKey])) {
-      word = ((letters[oldKey] && letters[oldKey].toUpperCase()) || temporaryLetters[oldKey]) + word;
+      word = word + ((letters[oldKey] && letters[oldKey].toUpperCase()) || temporaryLetters[oldKey]);
 
-      coord = (direction == 2) ? `${String.fromCharCode('A'.charCodeAt(0) + row)}${column + 1}` : `${column + 1}${String.fromCharCode('A'.charCodeAt(0) + row)}`;
+      if (!coord) {
+        coord = (direction == 2) ? `${String.fromCharCode('A'.charCodeAt(0) + row)}${column + 1}` : `${column + 1}${String.fromCharCode('A'.charCodeAt(0) + row)}`;
+      }
     }
   }
 
@@ -502,7 +558,7 @@ function playLetters() {
 }
 
 function resetUserActions() {
-  for (let element of [...document.getElementById('main_rack').getElementsByClassName('selected-letter')]) {
+  for (let element of [...mainRackDom.getElementsByClassName('selected-letter')]) {
     element.classList.remove("selected-letter");
   }
 
@@ -520,6 +576,7 @@ function resetUserActions() {
 
   selectedKey = null;
   temporaryLetters = {};
+  dragSelection = false;
 
   markOld();
   redrawLetters();
@@ -528,7 +585,7 @@ function resetUserActions() {
 }
 
 function randomizeLetters() {
-  let rack = document.getElementById('main_rack').getElementsByClassName("rack")[0];
+  let rack = mainRackDom.getElementsByClassName("rack")[0];
 
   let children = [...rack.children];
 
@@ -555,7 +612,7 @@ function calculateValidActions() {
   document.getElementById('undobutton').disabled = true;
 
   hasSelected = false;
-  for (let element of [...document.getElementById('main_rack').getElementsByClassName('letter')]) {
+  for (let element of [...mainRackDom.getElementsByClassName('letter')]) {
     if (element.classList.contains("selected-letter")) {
       hasSelected = true;
     } else {
@@ -597,7 +654,6 @@ function boardClick(event) {
   if (!boardDom.classList.contains('active'))
     return;
 
-  const cell = event.currentTarget;
   const data = event.currentTarget.id.split("_");
   const row = data[1];
   const column = data[2];
@@ -610,15 +666,11 @@ function boardClick(event) {
     resetUserActions();
     selectedKey = key;
     selectedDirection = 2;
-    cell.classList.add("selected-cell");
-    cell.classList.add("horizontal");
   } else if (selectedKey == key) {
     selectedDirection = (selectedDirection == 1 ? 2 : 1);
-    cell.classList.remove("vertical");
-    cell.classList.remove("horizontal");
-
-    cell.classList.add(selectedDirection == 1 ? "vertical" : "horizontal");
   }
+
+  redrawLetters();
 
   calculateValidActions();
 }
@@ -631,6 +683,83 @@ function makePlaceholder(draggedTask) {
   placeholder.classList.add("placeholder");
   placeholder.style.height = `${draggedTask.offsetHeight}px`;
   return placeholder;
+}
+
+function getSelectedCell(event) {
+  let result = null;
+  for (let element of [...boardDom.getElementsByClassName("cell")]) {
+    const elementRect = element.getBoundingClientRect();
+    if (elementRect.left <= event.clientX &&
+      elementRect.right >= event.clientX &&
+      elementRect.top <= event.clientY &&
+      elementRect.bottom >= event.clientY) {
+      element.classList.add("selected-cell");
+      result = element;
+    } else {
+      element.classList.remove("selected-cell");
+    }
+  }
+
+  return result;
+}
+
+function boardDrag(event) {
+  event.preventDefault();
+  getSelectedCell(event);
+  redrawLetters();
+}
+
+function boardLeave(event) {
+  let column = event.currentTarget;
+  if (column.contains(event.relatedTarget)) return;
+
+  boardDom.classList.remove("drag");
+  redrawLetters();
+}
+
+function boardDrop(event) {
+  event.preventDefault();
+  boardDom.classList.remove("drag");
+
+  const draggedLetter = document.getElementById("dragged-letter");
+
+  if (draggedLetter.classList.contains("selected-letter"))
+    return;
+
+  const cell = getSelectedCell(event);
+  let row = +cell.id.split('_')[1];
+  let col = +cell.id.split('_')[2];
+  const key = `${row};${col}`;
+
+  if (!selectedKey) {
+    selectedKey = key;
+    selectedDirection = 2;
+    dragSelection = true;
+    clickLetter(draggedLetter);
+  } else if (selectedKey == key) {
+    clickLetter(draggedLetter);
+  } else if (Object.keys(temporaryLetters).length == 1) {
+    let direction = selectedDirection;
+    row = +selectedKey.split(";")[0];
+    col = +selectedKey.split(";")[1];
+    if (selectedDirection == 2) {
+      col -= 1;
+      row += 1;
+      direction = 1;
+    } else {
+      row -= 1;
+      col += 1;
+      direction = 2;
+    }
+    const newKey = `${row};${col}`;
+    if (key == newKey) {
+      selectedKey = newKey;
+      selectedDirection = direction;
+      clickLetter(draggedLetter);
+    }
+  }
+
+  redrawLetters();
 }
 
 // Main rack drag and drop boilerplate functions
@@ -704,12 +833,6 @@ function fillCell(letter, letterToUse, row, column, newKey) {
 
   redrawLetters();
 
-  const oldCell = document.getElementById(`board_${row}_${column}`);
-  if (oldCell) {
-    oldCell.classList.remove("horizontal");
-    oldCell.classList.remove("vertical");
-  }
-
   while (row < 15 && column < 15 && (letters[newKey] || temporaryLetters[newKey])) {
     if (selectedDirection == 2)
       column += 1;
@@ -719,14 +842,9 @@ function fillCell(letter, letterToUse, row, column, newKey) {
     newKey = `${row};${column}`;
   }
 
-  const newCell = document.getElementById(`board_${row}_${column}`);
-  if (newCell) {
-    newCell.classList.add("selected-cell");
-    newCell.classList.add(selectedDirection == 1 ? "vertical" : "horizontal");
-  }
-
   selectedKey = newKey;
 
+  redrawLetters();
   calculateValidActions();
 }
 
@@ -771,12 +889,6 @@ function undoLetters(_event) {
     let column = +selectedKey.split(";")[1];
     let oldKey = `${row};${column}`;
 
-    const oldCell = document.getElementById(`board_${row}_${column}`);
-    if (oldCell) {
-      oldCell.classList.remove("horizontal");
-      oldCell.classList.remove("vertical");
-    }
-
     while (row >= 0 && column >= 0 && !temporaryLetters[oldKey]) {
       if (selectedDirection == 2)
         column -= 1;
@@ -786,7 +898,7 @@ function undoLetters(_event) {
       oldKey = `${row};${column}`;
     }
 
-    for (let element of [...document.getElementById('main_rack').getElementsByClassName('selected-letter')]) {
+    for (let element of [...mainRackDom.getElementsByClassName('selected-letter')]) {
       if (element.dataset.letter == temporaryLetters[oldKey]) {
         element.classList.remove("selected-letter");
         break;
@@ -797,15 +909,8 @@ function undoLetters(_event) {
     }
     delete temporaryLetters[oldKey];
 
-    redrawLetters();
-
-    const newCell = document.getElementById(`board_${row}_${column}`);
-    if (newCell) {
-      newCell.classList.add("selected-cell");
-      newCell.classList.add(selectedDirection == 1 ? "vertical" : "horizontal");
-    }
-
     selectedKey = oldKey;
+    redrawLetters();
   }
 
   calculateValidActions();

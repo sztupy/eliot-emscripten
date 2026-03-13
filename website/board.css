@@ -190,7 +190,8 @@ body {
   transition: color 1s ease-in-out, background-color 1s ease-in-out;
 }
 
-#board.active .cell:hover {
+#board.active .cell:hover,
+#board.active.drag .cell.selected-cell {
   background-color: white !important;
   transition: none;
   cursor: pointer;
@@ -198,6 +199,10 @@ body {
 
 #board .cell.selected-cell {
   background-color: white !important;
+}
+
+#board .cell.selected-cell.drag-option {
+  opacity: 0.8;
 }
 
 #board .cell.selected-cell.vertical,
