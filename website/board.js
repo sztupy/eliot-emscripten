@@ -248,14 +248,35 @@ function redrawLetters() {
     let direction = selectedDirection;
     row = +selectedKey.split(";")[0];
     col = +selectedKey.split(";")[1];
-    if (selectedDirection == 2) {
-      col -= 1;
+
+    let newKey = `${row};${col}`;
+    let start = true;
+    while (row >= 0 && col >= 0 && (start || letters[newKey])) {
+      start = false;
+      if (direction == 1)
+        row -= 1;
+      else
+        col -= 1;
+
+      newKey = `${row};${col}`;
+    }
+
+    if (direction == 2) {
       row += 1;
       direction = 1;
     } else {
-      row -= 1;
       col += 1;
       direction = 2;
+    }
+
+    newKey = `${row};${col}`;
+    while (row < 15 && col < 15 && letters[newKey]) {
+      if (direction == 1)
+        row += 1;
+      else
+        col += 1;
+
+      newKey = `${row};${col}`;
     }
     const cell = document.getElementById(`board_${row}_${col}`);
     if (cell) {
@@ -742,16 +763,37 @@ function boardDrop(event) {
     let direction = selectedDirection;
     row = +selectedKey.split(";")[0];
     col = +selectedKey.split(";")[1];
+
+    let newKey = `${row};${col}`;
+    let start = true;
+    while (row >= 0 && col >= 0 && (start || letters[newKey])) {
+      start = false;
+      if (direction == 1)
+        row -= 1;
+      else
+        col -= 1;
+
+      newKey = `${row};${col}`;
+    }
+
     if (selectedDirection == 2) {
-      col -= 1;
       row += 1;
       direction = 1;
     } else {
-      row -= 1;
       col += 1;
       direction = 2;
     }
-    const newKey = `${row};${col}`;
+
+    newKey = `${row};${col}`;
+    while (row < 15 && col < 15 && letters[newKey]) {
+      if (direction == 1)
+        row += 1;
+      else
+        col += 1;
+
+      newKey = `${row};${col}`;
+    }
+
     if (key == newKey) {
       selectedKey = newKey;
       selectedDirection = direction;
