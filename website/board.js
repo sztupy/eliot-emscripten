@@ -357,6 +357,12 @@ function redrawBoard() {
       text += "<button id='resetbutton' onclick='resetUserActions()'>";
       text += language == 'en' ? "✖ Reset" : "✖ Ath-shuidhich";
       text += "</button>";
+
+      text += "&nbsp;"
+
+      text += "<button id='randombutton' onclick='randomizeLetters()'>";
+      text += language == 'en' ? "🔀 Shuffle letters" : "🔀 Air thuaiream";
+      text += "</button>";
     }
   }
 
@@ -519,6 +525,22 @@ function resetUserActions() {
   redrawLetters();
 
   calculateValidActions();
+}
+
+function randomizeLetters() {
+  let rack = document.getElementById('main_rack').getElementsByClassName("rack")[0];
+
+  let children = [...rack.children];
+
+  rack.innerHTML = '';
+  for (let i = children.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [children[i], children[j]] = [children[j], children[i]];
+  }
+
+  for (let child of children) {
+    rack.appendChild(child);
+  }
 }
 
 function calculateValidActions() {
