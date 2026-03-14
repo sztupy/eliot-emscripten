@@ -1,3 +1,5 @@
+const VERSION = "VERSION_CODE";
+
 const boardDom = document.getElementById('board');
 const playerDom = document.getElementById('players');
 const historyDom = document.getElementById('history');
@@ -1575,6 +1577,13 @@ function resetAds() {
     });
 
   setTimeout(resetAds, 60000);
+}
+
+// set up PWA service worker
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("service.js")
+    .then(() => console.log("Service worker regisered!"));
 }
 
 resetAds();
