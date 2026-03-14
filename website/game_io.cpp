@@ -161,7 +161,7 @@ void printGameDebug(const PublicGame &iGame)
         const Move &move = turn.getMove();
 
         const int players = iGame.getNbPlayers();
-        const int player = iGame.getMode() == GameParams::kDUPLICATE ? 0 : i%players;
+        const int player = (iGame.getMode() == GameParams::kDUPLICATE) ? 0 : i%players;
 
         if (move.isValid())
         {

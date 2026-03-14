@@ -320,15 +320,26 @@ void loopFreegame(PublicGame &iGame, char* command)
         wchar_t command = parseCharInList(tokens, 0, L"#?adhjspq");
         if (command == L'p')
         {
-            wstring letters = L"";
-            // You can pass your turn without changing any letter
-            if (tokens.size() > 1)
-            {
-                letters = parseLetters(tokens, 1, iGame.getDic());
-            }
-            int res = iGame.freeGamePass(letters);
-            if (res != 0) {
-                GameIO::sendError(1, res);
+            if (iGame.getMode() == GameParams::kDUPLICATE) {
+                int max = 100;
+                int nextPlayer = (iGame.getCurrentPlayer().getId() + 1) % iGame.getNbPlayers();
+                while ((!iGame.getPlayer(nextPlayer).isHuman() || iGame.hasPlayed(nextPlayer)) && max>=0) {
+                    nextPlayer = (nextPlayer + 1) % iGame.getNbPlayers();
+                    max--;
+                }
+
+                iGame.duplicateSetPlayer(nextPlayer);
+            } else {
+                wstring letters = L"";
+                // You can pass your turn without changing any letter
+                if (tokens.size() > 1)
+                {
+                    letters = parseLetters(tokens, 1, iGame.getDic());
+                }
+                int res = iGame.freeGamePass(letters);
+                if (res != 0) {
+                    GameIO::sendError(1, res);
+                }
             }
         }
         else if (command == L's') {
