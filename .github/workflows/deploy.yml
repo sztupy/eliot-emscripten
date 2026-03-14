@@ -53,6 +53,7 @@ jobs:
       - name: Insert cache busting
         run: |
           sed -i 's|VERSION_CODE|'$(git log --pretty=format:%h -n 1)'|' _site/board.js
+          sed -i 's|BUILD_CODE|'$(git log -1 --date=format:"%Y-%m-%d-%H-%M-%S" --format="%ad")'|' _site/board.js
           sed -i 's|eliotweb.js|eliotweb.js?v='$(git log --pretty=format:%h -n 1)'|' _site/*.html
           sed -i 's|board.js|board.js?v='$(git log --pretty=format:%h -n 1)'|' _site/*.html
           sed -i 's|service.js|service.js?v='$(git log --pretty=format:%h -n 1)'|' _site/*.html

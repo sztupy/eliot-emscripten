@@ -1,4 +1,5 @@
 const VERSION = "VERSION_CODE";
+const BUILD = "BUILD_CODE";
 
 const boardDom = document.getElementById('board');
 const playerDom = document.getElementById('players');
@@ -1557,6 +1558,22 @@ installButton.addEventListener("click", async () => {
   installButton.setAttribute("hidden", "");
 });
 
+// set up PWA service worker
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("service.js")
+    .then(() => console.log("Service worker regisered!"));
+}
+
+// version code
+let versionCodeBox = document.getElementById("about_box").getElementsByClassName("text")[0];
+
+if (versionCodeBox) {
+  const versionElement = document.createElement("p");
+  versionElement.innerHTML = `Version code: ${VERSION}; Build date: ${BUILD}`;
+  versionCodeBox.appendChild(versionElement);
+}
+
 // Set up ads
 function resetAds() {
   const adsDom = document.getElementById("ad");
@@ -1577,13 +1594,6 @@ function resetAds() {
     });
 
   setTimeout(resetAds, 60000);
-}
-
-// set up PWA service worker
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker
-    .register("service.js")
-    .then(() => console.log("Service worker regisered!"));
 }
 
 resetAds();
