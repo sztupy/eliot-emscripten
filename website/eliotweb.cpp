@@ -165,7 +165,7 @@ PublicGame * readGame(const Dictionary &iDic,
                       GameParams::GameMode iMode, const wstring &iToken)
 {
     GameParams params(iDic, iMode);
-    for (unsigned int i = 1; i < iToken.size(); ++i)
+    for (unsigned int i = 0; i < iToken.size(); ++i)
     {
         if (iToken[i] == L'j')
             params.addVariant(GameParams::kJOKER);
@@ -356,7 +356,7 @@ extern "C" void stopGame() {
 }
 
 
-extern "C" void startGame(int nbHuman, int nbAI, int aiPercent) {
+extern "C" void startGame(int nbHuman, int nbAI, int aiPercent, int flags) {
     try {
         stopGame();
 
@@ -367,11 +367,24 @@ extern "C" void startGame(int nbHuman, int nbAI, int aiPercent) {
             srand(time(NULL));
         }
 
-        g_game = readGame(*g_dic, GameParams::kFREEGAME, L"");
+        GameParams::GameMode iMode = GameParams::kFREEGAME;
+
+        wstring token = L"";
+        if (flags & 0x1) {
+            token = L"j";
+        } else if (flags & 0x2) {
+            token = L"e";
+        }
+
+        if (flags & 0x4) {
+            iMode = GameParams::kDUPLICATE;
+        }
+
+        g_game = readGame(*g_dic, iMode, token);
 
         while (nbHuman + nbAI > 0) {
             if (nbHuman > 0 && nbAI > 0) {
-                if (rand()%2) {
+                if (rand()%2 || flags) {
                     g_game->addPlayer(new HumanPlayer);
                     nbHuman--;
                 } else {

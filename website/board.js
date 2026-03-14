@@ -1500,32 +1500,32 @@ function postGameInit() {
 }
 
 document.getElementById("quick_game_button").onclick = () => {
-  _startGame(1, 2, 25);
+  _startGame(1, 2, 25, 0);
   postGameInit();
 }
 
 document.getElementById("solo_game_button").onclick = () => {
-  _startGame(1, 0, 0);
+  _startGame(1, 0, 0, 0);
   postGameInit();
 }
 
 document.getElementById("duo_game_button").onclick = () => {
-  _startGame(2, 0, 0);
+  _startGame(2, 0, 0, 0);
   postGameInit();
 }
 
 document.getElementById("ai_only_button").onclick = () => {
-  _startGame(0, 4, 100);
+  _startGame(0, 4, 100, 0);
   postGameInit();
 }
 
 document.getElementById("expert_game_button").onclick = () => {
-  _startGame(1, 3, 100);
+  _startGame(1, 3, 100, 0);
   postGameInit();
 }
 
 document.getElementById("custom_game_button").onclick = () => {
-  _startGame(parseInt(document.getElementById("human_players").value, 10), parseInt(document.getElementById("computer_players").value, 10), parseInt(document.getElementById("computer_level").value, 10));
+  _startGame(parseInt(document.getElementById("human_players").value, 10), parseInt(document.getElementById("computer_players").value, 10), parseInt(document.getElementById("computer_level").value, 10), parseInt(document.getElementById("game_mode").value, 10));
   postGameInit();
 }
 

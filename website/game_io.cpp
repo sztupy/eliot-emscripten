@@ -161,11 +161,13 @@ void printGameDebug(const PublicGame &iGame)
         const Move &move = turn.getMove();
 
         const int players = iGame.getNbPlayers();
+        const int player = iGame.getMode() == GameParams::kDUPLICATE ? 0 : i%players;
+
         if (move.isValid())
         {
             const Round &round = move.getRound();
             addHistoryData(i,
-                i%players,
+                player,
                 lfw(turn.getPlayedRack().toString()).c_str(),
                 lfw(round.getWord()).c_str(),
                 round.getCoord().getRow() - 1,
@@ -180,7 +182,7 @@ void printGameDebug(const PublicGame &iGame)
             if (move.isInvalid())
             {
                 addHistoryData(i,
-                    i%players,
+                    player,
                     lfw(turn.getPlayedRack().toString()).c_str(),
                     lfw(L"#" + move.getBadWord() + L"#").c_str(),
                     -1,
@@ -193,7 +195,7 @@ void printGameDebug(const PublicGame &iGame)
             else if (move.isChangeLetters())
             {
                 addHistoryData(i,
-                    i%players,
+                    player,
                     lfw(turn.getPlayedRack().toString()).c_str(),
                     lfw(L"[" + move.getChangedLetters() + L"]").c_str(),
                     -1,
@@ -206,7 +208,7 @@ void printGameDebug(const PublicGame &iGame)
             else if (move.isPass())
             {
                 addHistoryData(i,
-                    i%players,
+                    player,
                     lfw(turn.getPlayedRack().toString()).c_str(),
                     "(PASS)",
                     -1,
@@ -219,7 +221,7 @@ void printGameDebug(const PublicGame &iGame)
             else
             {
                 addHistoryData(i,
-                    i%players,
+                    player,
                     lfw(turn.getPlayedRack().toString()).c_str(),
                     "(NO MOVE)",
                     -1,
