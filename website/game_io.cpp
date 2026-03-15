@@ -72,8 +72,8 @@ EM_JS(void, setPlayerData, (int playerId, int score, const char* rack, const cha
     setPlayer(playerId, score, UTF8ToString(rack), UTF8ToString(extended), isHuman);
 });
 
-EM_JS(void, setGameStateData, (int currentPlayer, int isFinished, int aiCount, int humanCount), {
-    setGameState(currentPlayer, isFinished, aiCount, humanCount);
+EM_JS(void, setGameStateData, (int currentPlayer, int isFinished, int aiCount, int humanCount, int gameType), {
+    setGameState(currentPlayer, isFinished, aiCount, humanCount, gameType);
 });
 
 EM_JS(void, saveGameData, (const char* data), {
@@ -255,7 +255,8 @@ void GameIO::sendData(const PublicGame &iGame) {
         iGame.getCurrentPlayer().getId(),
         iGame.isFinished() ? 1 : 0,
         aiCount,
-        humanCount
+        humanCount,
+        iGame.getMode()
     );
 
     printBoard(iGame);

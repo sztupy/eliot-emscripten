@@ -323,7 +323,7 @@ function redrawBoard() {
 
     text += `</div>`;
     text += `<div class="score">${player.score || 0}</div>`;
-    text += getRack(player.rack, false, gameData.isFinished || gameData.onlyAI || (gameData.oneHuman && player.isHuman));
+    text += getRack(player.rack, false, gameData.isFinished || gameData.gameType == "D" || gameData.onlyAI || (gameData.oneHuman && player.isHuman));
 
     playerElement.innerHTML = text;
     playerDom.appendChild(playerElement);
@@ -347,13 +347,13 @@ function redrawBoard() {
     let text = `<div class="history-id">#${i + 1}</div>`;
     text += `<div class="player-id">${players[playerId] && players[playerId].shortName}</div>`;
     if (row >= 0) {
-      if (gameData.isFinished || gameData.onlyAI) {
+      if (gameData.isFinished || gameData.onlyAI || gameData.gameType == "D") {
         text += `<div class="move">${rack} → <a draggable="false" href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${solution.toLowerCase()}" target="_blank">${solution}</a> @ ${String.fromCharCode('A'.charCodeAt(0) + row)}${col + 1}${direction ? '↕' : '↔'}</div>`;
       } else {
         text += `<div class="move"><a draggable="false" href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${solution.toLowerCase()}" target="_blank">${solution}</a> @ ${String.fromCharCode('A'.charCodeAt(0) + row)}${col + 1}${direction ? '↕' : '↔'}</div>`;
       }
     } else {
-      if (gameData.isFinished || gameData.onlyAI || (gameData.oneHuman && players[playerId].isHuman)) {
+      if (gameData.isFinished || gameData.onlyAI || gameData.gameType == "D" || (gameData.oneHuman && players[playerId].isHuman)) {
         text += `<div class="move">${rack} → ${solution}</div>`;
       } else {
         text += `<div class="move">${solution}</div>`;
@@ -380,7 +380,8 @@ function redrawBoard() {
         text += getRack(currentPlayer.rack);
       }
       // single human - always show the human's hand
-    } else if (gameData.oneHuman) {
+      // duplicate game - rack is the same for both so no need to hide
+    } else if (gameData.oneHuman || gameData.gameType == "D") {
       let player = players.find(p => p.isHuman);
       if (player) {
         if (player.rack == mainRackData) {
@@ -1205,7 +1206,7 @@ function setPlayer(playerId, score, rack, extended, isHuman) {
 }
 
 // Used by Eliot to send game state data to JS
-function setGameState(currentPlayer, isFinished, aiCount, humanCount) {
+function setGameState(currentPlayer, isFinished, aiCount, humanCount, gameType) {
   gameData.currentPlayer = currentPlayer;
   gameData.isFinished = isFinished;
   gameData.hasStarted = true;
@@ -1213,6 +1214,7 @@ function setGameState(currentPlayer, isFinished, aiCount, humanCount) {
   gameData.oneHuman = (humanCount == 1);
   gameData.humanCount = humanCount;
   gameData.aiCount = aiCount;
+  gameData.gameType = gameType == 2 ? "D" : "R";
 }
 
 // Used by Eliot to send over the entire dictionary

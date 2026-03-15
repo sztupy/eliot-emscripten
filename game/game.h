@@ -50,6 +50,7 @@ using namespace std;
 class Game
 {
     DEFINE_LOGGER();
+    friend class JsonReader;
 public:
     virtual ~Game();
 

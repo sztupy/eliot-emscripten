@@ -80,6 +80,18 @@ Game * JsonReader::load(const string &data, const Dictionary &iDic)
     if (game == NULL)
         throw LoadGameException("Did not obtain a game object");
 
+    // handle current player in duplicate mode needing to be one that hasn't played yet
+    if (game->getMode() == GameParams::kDUPLICATE) {
+        int player = 0;
+        while (game->hasPlayed(player) && player < game->getNPlayers()) {
+            player++;
+        }
+
+        if (player < game->getNPlayers()) {
+            game->setCurrentPlayer(player);
+        }
+    }
+
     LOG_INFO("Savegame parsed successfully");
     return game;
 }
