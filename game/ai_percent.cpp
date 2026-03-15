@@ -31,20 +31,29 @@
 INIT_LOGGER(game, AIPercent);
 
 
-AIPercent::AIPercent(float iPercent)
+AIPercent::AIPercent(float iMinPercent, float iMaxPercent)
 {
-    if (iPercent < 0)
-        iPercent = 0;
-    if (iPercent > 1)
-        iPercent = 1;
+    if (iMinPercent > iMaxPercent)
+        iMinPercent = iMaxPercent;
 
-    m_percent = iPercent;
+    if (iMinPercent < 0)
+        iMinPercent = 0;
+    if (iMinPercent > 1)
+        iMinPercent = 1;
+
+    if (iMaxPercent < 0)
+        iMaxPercent = 0;
+    if (iMaxPercent > 1)
+        iMaxPercent = 1;
+
+    m_min_percent = iMinPercent;
+    m_max_percent = iMaxPercent;
 
     // Use BestResults to be slightly faster when the percentage is 100%
-    if (iPercent == 1)
+    if (iMinPercent == iMaxPercent && iMaxPercent == 1)
         m_results = new BestResults;
     else
-        m_results = new PercentResults(iPercent);
+        m_results = new PercentResults(iMinPercent, iMaxPercent);
 }
 
 
@@ -57,6 +66,10 @@ AIPercent::~AIPercent()
 void AIPercent::compute(const Dictionary &iDic, const Board &iBoard, bool iFirstWord)
 {
     m_results->clear();
+    if (dynamic_cast<PercentResults*>(m_results)) {
+        PercentResults *convResults = static_cast<PercentResults*>(m_results);
+        convResults->updatePercentage();
+    };
 
     const Rack &rack = getCurrentRack().getRack();
     m_results->search(iDic, iBoard, rack, iFirstWord);
@@ -78,4 +91,3 @@ Move AIPercent::getMove() const
         return Move(m_results->get(0));
     }
 }
-

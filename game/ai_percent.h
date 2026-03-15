@@ -41,10 +41,11 @@ class AIPercent: public AIPlayer
     DEFINE_LOGGER();
 public:
     /// Constructor, taking the percentage (0.0 <= iPercent <= 1.0)
-    AIPercent(float iPercent);
+    AIPercent(float iMinPercent, float iMaxPercent);
     virtual ~AIPercent();
 
-    float getPercent() const { return m_percent; }
+    float getMinPercent() const { return m_min_percent; }
+    float getMaxPercent() const { return m_max_percent; }
 
     /**
      * This method does the actual computation. It will be called before any
@@ -56,10 +57,10 @@ public:
     virtual Move getMove() const;
 
 private:
-    float m_percent;
+    float m_min_percent;
+    float m_max_percent;
     /// Container for all the found solutions
     Results *m_results;
 };
 
 #endif
-

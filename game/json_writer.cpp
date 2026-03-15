@@ -177,7 +177,12 @@ void JsonWriter::write(const Game &iGame, std::ostream &out)
             const AIPercent *ai = dynamic_cast<const AIPercent *>(&player);
             if (ai == NULL)
                 throw SaveGameException(FMT1(_("Invalid player type for player %1%"), i));
-            out << "\"level\":" << lrint(ai->getPercent() * 100) << ",";
+            if (ai->getMinPercent() == ai->getMaxPercent()) {
+                out << "\"level\":" << lrint(ai->getMinPercent() * 100) << ",";
+            } else {
+                out << "\"levelMin\":" << lrint(ai->getMinPercent() * 100) << ",";
+                out << "\"levelMax\":" << lrint(ai->getMaxPercent() * 100) << ",";
+            }
         }
         out << "\"tableNb\":" << player.getTableNb();
         out << "}";

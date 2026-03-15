@@ -1502,32 +1502,38 @@ function postGameInit() {
 }
 
 document.getElementById("quick_game_button").onclick = () => {
-  _startGame(1, 2, 25, 0);
+  _startGame(1, 2, 20, 50, 0);
   postGameInit();
 }
 
 document.getElementById("solo_game_button").onclick = () => {
-  _startGame(1, 0, 0, 0);
+  _startGame(1, 0, 0, 0, 0);
   postGameInit();
 }
 
 document.getElementById("duo_game_button").onclick = () => {
-  _startGame(2, 0, 0, 0);
+  _startGame(2, 0, 0, 0, 0);
   postGameInit();
 }
 
 document.getElementById("ai_only_button").onclick = () => {
-  _startGame(0, 4, 100, 0);
+  _startGame(0, 4, 100, 100, 0);
   postGameInit();
 }
 
 document.getElementById("expert_game_button").onclick = () => {
-  _startGame(1, 3, 100, 0);
+  _startGame(1, 3, 100, 100, 0);
   postGameInit();
 }
 
 document.getElementById("custom_game_button").onclick = () => {
-  _startGame(parseInt(document.getElementById("human_players").value, 10), parseInt(document.getElementById("computer_players").value, 10), parseInt(document.getElementById("computer_level").value, 10), parseInt(document.getElementById("game_mode").value, 10));
+  const humanPlayers = parseInt(document.getElementById("human_players").value, 10);
+  const aiPlayers = parseInt(document.getElementById("computer_players").value, 10);
+  const computerLevelMin = parseInt(document.getElementById("computer_level").value.split(",")[0], 10);
+  const computerLevelMax = parseInt(document.getElementById("computer_level").value.split(",")[1], 10);
+  const gameMode = parseInt(document.getElementById("game_mode").value, 10);
+
+  _startGame(humanPlayers, aiPlayers, computerLevelMin, computerLevelMax, gameMode);
   postGameInit();
 }
 

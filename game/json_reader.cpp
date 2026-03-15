@@ -277,7 +277,13 @@ void JsonReader::parse() {
                 else if (getString(player, "type") == "computer")
                 {
                     int level = getInt(player, "level");
-                    p = new AIPercent(0.01 * level);
+                    if (level == INT_MIN) {
+                        int levelMin = getInt(player, "levelMin");
+                        int levelMax = getInt(player, "levelMin");
+                        p = new AIPercent(0.01 * levelMin, 0.01 * levelMax);
+                    } else {
+                        p = new AIPercent(0.01 * level, 0.01 * level);
+                    }
                 }
                 else
                     throw LoadGameException(FMT1(_("Invalid player type: %1%"), getString(player, "type")));

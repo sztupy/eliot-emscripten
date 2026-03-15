@@ -155,8 +155,8 @@ void BestResults::clear()
 
 
 
-PercentResults::PercentResults(float iPercent)
-    : m_percent(iPercent), m_bestScore(0), m_minScore(0)
+PercentResults::PercentResults(float iMinPercent, float iMaxPercent)
+    : m_min_percent(iMinPercent), m_max_percent(iMaxPercent), m_percent(iMaxPercent), m_bestScore(0), m_minScore(0)
 {
 }
 
@@ -231,6 +231,17 @@ void PercentResults::clear()
     m_rounds.clear();
     m_bestScore = 0;
     m_minScore = 0;
+}
+
+void PercentResults::updatePercentage()
+{
+    if (m_min_percent == m_max_percent) {
+        m_percent = m_max_percent;
+    } else {
+        // select a new percentage we'll use for this search
+        float diff = m_max_percent - m_min_percent;
+        m_percent = m_min_percent + ((double)diff * rand() / RAND_MAX);
+    }
 }
 
 

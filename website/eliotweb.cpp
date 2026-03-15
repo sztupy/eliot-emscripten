@@ -367,7 +367,7 @@ extern "C" void stopGame() {
 }
 
 
-extern "C" void startGame(int nbHuman, int nbAI, int aiPercent, int flags) {
+extern "C" void startGame(int nbHuman, int nbAI, int aiPercentMin, int aiPercentMax, int flags) {
     try {
         stopGame();
 
@@ -399,14 +399,14 @@ extern "C" void startGame(int nbHuman, int nbAI, int aiPercent, int flags) {
                     g_game->addPlayer(new HumanPlayer);
                     nbHuman--;
                 } else {
-                    g_game->addPlayer(new AIPercent((float)aiPercent / 100.0));
+                    g_game->addPlayer(new AIPercent((float)aiPercentMin / 100.0, (float)aiPercentMax / 100.0));
                     nbAI--;
                 }
             } else if (nbHuman > 0) {
                 g_game->addPlayer(new HumanPlayer);
                 nbHuman--;
             } else {
-                g_game->addPlayer(new AIPercent((float)aiPercent / 100.0));
+                g_game->addPlayer(new AIPercent((float)aiPercentMin / 100.0, (float)aiPercentMax / 100.0));
                 nbAI--;
             }
         }

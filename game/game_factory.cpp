@@ -236,7 +236,7 @@ Game *GameFactory::createFromCmdLine(int argc, char **argv)
         if (m_players[i].first)
             player = new HumanPlayer;
         else
-            player = new AIPercent(1);
+            player = new AIPercent(1, 1);
         player->setName(m_players[i].second);
         game->addPlayer(player);
     }

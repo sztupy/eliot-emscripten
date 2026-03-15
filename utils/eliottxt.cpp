@@ -858,7 +858,7 @@ void mainLoop(const Dictionary &iDic)
                         for (int i = 0; i < nbHuman; i++)
                             game->addPlayer(new HumanPlayer);
                         for (int i = 0; i < nbAI; i++)
-                            game->addPlayer(new AIPercent(1));
+                            game->addPlayer(new AIPercent(1,1));
                         game->start();
                         loopDuplicate(*game);
                         delete game;
@@ -873,7 +873,7 @@ void mainLoop(const Dictionary &iDic)
                         for (int i = 0; i < nbHuman; i++)
                             game->addPlayer(new HumanPlayer);
                         for (int i = 0; i < nbAI; i++)
-                            game->addPlayer(new AIPercent(1));
+                            game->addPlayer(new AIPercent(1,1));
                         game->start();
                         loopFreegame(*game);
                         delete game;
@@ -888,7 +888,7 @@ void mainLoop(const Dictionary &iDic)
                         for (int i = 0; i < nbHuman; i++)
                             game->addPlayer(new HumanPlayer);
                         for (int i = 0; i < nbAI; i++)
-                            game->addPlayer(new AIPercent(1));
+                            game->addPlayer(new AIPercent(1,1));
                         game->start();
                         loopArbitration(*game);
                         delete game;

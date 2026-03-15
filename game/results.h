@@ -1,8 +1,8 @@
 /*****************************************************************************
  * Eliot
- * Copyright (C) 2005-2012 Antoine Fraboulet & Olivier Teulière
+ * Copyright (C) 2005-2012 Antoine Fraboulet & Olivier Teuliï¿½re
  * Authors: Antoine Fraboulet <antoine.fraboulet @@ free.fr>
- *          Olivier Teulière <ipkiss @@ gmail.com>
+ *          Olivier Teuliï¿½re <ipkiss @@ gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,14 +103,17 @@ class PercentResults: public Results
 {
 public:
     /** The percentage is given as a float between 0 (0%) and 1 (100%) */
-    PercentResults(float iPercent);
+    PercentResults(float iMinPercent, float iMaxPercent);
     virtual void search(const Dictionary &iDic, const Board &iBoard,
                         const Rack &iRack, bool iFirstWord);
     virtual void clear();
     virtual void add(const Round &iRound);
+    virtual void updatePercentage();
 
 private:
-    const float m_percent;
+    const float m_min_percent;
+    const float m_max_percent;
+    float m_percent;
     int m_bestScore;
     int m_minScore;
 };
@@ -162,4 +165,3 @@ private:
 };
 
 #endif
-
