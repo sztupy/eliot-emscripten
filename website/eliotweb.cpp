@@ -387,6 +387,11 @@ extern "C" void startGame(int nbHuman, int nbAI, int aiPercentMin, int aiPercent
 
         if (flags & 0x4)
         {
+            token += L"8";
+        }
+
+        if (flags & 0x8)
+        {
             iMode = GameParams::kDUPLICATE;
         }
 

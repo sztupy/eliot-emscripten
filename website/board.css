@@ -467,6 +467,15 @@ body {
   user-select: none;
 }
 
+.game-super-rack .player .rack {
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.game-super-rack #main_rack .rack {
+  grid-template-columns: repeat(9, 1fr);
+}
+
+
 #main_rack .rack .letter {
   cursor: pointer;
   -webkit-user-select: none;

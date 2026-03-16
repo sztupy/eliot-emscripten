@@ -103,9 +103,12 @@
               <li><strong>Joker mode</strong>: The first two players get a joker into their rack. If they play it, it
                 will be replaced with the real letter if it's still in the bag. Otherwise the joker is used as in a
                 normal game. If the joker remains they get it back for the next turn.</li>
-              <li><strong>Super rack mode</strong>: The players only get 6 letters randomly from the bag. The 7th letter
-                will be assigned from the rack by the computer to allow for a truly great word to be played. The player
+              <li><strong>Deus ex machina mode</strong>: The players only get 6 letters randomly from the bag. The 7th
+                letter
+                will be assigned from the bag by the computer to allow for a truly great word to be played. The player
                 just needs to find what this word is.</li>
+              <li><strong>Super rack mode</strong>: The players gets 8 letters in the rack instead of 7. They can still
+                only use a maximum of 7 to make words.</li>
             </ul>
           </li>
         </ul>
@@ -412,11 +415,20 @@
           <label for="game_mode">Seòrsa geama:</label>
           <select name="game_mode" id="game_mode">
             <option value="0" selected>Riaghailteach</option>
+            <option value="8">Geama dùblaichte</option>
+
             <option value="1">Modh cairt-chuiridh</option>
-            <option value="2">Modh racais sàr-mhath</option>
-            <option value="4">Geama dùblaichte</option>
-            <option value="5">Geama dùblaichte le modh cairt-chuiridh</option>
-            <option value="6">Geama dùblaichte le modh racais sàr-mhath</option>
+            <option value="2">Modh deus ex machina</option>
+            <option value="4">Modh racais sàr-mhath</option>
+
+            <option value="5">Modh racais sàr-mhath + cairt-chuiridh</option>
+            <option value="6">Modh racais sàr-mhath + deus ex machina</option>
+
+            <option value="9">Geama dùblaichte le modh cairt-chuiridh</option>
+            <option value="10">Geama dùblaichte le modh deus ex machina</option>
+            <option value="12">Geama dùblaichte le modh racais sàr-mhath</option>
+            <option value="13">Geama dùblaichte le modh racais sàr-mhath + cairt-chuiridh</option>
+            <option value="14">Geama dùblaichte le modh racais sàr-mhath + deus ex machina</option>
           </select>
 
           <button id="custom_game_button">Tòisich a’ gheama</button>

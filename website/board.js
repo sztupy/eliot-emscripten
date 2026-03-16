@@ -1214,7 +1214,21 @@ function setGameState(currentPlayer, isFinished, aiCount, humanCount, gameType) 
   gameData.oneHuman = (humanCount == 1);
   gameData.humanCount = humanCount;
   gameData.aiCount = aiCount;
-  gameData.gameType = gameType == 2 ? "D" : "R";
+  gameData.gameType = (gameType & 8) ? "D" : "R";
+  gameData.gameVariant = gameType;
+
+  if (gameData.gameVariant & 1) {
+    document.body.classList.add("game-joker");
+  }
+  if (gameData.gameVariant & 2) {
+    document.body.classList.add("game-deus-ex");
+  }
+  if (gameData.gameVariant & 4) {
+    document.body.classList.add("game-super-rack");
+  }
+  if (gameData.gameVariant & 8) {
+    document.body.classList.add("game-duplicate");
+  }
 }
 
 // Used by Eliot to send over the entire dictionary

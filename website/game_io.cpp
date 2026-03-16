@@ -52,7 +52,7 @@ using boost::wformat;
 
 INIT_LOGGER(utils, GameIO);
 
-EM_JS(void, setBoardLetter, (int row, int col, const char* text), {
+EM_JS(void, setBoardLetter, (int row, int col, const char *text), {
     letters[`${row-1};${col-1}`] = UTF8ToString(text);
 });
 
@@ -64,11 +64,11 @@ EM_JS(void, resetBoard, (), {
     letters = {};
 });
 
-EM_JS(void, addHistoryData, (int n, int playerId, const char* rack, const char* solution, int row, int col, int direction, int points, int bonus), {
+EM_JS(void, addHistoryData, (int n, int playerId, const char *rack, const char *solution, int row, int col, int direction, int points, int bonus), {
     addHistory(n, playerId, UTF8ToString(rack), UTF8ToString(solution), row, col, direction, points, bonus);
 });
 
-EM_JS(void, setPlayerData, (int playerId, int score, const char* rack, const char* extended, int isHuman), {
+EM_JS(void, setPlayerData, (int playerId, int score, const char *rack, const char *extended, int isHuman), {
     setPlayer(playerId, score, UTF8ToString(rack), UTF8ToString(extended), isHuman);
 });
 
@@ -76,7 +76,7 @@ EM_JS(void, setGameStateData, (int currentPlayer, int isFinished, int aiCount, i
     setGameState(currentPlayer, isFinished, aiCount, humanCount, gameType);
 });
 
-EM_JS(void, saveGameData, (const char* data), {
+EM_JS(void, saveGameData, (const char *data), {
     localStorage.setItem('save', UTF8ToString(data));
 });
 
@@ -84,7 +84,7 @@ EM_JS(void, sendErrorData, (int category, int errorCode), {
     sendError(category, errorCode);
 });
 
-EM_JS(void, sendDictionaryData, (const char* word), {
+EM_JS(void, sendDictionaryData, (const char *word), {
     sendDictionaryWord(UTF8ToString(word));
 });
 
@@ -109,13 +109,12 @@ void printPlayerData(const PublicGame &iGame)
 {
     for (unsigned int i = 0; i < iGame.getNbPlayers(); i++)
     {
-        const Player& player = iGame.getPlayer(i);
+        const Player &player = iGame.getPlayer(i);
         setPlayerData(i,
-            player.getTotalScore(),
-            lfw(player.getCurrentRack().toString(PlayedRack::RACK_SIMPLE)).c_str(),
-            lfw(player.getCurrentRack().toString(PlayedRack::RACK_EXTRA)).c_str(),
-            player.isHuman() ? 1 : 0
-        );
+                      player.getTotalScore(),
+                      lfw(player.getCurrentRack().toString(PlayedRack::RACK_SIMPLE)).c_str(),
+                      lfw(player.getCurrentRack().toString(PlayedRack::RACK_EXTRA)).c_str(),
+                      player.isHuman() ? 1 : 0);
     }
 }
 
@@ -126,23 +125,21 @@ void printSaveGame(const PublicGame &iGame)
     saveGameData(os.str().c_str());
 }
 
-
-static void printDicRec(const Dictionary &iDic, const wchar_t * const buf, wchar_t *s, DicEdge edge)
+static void printDicRec(const Dictionary &iDic, const wchar_t *const buf, wchar_t *s, DicEdge edge)
 {
-    if (edge.term)  /* edge points at a complete word */
+    if (edge.term) /* edge points at a complete word */
     {
         *s = '\0';
         sendDictionaryData(lfw(buf).c_str());
     }
     if (edge.ptr)
-    {           /* Compute index: is it non-zero ? */
+    { /* Compute index: is it non-zero ? */
         const DicEdge *p = iDic.getEdgeAt(edge.ptr);
         do
-        {                         /* for each edge out of this node */
+        { /* for each edge out of this node */
             *s = iDic.getHeader().getCharFromCode(p->chr);
             printDicRec(iDic, buf, s + 1, *p);
-        }
-        while (!(*p++).last);
+        } while (!(*p++).last);
     }
 }
 
@@ -152,7 +149,6 @@ void GameIO::printWords(const Dictionary &iDic)
     printDicRec(iDic, buf, buf, *iDic.getEdgeAt(iDic.getRoot()));
 }
 
-
 void printGameDebug(const PublicGame &iGame)
 {
     for (unsigned int i = 0; i < iGame.getHistory().getSize(); ++i)
@@ -161,94 +157,111 @@ void printGameDebug(const PublicGame &iGame)
         const Move &move = turn.getMove();
 
         const int players = iGame.getNbPlayers();
-        const int player = (iGame.getMode() == GameParams::kDUPLICATE) ? 0 : i%players;
+        const int player = (iGame.getMode() == GameParams::kDUPLICATE) ? 0 : i % players;
 
         if (move.isValid())
         {
             const Round &round = move.getRound();
             addHistoryData(i,
-                player,
-                lfw(turn.getPlayedRack().toString()).c_str(),
-                lfw(round.getWord()).c_str(),
-                round.getCoord().getRow() - 1,
-                round.getCoord().getCol() - 1,
-                round.getCoord().getDir() == Coord::HORIZONTAL ? 0 : 1,
-                round.getPoints(),
-                round.getBonus() ? 50 : 0
-            );
+                           player,
+                           lfw(turn.getPlayedRack().toString()).c_str(),
+                           lfw(round.getWord()).c_str(),
+                           round.getCoord().getRow() - 1,
+                           round.getCoord().getCol() - 1,
+                           round.getCoord().getDir() == Coord::HORIZONTAL ? 0 : 1,
+                           round.getPoints(),
+                           round.getBonus() ? 50 : 0);
         }
         else
         {
             if (move.isInvalid())
             {
                 addHistoryData(i,
-                    player,
-                    lfw(turn.getPlayedRack().toString()).c_str(),
-                    lfw(L"#" + move.getBadWord() + L"#").c_str(),
-                    -1,
-                    -1,
-                    -1,
-                    0,
-                    0
-                );
+                               player,
+                               lfw(turn.getPlayedRack().toString()).c_str(),
+                               lfw(L"#" + move.getBadWord() + L"#").c_str(),
+                               -1,
+                               -1,
+                               -1,
+                               0,
+                               0);
             }
             else if (move.isChangeLetters())
             {
                 addHistoryData(i,
-                    player,
-                    lfw(turn.getPlayedRack().toString()).c_str(),
-                    lfw(L"[" + move.getChangedLetters() + L"]").c_str(),
-                    -1,
-                    -1,
-                    -1,
-                    0,
-                    0
-                );
+                               player,
+                               lfw(turn.getPlayedRack().toString()).c_str(),
+                               lfw(L"[" + move.getChangedLetters() + L"]").c_str(),
+                               -1,
+                               -1,
+                               -1,
+                               0,
+                               0);
             }
             else if (move.isPass())
             {
                 addHistoryData(i,
-                    player,
-                    lfw(turn.getPlayedRack().toString()).c_str(),
-                    "(PASS)",
-                    -1,
-                    -1,
-                    -1,
-                    0,
-                    0
-                );
+                               player,
+                               lfw(turn.getPlayedRack().toString()).c_str(),
+                               "(PASS)",
+                               -1,
+                               -1,
+                               -1,
+                               0,
+                               0);
             }
             else
             {
                 addHistoryData(i,
-                    player,
-                    lfw(turn.getPlayedRack().toString()).c_str(),
-                    "(NO MOVE)",
-                    -1,
-                    -1,
-                    -1,
-                    0,
-                    0
-                );
+                               player,
+                               lfw(turn.getPlayedRack().toString()).c_str(),
+                               "(NO MOVE)",
+                               -1,
+                               -1,
+                               -1,
+                               0,
+                               0);
             }
         }
     }
 }
 
-void GameIO::sendError(int category, int errorCode) {
+void GameIO::sendError(int category, int errorCode)
+{
     sendErrorData(category, errorCode);
 }
 
-void GameIO::sendData(const PublicGame &iGame) {
+void GameIO::sendData(const PublicGame &iGame)
+{
     int aiCount = 0;
     int humanCount = 0;
     for (unsigned int i = 0; i < iGame.getNbPlayers(); i++)
     {
-        const Player& player = iGame.getPlayer(i);
+        const Player &player = iGame.getPlayer(i);
         if (player.isHuman())
             humanCount++;
         else
             aiCount++;
+    }
+
+    int gameType = 0;
+
+    if (iGame.getParams().hasVariant(GameParams::kJOKER))
+    {
+        gameType |= 1;
+    }
+    if (iGame.getParams().hasVariant(GameParams::kEXPLOSIVE))
+    {
+        gameType |= 2;
+    }
+    if (iGame.getParams().hasVariant(GameParams::k7AMONG8))
+    {
+        gameType |= 4;
+    }
+
+    if (iGame.getMode() == GameParams::GameMode::kDUPLICATE)
+    {
+        gameType |= 8;
     }
 
     setGameStateData(
@@ -256,8 +269,7 @@ void GameIO::sendData(const PublicGame &iGame) {
         iGame.isFinished() ? 1 : 0,
         aiCount,
         humanCount,
-        iGame.getMode()
-    );
+        gameType);
 
     printBoard(iGame);
     printGameDebug(iGame);

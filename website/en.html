@@ -101,9 +101,12 @@
               <li><strong>Joker mode</strong>: The first two players get a joker into their rack. If they play it, it
                 will be replaced with the real letter if it's still in the bag. Otherwise the joker is used as in a
                 normal game. If the joker remains they get it back for the next turn.</li>
-              <li><strong>Super rack mode</strong>: The players only get 6 letters randomly from the bag. The 7th letter
-                will be assigned from the rack by the computer to allow for a truly great word to be played. The player
+              <li><strong>Deus ex machina mode</strong>: The players only get 6 letters randomly from the bag. The 7th
+                letter
+                will be assigned from the bag by the computer to allow for a truly great word to be played. The player
                 just needs to find what this word is.</li>
+              <li><strong>Super rack mode</strong>: The players gets 8 letters in the rack instead of 7. They can still
+                only use a maximum of 7 to make words.</li>
             </ul>
           </li>
         </ul>
@@ -416,11 +419,20 @@
           <label for="game_mode">Game variant:</label>
           <select name="game_mode" id="game_mode">
             <option value="0" selected>Standard game</option>
+            <option value="8">Duplicate game</option>
+
             <option value="1">Joker mode</option>
-            <option value="2">Super rack mode</option>
-            <option value="4">Duplicate game</option>
-            <option value="5">Duplicate game with joker mode</option>
-            <option value="6">Duplicate game with super rack</option>
+            <option value="2">Deus ex machina mode</option>
+            <option value="4">Super rack mode</option>
+
+            <option value="5">Super rack + joker mode</option>
+            <option value="6">Super rack + deus ex machina mode</option>
+
+            <option value="9">Duplicate game with joker mode</option>
+            <option value="10">Duplicate game with deus ex machina</option>
+            <option value="12">Duplicate game with super rack</option>
+            <option value="13">Duplicate game with super rack + joker</option>
+            <option value="14">Duplicate game with super rack + deus ex machina</option>
           </select>
 
           <button id="custom_game_button">Start Game</button>
