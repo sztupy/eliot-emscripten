@@ -370,6 +370,7 @@ body {
   align-items: center;
   padding: 8px 0;
   border-bottom: 1px solid #eee;
+  flex-wrap: wrap;
 }
 
 .history-item:last-child {
@@ -393,6 +394,20 @@ body {
   margin: 0 12px;
   font-family: monospace;
   font-size: 14px;
+  white-space: pre;
+}
+
+.others {
+  display: flex;
+  flex: 1;
+  margin: 0 12px;
+}
+
+.other-value {
+  flex: 1;
+  font-family: monospace;
+  font-size: 10px;
+  margin: 0 1em;
 }
 
 .points {

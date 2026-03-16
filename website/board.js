@@ -341,7 +341,7 @@ function redrawBoard() {
     historyDom.innerHTML = `<span class="box_header">${language == 'en' ? 'History' : 'Eachdraidh'}</span>`;
   }
   for (let i = history.length - 1; i >= 0; i--) {
-    const [playerId, rack, solution, row, col, direction, points, bonus] = history[i];
+    const [playerId, rack, solution, others, row, col, direction, points, bonus] = history[i];
     const historyElement = document.createElement('div');
     historyElement.className = 'history-item';
     let text = `<div class="history-id">#${i + 1}</div>`;
@@ -358,6 +358,22 @@ function redrawBoard() {
       } else {
         text += `<div class="move">${solution}</div>`;
       }
+    }
+    if (others.trim()) {
+      text += `<div class="others">`;
+      for (let values of others.split(";")) {
+        if (values.trim()) {
+          let plSolution = values.trim().split(" ")[0];
+          let plPoints = values.trim().split(" ")[1];
+
+          if (plSolution != "(PASS)") {
+            plSolution = `<a draggable="false" href="https://www.faclair.com/index.aspx?Language=gd&txtSearch=${plSolution.toLowerCase()}" target="_blank">${plSolution}</a>`;
+          }
+
+          text += `<div class="other-value">${plSolution} ${plPoints}</div>`;
+        }
+      }
+      text += `</div>`;
     }
     text += `<div class="points">${points}${bonus > 0 ? ` (${points - bonus}+${bonus})` : ''}</div>`;
     historyElement.innerHTML = text;
@@ -1155,8 +1171,8 @@ function letterSelector(letter, row, column, newKey) {
 }
 
 // Used by Eliot to send history data to JS
-function addHistory(n, playerId, rack, solution, row, col, direction, points, bonus) {
-  history[n] = [playerId, rack, solution, row, col, direction, points, bonus];
+function addHistory(n, playerId, rack, solution, others, row, col, direction, points, bonus) {
+  history[n] = [playerId, rack, solution, others, row, col, direction, points, bonus];
 }
 
 // Used by Eliot to send player data to JS

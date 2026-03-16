@@ -277,6 +277,11 @@ const Move &PublicGame::duplicateGetMasterMove() const
     return getTypedGame<Duplicate>(m_game).getMasterMove();
 }
 
+const Move &PublicGame::duplicateGetPlayedMove(unsigned int turn, unsigned int playerId) const
+{
+    return getTypedGame<Duplicate>(m_game).getPlayedMove(turn, playerId);
+}
+
 /***************************/
 
 int PublicGame::freeGamePass(const wstring &iToChange)

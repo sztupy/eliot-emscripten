@@ -53,7 +53,7 @@ using boost::wformat;
 INIT_LOGGER(utils, GameIO);
 
 EM_JS(void, setBoardLetter, (int row, int col, const char *text), {
-    letters[`${row-1};${col-1}`] = UTF8ToString(text);
+    letters["" + (row - 1) + ";" + (col - 1)] = UTF8ToString(text);
 });
 
 EM_JS(void, callRedrawBoard, (), {
@@ -64,8 +64,8 @@ EM_JS(void, resetBoard, (), {
     letters = {};
 });
 
-EM_JS(void, addHistoryData, (int n, int playerId, const char *rack, const char *solution, int row, int col, int direction, int points, int bonus), {
-    addHistory(n, playerId, UTF8ToString(rack), UTF8ToString(solution), row, col, direction, points, bonus);
+EM_JS(void, addHistoryData, (int n, int playerId, const char *rack, const char *solution, const char *others, int row, int col, int direction, int points, int bonus), {
+    addHistory(n, playerId, UTF8ToString(rack), UTF8ToString(solution), UTF8ToString(others), row, col, direction, points, bonus);
 });
 
 EM_JS(void, setPlayerData, (int playerId, int score, const char *rack, const char *extended, int isHuman), {
@@ -157,7 +157,31 @@ void printGameDebug(const PublicGame &iGame)
         const Move &move = turn.getMove();
 
         const int players = iGame.getNbPlayers();
-        const int player = (iGame.getMode() == GameParams::kDUPLICATE) ? 0 : i % players;
+        int player = (iGame.getMode() == GameParams::kDUPLICATE) ? 0 : i % players;
+
+        wstringstream otherPlayers;
+
+        if (iGame.getMode() == GameParams::kDUPLICATE)
+        {
+            const Round &mainRound = move.isValid() ? move.getRound() : Round();
+            for (unsigned int plId = 0; plId < players; plId++)
+            {
+                const Move &playerMove = iGame.duplicateGetPlayedMove(i, plId);
+                if (playerMove.isValid())
+                {
+                    const Round &round = playerMove.getRound();
+                    otherPlayers << round.getWord() << " (" << round.getPoints() << "); ";
+                    if (round.getWord() == mainRound.getWord() && round.getCoord() == mainRound.getCoord())
+                    {
+                        player = plId;
+                    }
+                }
+                else
+                {
+                    otherPlayers << "(PASS) (0); ";
+                }
+            }
+        }
 
         if (move.isValid())
         {
@@ -166,62 +190,64 @@ void printGameDebug(const PublicGame &iGame)
                            player,
                            lfw(turn.getPlayedRack().toString()).c_str(),
                            lfw(round.getWord()).c_str(),
+                           lfw(otherPlayers.str()).c_str(),
                            round.getCoord().getRow() - 1,
                            round.getCoord().getCol() - 1,
                            round.getCoord().getDir() == Coord::HORIZONTAL ? 0 : 1,
                            round.getPoints(),
                            round.getBonus() ? 50 : 0);
         }
+        else if (move.isInvalid())
+        {
+            addHistoryData(i,
+                           player,
+                           lfw(turn.getPlayedRack().toString()).c_str(),
+                           lfw(L"#" + move.getBadWord() + L"#").c_str(),
+                           lfw(otherPlayers.str()).c_str(),
+                           -1,
+                           -1,
+                           -1,
+                           0,
+                           0);
+        }
+        else if (move.isChangeLetters())
+        {
+            addHistoryData(i,
+                           player,
+                           lfw(turn.getPlayedRack().toString()).c_str(),
+                           lfw(L"[" + move.getChangedLetters() + L"]").c_str(),
+                           lfw(otherPlayers.str()).c_str(),
+                           -1,
+                           -1,
+                           -1,
+                           0,
+                           0);
+        }
+        else if (move.isPass())
+        {
+            addHistoryData(i,
+                           player,
+                           lfw(turn.getPlayedRack().toString()).c_str(),
+                           "(PASS)",
+                           lfw(otherPlayers.str()).c_str(),
+                           -1,
+                           -1,
+                           -1,
+                           0,
+                           0);
+        }
         else
         {
-            if (move.isInvalid())
-            {
-                addHistoryData(i,
-                               player,
-                               lfw(turn.getPlayedRack().toString()).c_str(),
-                               lfw(L"#" + move.getBadWord() + L"#").c_str(),
-                               -1,
-                               -1,
-                               -1,
-                               0,
-                               0);
-            }
-            else if (move.isChangeLetters())
-            {
-                addHistoryData(i,
-                               player,
-                               lfw(turn.getPlayedRack().toString()).c_str(),
-                               lfw(L"[" + move.getChangedLetters() + L"]").c_str(),
-                               -1,
-                               -1,
-                               -1,
-                               0,
-                               0);
-            }
-            else if (move.isPass())
-            {
-                addHistoryData(i,
-                               player,
-                               lfw(turn.getPlayedRack().toString()).c_str(),
-                               "(PASS)",
-                               -1,
-                               -1,
-                               -1,
-                               0,
-                               0);
-            }
-            else
-            {
-                addHistoryData(i,
-                               player,
-                               lfw(turn.getPlayedRack().toString()).c_str(),
-                               "(NO MOVE)",
-                               -1,
-                               -1,
-                               -1,
-                               0,
-                               0);
-            }
+            addHistoryData(i,
+                           player,
+                           lfw(turn.getPlayedRack().toString()).c_str(),
+                           "(NO MOVE)",
+                           lfw(otherPlayers.str()).c_str(),
+                           -1,
+                           -1,
+                           -1,
+                           0,
+                           0);
         }
     }
 }

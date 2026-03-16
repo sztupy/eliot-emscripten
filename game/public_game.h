@@ -255,6 +255,7 @@ public:
     void duplicateSetPlayer(unsigned int p);
     void duplicateSetMasterMove(const Move &iMove);
     const Move &duplicateGetMasterMove() const;
+    const Move &duplicateGetPlayedMove(unsigned int turn, unsigned int playerId) const;
 
     /***************
      * FreeGame games

@@ -379,6 +379,27 @@ void Duplicate::setPlayer(unsigned int p)
     m_currPlayer = p;
 }
 
+const Move &Duplicate::getPlayedMove(unsigned int turn, unsigned int playerId) const
+{
+    vector<Turn *> turns = getNavigation().getTurns();
+    if (turn >= turns.size())
+        return Move(0);
+
+    Turn *actualTurn = turns[turn];
+
+    BOOST_FOREACH (const Command *cmd, actualTurn->getCommands())
+    {
+        if (dynamic_cast<const PlayerMoveCmd *>(cmd))
+        {
+            const PlayerMoveCmd *moveCmd = static_cast<const PlayerMoveCmd *>(cmd);
+            if (moveCmd->getPlayer().getId() == playerId)
+                return moveCmd->getMove();
+        }
+    }
+
+    return Move(0);
+}
+
 bool Duplicate::hasPlayed(unsigned iPlayerId) const
 {
     ASSERT(iPlayerId < getNPlayers(), "Wrong player number");

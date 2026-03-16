@@ -114,6 +114,12 @@ public:
 
     const Move &getMasterMove() const { return m_masterMove; }
 
+    /**
+     * Return the actual move played by the specific player on the specific turn.
+     * Used to display a full history
+     */
+    const Move &getPlayedMove(unsigned int turn, unsigned int playerId) const;
+
     /// Return true if the player has played for the current turn
     virtual bool hasPlayed(unsigned int iPlayerId) const;
 
