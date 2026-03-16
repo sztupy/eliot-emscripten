@@ -32,7 +32,6 @@ class PlayerEventCmd;
 using std::string;
 using std::wstring;
 
-
 /**
  * This class handles the logic specific to a duplicate game.
  * The trick in this mode is that the players will not necessarily play they
@@ -54,15 +53,15 @@ using std::wstring;
  * have more clues about the best word.
  * TODO: better isolation of the players...
  */
-class Duplicate: public Game
+class Duplicate : public Game
 {
     DEFINE_LOGGER();
     friend class GameFactory;
     friend class MarkPlayedCmd;
     friend class MasterMoveCmd;
     friend class JsonReader;
-public:
 
+public:
     /*************************
      * Game handling
      *************************/
@@ -89,7 +88,7 @@ public:
      * This method is called when it's the turn of an AI player to play.
      * Returns 1 if there was a move, 0 if it's the human's turn
      */
-    virtual int makeAIMove() { return 0; };
+    virtual int makeAIMove();
 
     /**
      * Set the current player, given its ID.
@@ -107,6 +106,11 @@ public:
      * Setting a master move to NO_MOVE means reseting it.
      */
     void setMasterMove(const Move &iMove);
+
+    /**
+     * Use if the current player can't make a play with the current letters and wants to forfeit their turn
+     */
+    int pass();
 
     const Move &getMasterMove() const { return m_masterMove; }
 
@@ -142,8 +146,8 @@ protected:
      * in the commands history for the current turn.
      * If none is found, return 0.
      */
-    const PlayerEventCmd * getPlayerEvent(unsigned iPlayerId,
-                                          int iEventType) const;
+    const PlayerEventCmd *getPlayerEvent(unsigned iPlayerId,
+                                         int iEventType) const;
 
     /**
      * Automatically set the solo for the current turn.
@@ -168,7 +172,7 @@ private:
      * If several players have the same score, one is returned arbitrarily.
      * If nobody played a valid move, the method returns a null pointer.
      */
-    Player * findBestPlayer() const;
+    Player *findBestPlayer() const;
 
     /**
      * This function really changes the turn, i.e. the best word is played,

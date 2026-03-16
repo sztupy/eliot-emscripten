@@ -30,13 +30,13 @@ using std::map;
 
 class Dictionary;
 
-
 /**
  * A bag stores the set of free tiles for the game.
  */
 class Bag
 {
     DEFINE_LOGGER();
+
 public:
     explicit Bag(const Dictionary &iDic);
 
@@ -81,10 +81,13 @@ public:
      */
     Tile selectRandomConsonant() const;
 
-    Bag & operator=(const Bag &iOther);
+    Bag &operator=(const Bag &iOther);
 
     /// Convenience getter on the dictionary
-    const Dictionary & getDic() const { return m_dic; }
+    const Dictionary &getDic() const { return m_dic; }
+
+    // contents of the bag for debug purposes
+    wstring contentsDebug() const;
 
 private:
     /// Dictionary
@@ -102,4 +105,3 @@ private:
 };
 
 #endif
-

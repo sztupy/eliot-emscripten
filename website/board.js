@@ -1325,6 +1325,7 @@ function play() {
 
   if (!gameData.isFinished) {
     setTimeout(play, 3000 + (Math.floor(Math.random() * 10) + 1) * 250);
+    //setTimeout(play, 10 + (Math.floor(Math.random() * 10) + 1) * 10);
   } else {
     sendError(0, 3);
     sound_endgame.play();

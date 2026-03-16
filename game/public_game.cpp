@@ -32,118 +32,99 @@
 #include "pldrack.h"
 #include "json_writer.h"
 
-
 PublicGame::PublicGame(Game &iGame)
     : m_game(iGame)
 {
 }
-
 
 PublicGame::~PublicGame()
 {
     delete &m_game;
 }
 
-
 PublicGame::GameMode PublicGame::getMode() const
 {
-    if (dynamic_cast<Arbitration*>(&m_game))
+    if (dynamic_cast<Arbitration *>(&m_game))
         return kARBITRATION;
-    else if (dynamic_cast<Duplicate*>(&m_game))
+    else if (dynamic_cast<Duplicate *>(&m_game))
         return kDUPLICATE;
-    else if (dynamic_cast<FreeGame*>(&m_game))
+    else if (dynamic_cast<FreeGame *>(&m_game))
         return kFREEGAME;
-    else if (dynamic_cast<Topping*>(&m_game))
+    else if (dynamic_cast<Topping *>(&m_game))
         return kTOPPING;
     else
         return kTRAINING;
 }
 
-
-const GameParams & PublicGame::getParams() const
+const GameParams &PublicGame::getParams() const
 {
     return m_game.getParams();
 }
-
 
 bool PublicGame::hasMasterGame() const
 {
     return m_game.hasMasterGame();
 }
 
-
-const Dictionary & PublicGame::getDic() const
+const Dictionary &PublicGame::getDic() const
 {
     return m_game.getDic();
 }
 
-
-const Board& PublicGame::getBoard() const
+const Board &PublicGame::getBoard() const
 {
     return m_game.getBoard();
 }
 
-
-const Bag& PublicGame::getBag() const
+const Bag &PublicGame::getBag() const
 {
     return m_game.getBag();
 }
 
-
-const PlayedRack& PublicGame::getCurrentRack() const
+const PlayedRack &PublicGame::getCurrentRack() const
 {
     return m_game.getHistory().getCurrentRack();
 }
 
-
-const History& PublicGame::getHistory() const
+const History &PublicGame::getHistory() const
 {
     return m_game.getHistory();
 }
-
 
 void PublicGame::addPlayer(Player *iPlayer)
 {
     m_game.addPlayer(iPlayer);
 }
 
-
-const Player& PublicGame::getPlayer(unsigned int iNum) const
+const Player &PublicGame::getPlayer(unsigned int iNum) const
 {
     return m_game.getPlayer(iNum);
 }
 
-
-const Player& PublicGame::getCurrentPlayer() const
+const Player &PublicGame::getCurrentPlayer() const
 {
     return m_game.getCurrentPlayer();
 }
-
 
 unsigned int PublicGame::getNbPlayers() const
 {
     return m_game.getNPlayers();
 }
 
-
 unsigned int PublicGame::getNbHumanPlayers() const
 {
     return m_game.getNHumanPlayers();
 }
-
 
 void PublicGame::setPlayerName(unsigned iPlayerId, const wstring &iName)
 {
     m_game.accessPlayer(iPlayerId).setName(iName);
 }
 
-
 void PublicGame::setPlayerTableNb(unsigned iPlayerId, unsigned iTableNb)
 {
     m_game.accessPlayer(iPlayerId).setTableNb(iTableNb);
 }
-
-
 
 bool PublicGame::hasPlayed(unsigned int player) const
 {
@@ -155,12 +136,10 @@ void PublicGame::start()
     m_game.start();
 }
 
-
 bool PublicGame::isFinished() const
 {
     return m_game.isFinished();
 }
-
 
 int PublicGame::play(const wstring &iWord, const wstring &iCoord)
 {
@@ -177,7 +156,6 @@ int PublicGame::checkPlayedWord(const wstring &iWord, const wstring &iCoord, Mov
     return m_game.checkPlayedWord(iCoord, iWord, oMove, true, false);
 }
 
-
 int PublicGame::computePoints(const wstring &iWord, const wstring &iCoord) const
 {
     Move move;
@@ -187,24 +165,20 @@ int PublicGame::computePoints(const wstring &iWord, const wstring &iCoord) const
     return move.getScore();
 }
 
-
 void PublicGame::shuffleRack()
 {
     m_game.shuffleRack();
 }
-
 
 void PublicGame::reorderRack(const PlayedRack &iRack)
 {
     m_game.reorderRack(iRack);
 }
 
-
 void PublicGame::setTestRound(const Round &iRound)
 {
     m_game.accessBoard().testRound(iRound);
 }
-
 
 void PublicGame::removeTestRound()
 {
@@ -214,9 +188,9 @@ void PublicGame::removeTestRound()
 /***************************/
 
 template <typename T>
-static T & getTypedGame(Game &iGame)
+static T &getTypedGame(Game &iGame)
 {
-    T *typedGame = dynamic_cast<T*>(&iGame);
+    T *typedGame = dynamic_cast<T *>(&iGame);
     if (typedGame == NULL)
     {
         throw GameException("Invalid game type");
@@ -231,18 +205,15 @@ void PublicGame::trainingSearch()
     getTypedGame<Training>(m_game).search();
 }
 
-
-const Results& PublicGame::trainingGetResults() const
+const Results &PublicGame::trainingGetResults() const
 {
     return getTypedGame<Training>(m_game).getResults();
 }
-
 
 int PublicGame::trainingPlayResult(unsigned int iResultIndex)
 {
     return getTypedGame<Training>(m_game).playResult(iResultIndex);
 }
-
 
 void PublicGame::trainingSetRackRandom(bool iCheck, RackMode iRackMode)
 {
@@ -251,7 +222,6 @@ void PublicGame::trainingSetRackRandom(bool iCheck, RackMode iRackMode)
     else
         getTypedGame<Training>(m_game).setRackRandom(iCheck, Game::RACK_ALL);
 }
-
 
 void PublicGame::trainingSetRackManual(bool iCheck, const wstring &iLetters)
 {
@@ -265,24 +235,20 @@ void PublicGame::toppingPlay(const wstring &iWord, const wstring &iCoord, int iE
     getTypedGame<Topping>(m_game).tryWord(iWord, iCoord, iElapsed);
 }
 
-
 void PublicGame::toppingTimeOut(int iElapsed)
 {
     getTypedGame<Topping>(m_game).turnTimeOut(iElapsed);
 }
-
 
 void PublicGame::toppingAddPenalty(int iPenalty)
 {
     getTypedGame<Topping>(m_game).addPenalty(iPenalty);
 }
 
-
 vector<Move> PublicGame::toppingGetTriedMoves() const
 {
     return getTypedGame<Topping>(m_game).getTriedMoves();
 }
-
 
 Move PublicGame::toppingGetTopMove() const
 {
@@ -290,6 +256,11 @@ Move PublicGame::toppingGetTopMove() const
 }
 
 /***************************/
+
+int PublicGame::duplicateGamePass()
+{
+    return getTypedGame<Duplicate>(m_game).pass();
+}
 
 void PublicGame::duplicateSetPlayer(unsigned int p)
 {
@@ -301,7 +272,7 @@ void PublicGame::duplicateSetMasterMove(const Move &iMove)
     getTypedGame<Duplicate>(m_game).setMasterMove(iMove);
 }
 
-const Move & PublicGame::duplicateGetMasterMove() const
+const Move &PublicGame::duplicateGetMasterMove() const
 {
     return getTypedGame<Duplicate>(m_game).getMasterMove();
 }
@@ -320,25 +291,21 @@ void PublicGame::arbitrationSetRackRandom()
     getTypedGame<Arbitration>(m_game).setRackRandom();
 }
 
-
 void PublicGame::arbitrationSetRackManual(const wstring &iLetters)
 {
     getTypedGame<Arbitration>(m_game).setRackManual(iLetters);
 }
-
 
 void PublicGame::arbitrationSearch(LimitResults &oResults)
 {
     return getTypedGame<Arbitration>(m_game).search(oResults);
 }
 
-
 Move PublicGame::arbitrationCheckWord(const wstring &iWord,
                                       const wstring &iCoords) const
 {
     return getTypedGame<Arbitration>(m_game).checkWord(iWord, iCoords);
 }
-
 
 void PublicGame::arbitrationToggleSolo(unsigned iPlayerId)
 {
@@ -349,12 +316,10 @@ void PublicGame::arbitrationToggleSolo(unsigned iPlayerId)
         game.setSolo(iPlayerId);
 }
 
-
 int PublicGame::arbitrationGetSolo(unsigned iPlayerId) const
 {
     return getTypedGame<Arbitration>(m_game).getSolo(iPlayerId);
 }
-
 
 void PublicGame::arbitrationToggleWarning(unsigned iPlayerId)
 {
@@ -365,12 +330,10 @@ void PublicGame::arbitrationToggleWarning(unsigned iPlayerId)
         game.addWarning(iPlayerId);
 }
 
-
 bool PublicGame::arbitrationHasWarning(unsigned iPlayerId) const
 {
     return getTypedGame<Arbitration>(m_game).hasWarning(iPlayerId);
 }
-
 
 void PublicGame::arbitrationTogglePenalty(unsigned iPlayerId)
 {
@@ -381,18 +344,15 @@ void PublicGame::arbitrationTogglePenalty(unsigned iPlayerId)
         game.addPenalty(iPlayerId);
 }
 
-
 int PublicGame::arbitrationGetPenalty(unsigned iPlayerId) const
 {
     return getTypedGame<Arbitration>(m_game).getPenalty(iPlayerId);
 }
 
-
 void PublicGame::arbitrationAssign(unsigned iPlayerId, const Move &iMove)
 {
     getTypedGame<Arbitration>(m_game).assignMove(iPlayerId, iMove);
 }
-
 
 void PublicGame::arbitrationFinalizeTurn()
 {
@@ -407,61 +367,52 @@ unsigned int PublicGame::getCurrTurn() const
     return m_game.getNavigation().getCurrTurn() + 1;
 }
 
-
 unsigned int PublicGame::getNbTurns() const
 {
     return m_game.getNavigation().getNbTurns();
 }
-
 
 bool PublicGame::isFirstTurn() const
 {
     return m_game.getNavigation().isFirstTurn();
 }
 
-
 bool PublicGame::isLastTurn() const
 {
     return m_game.getNavigation().isLastTurn();
 }
-
 
 void PublicGame::firstTurn()
 {
     m_game.accessNavigation().firstTurn();
 }
 
-
 void PublicGame::prevTurn()
 {
     m_game.accessNavigation().prevTurn();
 }
-
 
 void PublicGame::nextTurn()
 {
     m_game.accessNavigation().nextTurn();
 }
 
-
 void PublicGame::lastTurn()
 {
     m_game.accessNavigation().lastTurn();
 }
-
 
 void PublicGame::clearFuture()
 {
     m_game.accessNavigation().clearFuture();
 }
 
-
 void PublicGame::printTurns() const
 {
     m_game.getNavigation().print();
 }
 
-void PublicGame::saveGame(ostream& out) const
+void PublicGame::saveGame(ostream &out) const
 {
     JsonWriter::write(m_game, out);
 }

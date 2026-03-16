@@ -32,9 +32,9 @@
 #include <locale.h>
 #include <wctype.h>
 #if HAVE_READLINE_READLINE_H
-#   include <stdio.h>
-#   include <readline/readline.h>
-#   include <readline/history.h>
+#include <stdio.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 #endif
 
 #include "dic.h"
@@ -56,29 +56,28 @@
 class Game;
 
 typedef boost::tokenizer<boost::char_separator<wchar_t>,
-        std::wstring::const_iterator,
-        std::wstring> Tokenizer;
+                         std::wstring::const_iterator,
+                         std::wstring>
+    Tokenizer;
 
 class ParsingException : public BaseException
 {
-    public:
-        ParsingException(const string &s) : BaseException(s) {}
+public:
+    ParsingException(const string &s) : BaseException(s) {}
 };
-
 
 wstring parseAlpha(const vector<wstring> &tokens, uint8_t index)
 {
     if (tokens.size() <= index)
         throw ParsingException("Not enough tokens");
     const wstring &wstr = tokens[index];
-    BOOST_FOREACH(wchar_t wch, wstr)
+    BOOST_FOREACH (wchar_t wch, wstr)
     {
         if (!iswalpha(wch))
             throw ParsingException("Not an alphabetical character: " + lfw(wch));
     }
     return wstr;
 }
-
 
 int parseNum(const vector<wstring> &tokens, uint8_t index,
              bool acceptDefault = false, int defValue = -1)
@@ -90,7 +89,7 @@ int parseNum(const vector<wstring> &tokens, uint8_t index,
         throw ParsingException("Not enough tokens");
     }
     const wstring &wstr = tokens[index];
-    BOOST_FOREACH(wchar_t wch, wstr)
+    BOOST_FOREACH (wchar_t wch, wstr)
     {
         if (!iswdigit(wch))
             throw ParsingException("Not a numeric character: " + lfw(wch));
@@ -99,20 +98,18 @@ int parseNum(const vector<wstring> &tokens, uint8_t index,
     return value;
 }
 
-
 wstring parseAlphaNum(const vector<wstring> &tokens, uint8_t index)
 {
     if (tokens.size() <= index)
         throw ParsingException("Not enough tokens");
     const wstring &wstr = tokens[index];
-    BOOST_FOREACH(wchar_t wch, wstr)
+    BOOST_FOREACH (wchar_t wch, wstr)
     {
         if (!iswalnum(wch))
             throw ParsingException("Not an alphanumeric character: " + lfw(wch));
     }
     return wstr;
 }
-
 
 wstring parseLetters(const vector<wstring> &tokens, uint8_t index,
                      const Dictionary &iDic)
@@ -121,7 +118,6 @@ wstring parseLetters(const vector<wstring> &tokens, uint8_t index,
         throw ParsingException("Not enough tokens");
     return iDic.convertFromInput(tokens[index]);
 }
-
 
 wchar_t parseCharInList(const vector<wstring> &tokens, uint8_t index,
                         const wstring &allowed)
@@ -136,7 +132,6 @@ wchar_t parseCharInList(const vector<wstring> &tokens, uint8_t index,
     return wstr[0];
 }
 
-
 int parsePlayerId(const vector<wstring> &tokens,
                   uint8_t index, const PublicGame &iGame)
 {
@@ -146,13 +141,12 @@ int parsePlayerId(const vector<wstring> &tokens,
     return playerId;
 }
 
-
 wstring parseFileName(const vector<wstring> &tokens, uint8_t index)
 {
     if (tokens.size() <= index)
         throw ParsingException("Not enough tokens");
     const wstring &wstr = tokens[index];
-    BOOST_FOREACH(wchar_t wch, wstr)
+    BOOST_FOREACH (wchar_t wch, wstr)
     {
         if (!iswalnum(wch) && wch != L'.' && wch != L'_')
             throw ParsingException("Invalid file name");
@@ -160,9 +154,8 @@ wstring parseFileName(const vector<wstring> &tokens, uint8_t index)
     return wstr;
 }
 
-
-PublicGame * readGame(const Dictionary &iDic,
-                      GameParams::GameMode iMode, const wstring &iToken)
+PublicGame *readGame(const Dictionary &iDic,
+                     GameParams::GameMode iMode, const wstring &iToken)
 {
     GameParams params(iDic, iMode);
     for (unsigned int i = 0; i < iToken.size(); ++i)
@@ -181,13 +174,13 @@ PublicGame * readGame(const Dictionary &iDic,
 void displayData(const PublicGame &iGame, const vector<wstring> &tokens)
 {
     const wstring &displayType = parseAlpha(tokens, 1);
-    if (displayType == L"g") {
+    if (displayType == L"g")
+    {
         GameIO::sendData(iGame);
     }
     else
         throw ParsingException("Invalid command");
 }
-
 
 void commonCommands(PublicGame &iGame, const vector<wstring> &tokens)
 {
@@ -236,8 +229,7 @@ void commonCommands(PublicGame &iGame, const vector<wstring> &tokens)
     }
 }
 
-
-void handleRegexp(const Dictionary& iDic, const vector<wstring> &tokens)
+void handleRegexp(const Dictionary &iDic, const vector<wstring> &tokens)
 {
     const wstring &regexp = tokens[1];
     int nres = parseNum(tokens, 2, true, 50);
@@ -267,13 +259,12 @@ void handleRegexp(const Dictionary& iDic, const vector<wstring> &tokens)
         return;
     }
 
-    BOOST_FOREACH(const wdstring &wstr, wordList)
+    BOOST_FOREACH (const wdstring &wstr, wordList)
     {
         printf("%s\n", lfw(wstr).c_str());
     }
     printf("%u printed results\n", (unsigned)wordList.size());
 }
-
 
 void setSetting(const vector<wstring> &tokens)
 {
@@ -296,13 +287,14 @@ void setSetting(const vector<wstring> &tokens)
     }
 }
 
-vector<wstring> readTokens(char* command) {
+vector<wstring> readTokens(char *command)
+{
     wstring wcommand = wfl(command);
     // Split the command
     vector<wstring> tokens;
     boost::char_separator<wchar_t> sep(L" ");
     Tokenizer tok(wcommand, sep);
-    BOOST_FOREACH(const wstring &wstr, tok)
+    BOOST_FOREACH (const wstring &wstr, tok)
     {
         if (wstr != L"")
             tokens.push_back(wstr);
@@ -310,7 +302,7 @@ vector<wstring> readTokens(char* command) {
     return tokens;
 }
 
-void loopFreegame(PublicGame &iGame, char* command)
+void loopFreegame(PublicGame &iGame, char *command)
 {
     const vector<wstring> &tokens = readTokens(command);
     if (tokens.empty())
@@ -320,16 +312,12 @@ void loopFreegame(PublicGame &iGame, char* command)
         wchar_t command = parseCharInList(tokens, 0, L"#?adhjspq");
         if (command == L'p')
         {
-            if (iGame.getMode() == GameParams::kDUPLICATE) {
-                int max = 100;
-                int nextPlayer = (iGame.getCurrentPlayer().getId() + 1) % iGame.getNbPlayers();
-                while ((!iGame.getPlayer(nextPlayer).isHuman() || iGame.hasPlayed(nextPlayer)) && max>=0) {
-                    nextPlayer = (nextPlayer + 1) % iGame.getNbPlayers();
-                    max--;
-                }
-
-                iGame.duplicateSetPlayer(nextPlayer);
-            } else {
+            if (iGame.getMode() == GameParams::kDUPLICATE)
+            {
+                iGame.duplicateGamePass();
+            }
+            else
+            {
                 wstring letters = L"";
                 // You can pass your turn without changing any letter
                 if (tokens.size() > 1)
@@ -337,13 +325,16 @@ void loopFreegame(PublicGame &iGame, char* command)
                     letters = parseLetters(tokens, 1, iGame.getDic());
                 }
                 int res = iGame.freeGamePass(letters);
-                if (res != 0) {
+                if (res != 0)
+                {
                     GameIO::sendError(1, res);
                 }
             }
         }
-        else if (command == L's') {
-            if (!iGame.isFinished()) {
+        else if (command == L's')
+        {
+            if (!iGame.isFinished())
+            {
                 iGame.makeAIMove();
             }
         }
@@ -359,19 +350,23 @@ void loopFreegame(PublicGame &iGame, char* command)
 Dictionary *g_dic;
 PublicGame *g_game;
 
-extern "C" void stopGame() {
-    if (g_game) {
+extern "C" void stopGame()
+{
+    if (g_game)
+    {
         delete g_game;
         g_game = NULL;
     }
 }
 
-
-extern "C" void startGame(int nbHuman, int nbAI, int aiPercentMin, int aiPercentMax, int flags) {
-    try {
+extern "C" void startGame(int nbHuman, int nbAI, int aiPercentMin, int aiPercentMax, int flags)
+{
+    try
+    {
         stopGame();
 
-        if (!g_dic) {
+        if (!g_dic)
+        {
             setlocale(LC_ALL, "");
             std::locale::global(std::locale(""));
             g_dic = new Dictionary("gd.dawg");
@@ -381,47 +376,64 @@ extern "C" void startGame(int nbHuman, int nbAI, int aiPercentMin, int aiPercent
         GameParams::GameMode iMode = GameParams::kFREEGAME;
 
         wstring token = L"";
-        if (flags & 0x1) {
+        if (flags & 0x1)
+        {
             token = L"j";
-        } else if (flags & 0x2) {
+        }
+        else if (flags & 0x2)
+        {
             token = L"e";
         }
 
-        if (flags & 0x4) {
+        if (flags & 0x4)
+        {
             iMode = GameParams::kDUPLICATE;
         }
 
         g_game = readGame(*g_dic, iMode, token);
 
-        while (nbHuman + nbAI > 0) {
-            if (nbHuman > 0 && nbAI > 0) {
-                if (rand()%2 || flags) {
+        while (nbHuman + nbAI > 0)
+        {
+            if (nbHuman > 0 && nbAI > 0)
+            {
+                if (rand() % 2 || flags)
+                {
                     g_game->addPlayer(new HumanPlayer);
                     nbHuman--;
-                } else {
+                }
+                else
+                {
                     g_game->addPlayer(new AIPercent((float)aiPercentMin / 100.0, (float)aiPercentMax / 100.0));
                     nbAI--;
                 }
-            } else if (nbHuman > 0) {
+            }
+            else if (nbHuman > 0)
+            {
                 g_game->addPlayer(new HumanPlayer);
                 nbHuman--;
-            } else {
+            }
+            else
+            {
                 g_game->addPlayer(new AIPercent((float)aiPercentMin / 100.0, (float)aiPercentMax / 100.0));
                 nbAI--;
             }
         }
         g_game->start();
-    } catch (std::exception &e)
+    }
+    catch (std::exception &e)
     {
         cerr << e.what() << endl;
     }
 }
 
-extern "C" void loadGame(char* saveData) {
-    try {
+extern "C" void loadGame(char *saveData)
+{
+    try
+    {
         stopGame();
 
-        if (!g_dic) {
+        if (!g_dic)
+        {
             setlocale(LC_ALL, "");
             std::locale::global(std::locale(""));
             g_dic = new Dictionary("gd.dawg");
@@ -430,27 +442,35 @@ extern "C" void loadGame(char* saveData) {
 
         Game *tmpGame = GameFactory::Instance()->load(saveData, *g_dic);
         g_game = new PublicGame(*tmpGame);
-    } catch (std::exception &e)
+    }
+    catch (std::exception &e)
     {
         cerr << e.what() << endl;
     }
 }
 
-extern "C" void gameAction(char* command) {
-    try {
-        if (!g_dic) {
+extern "C" void gameAction(char *command)
+{
+    try
+    {
+        if (!g_dic)
+        {
             setlocale(LC_ALL, "");
             std::locale::global(std::locale(""));
             g_dic = new Dictionary("gd.dawg");
             srand(time(NULL));
         }
 
-        if (command[0] == L'x') {
+        if (command[0] == L'x')
+        {
             GameIO::printWords(*g_dic);
-        } else {
+        }
+        else
+        {
             loopFreegame(*g_game, command);
         }
-    } catch (std::exception &e)
+    }
+    catch (std::exception &e)
     {
         cerr << e.what() << endl;
     }

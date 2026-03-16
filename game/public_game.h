@@ -40,7 +40,6 @@ class PlayedRack;
 
 using namespace std;
 
-
 /**
  * This class is a wrapper around a Game object (Façade design pattern).
  *
@@ -81,7 +80,7 @@ public:
      ***************/
 
     /// Get the game characteristics
-    const GameParams & getParams() const;
+    const GameParams &getParams() const;
 
     bool hasMasterGame() const;
 
@@ -90,17 +89,17 @@ public:
      * You should never create a new dictionary object while a Game
      * object still exists
      */
-    const Dictionary & getDic() const;
+    const Dictionary &getDic() const;
 
     /// Get the board
-    const Board& getBoard() const;
+    const Board &getBoard() const;
     /// Get the bag
-    const Bag& getBag() const;
+    const Bag &getBag() const;
     /// Get the rack
-    const PlayedRack & getCurrentRack() const;
+    const PlayedRack &getCurrentRack() const;
 
     /// Get the history of the game */
-    const History& getHistory() const;
+    const History &getHistory() const;
 
     /***************
      * Methods to access players.
@@ -112,8 +111,8 @@ public:
      */
     void addPlayer(Player *iPlayer);
 
-    const Player& getPlayer(unsigned int iNum) const;
-    const Player& getCurrentPlayer() const;
+    const Player &getPlayer(unsigned int iNum) const;
+    const Player &getCurrentPlayer() const;
     unsigned int getNbPlayers() const;
     unsigned int getNbHumanPlayers() const;
 
@@ -204,7 +203,7 @@ public:
      ***************/
 
     void trainingSearch();
-    const Results& trainingGetResults() const;
+    const Results &trainingGetResults() const;
     int trainingPlayResult(unsigned int iResultIndex);
 
     enum RackMode
@@ -221,7 +220,6 @@ public:
     void trainingSetRackRandom(bool iCheck, RackMode iRackMode);
 
     void trainingSetRackManual(bool iCheck, const wstring &iLetters);
-
 
     /***************
      * Topping games
@@ -253,10 +251,10 @@ public:
      * @exception GameException: Thrown if the player is not human or if
      *      he has already played
      */
+    int duplicateGamePass();
     void duplicateSetPlayer(unsigned int p);
-
     void duplicateSetMasterMove(const Move &iMove);
-    const Move & duplicateGetMasterMove() const;
+    const Move &duplicateGetMasterMove() const;
 
     /***************
      * FreeGame games
@@ -342,7 +340,8 @@ public:
      */
     void printTurns() const;
 
-    void saveGame(std::ostream& out) const;
+    void saveGame(std::ostream &out) const;
+
 private:
     /// Wrapped game
     Game &m_game;

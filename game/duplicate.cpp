@@ -23,10 +23,10 @@
 
 #include "config.h"
 #if ENABLE_NLS
-#   include <libintl.h>
-#   define _(String) gettext(String)
+#include <libintl.h>
+#define _(String) gettext(String)
 #else
-#   define _(String) String
+#define _(String) String
 #endif
 
 #include "duplicate.h"
@@ -52,15 +52,12 @@
 #include "encoding.h"
 #include "debug.h"
 
-
 INIT_LOGGER(game, Duplicate);
-
 
 Duplicate::Duplicate(const GameParams &iParams, const Game *iMasterGame)
     : Game(iParams, iMasterGame)
 {
 }
-
 
 int Duplicate::play(const wstring &iCoord, const wstring &iWord)
 {
@@ -90,18 +87,28 @@ int Duplicate::play(const wstring &iCoord, const wstring &iWord)
     return 0;
 }
 
+int Duplicate::pass()
+{
+    Move move(L"");
+    Player &currPlayer = *m_players[m_currPlayer];
+    recordPlayerMove(currPlayer, move);
+
+    tryEndTurn();
+
+    return 0;
+}
 
 void Duplicate::playAI(unsigned int p)
 {
     ASSERT(p < getNPlayers(), "Wrong player number");
     ASSERT(!hasPlayed(p), "AI player has already played");
 
-    AIPlayer *player = dynamic_cast<AIPlayer*>(m_players[p]);
+    AIPlayer *player = dynamic_cast<AIPlayer *>(m_players[p]);
     ASSERT(player != NULL, "AI requested for a human player");
 
     player->compute(getDic(), getBoard(), getHistory().beforeFirstRound());
     const Move &move = player->getMove();
-    if (move.isChangeLetters() || move.isPass())
+    if (move.isChangeLetters())
     {
         // The AI player must be buggy...
         ASSERT(false, "AI tried to cheat!");
@@ -143,6 +150,7 @@ void Duplicate::start()
     }
     catch (EndGameException &e)
     {
+        LOG_DEBUG("End game: " << e.what());
         endGame();
         return;
     }
@@ -155,12 +163,32 @@ void Duplicate::start()
     }
 }
 
-
 bool Duplicate::isFinished() const
 {
     return !canDrawRack(m_players[0]->getHistory().getCurrentRack(), true);
 }
 
+int Duplicate::makeAIMove()
+{
+    int wasPlayed = 0;
+    for (unsigned int i = 0; i < getNPlayers(); i++)
+    {
+        if (!m_players[i]->isHuman() && !hasPlayed(i))
+        {
+            playAI(i);
+            wasPlayed = 1;
+        }
+    }
+
+    if (!isArbitrationGame())
+    {
+        // Little hack to handle duplicate games with only AI players.
+        // This will have no effect when there is at least one human player
+        tryEndTurn();
+    }
+
+    return wasPlayed;
+}
 
 void Duplicate::tryEndTurn()
 {
@@ -176,24 +204,21 @@ void Duplicate::tryEndTurn()
                 return;
             }
         }
-    }
 
-    // Now that all the human players have played,
-    // make AI players play their turn
-    // Some may have already played, in arbitration mode, if the future turns
-    // were removed (because of the isHumanIndependent() behaviour)
-    for (unsigned int i = 0; i < getNPlayers(); i++)
-    {
-        if (!m_players[i]->isHuman() && !hasPlayed(i))
+        for (unsigned int i = 0; i < getNPlayers(); i++)
         {
-            playAI(i);
+            if (!hasPlayed(i))
+            {
+                m_currPlayer = i;
+                // AI still needs to play. `makeAIMove` needs to be called
+                return;
+            }
         }
     }
 
     // Next turn
     endTurn();
 }
-
 
 struct MatchingPlayer : public function<bool(PlayerMoveCmd)>
 {
@@ -206,7 +231,6 @@ struct MatchingPlayer : public function<bool(PlayerMoveCmd)>
 
     const unsigned m_playerId;
 };
-
 
 void Duplicate::recordPlayerMove(Player &ioPlayer, const Move &iMove)
 {
@@ -232,12 +256,11 @@ void Duplicate::recordPlayerMove(Player &ioPlayer, const Move &iMove)
     }
 }
 
-
-Player * Duplicate::findBestPlayer() const
+Player *Duplicate::findBestPlayer() const
 {
     Player *bestPlayer = NULL;
     int bestScore = -1;
-    BOOST_FOREACH(Player *player, m_players)
+    BOOST_FOREACH (Player *player, m_players)
     {
         const Move &move = player->getLastMove();
         if (move.isValid() && move.getScore() > bestScore)
@@ -248,7 +271,6 @@ Player * Duplicate::findBestPlayer() const
     }
     return bestPlayer;
 }
-
 
 void Duplicate::endTurn()
 {
@@ -324,8 +346,8 @@ void Duplicate::endTurn()
     // Leave the same reliquate to all players
     // This is required by the start() method which will be called to
     // start the next turn
-    const PlayedRack& pld = getHistory().getCurrentRack();
-    BOOST_FOREACH(Player *player, m_players)
+    const PlayedRack &pld = getHistory().getCurrentRack();
+    BOOST_FOREACH (Player *player, m_players)
     {
         Command *pCmd = new PlayerRackCmd(*player, pld);
         accessNavigation().addAndExecute(pCmd);
@@ -335,14 +357,12 @@ void Duplicate::endTurn()
     start();
 }
 
-
 void Duplicate::endGame()
 {
     LOG_INFO("End of the game");
     // No more master move
     setMasterMove(Move());
 }
-
 
 void Duplicate::setPlayer(unsigned int p)
 {
@@ -359,7 +379,6 @@ void Duplicate::setPlayer(unsigned int p)
     m_currPlayer = p;
 }
 
-
 bool Duplicate::hasPlayed(unsigned iPlayerId) const
 {
     ASSERT(iPlayerId < getNPlayers(), "Wrong player number");
@@ -371,12 +390,10 @@ bool Duplicate::hasPlayed(unsigned iPlayerId) const
     return cmd != 0 && cmd->isExecuted() && !cmd->getMove().isNull();
 }
 
-
 void Duplicate::innerSetMasterMove(const Move &iMove)
 {
     m_masterMove = iMove;
 }
-
 
 void Duplicate::setMasterMove(const Move &iMove)
 {
@@ -390,17 +407,15 @@ void Duplicate::setMasterMove(const Move &iMove)
     accessNavigation().addAndExecute(pCmd);
 }
 
-
 bool Duplicate::isArbitrationGame() const
 {
     return getParams().getMode() == GameParams::kARBITRATION;
 }
 
-
 void Duplicate::setSoloAuto(unsigned int minNbPlayers, int iSoloValue)
 {
     // Remove all existing solos
-    BOOST_FOREACH(const Player *player, m_players)
+    BOOST_FOREACH (const Player *player, m_players)
     {
         const PlayerEventCmd *cmd = getPlayerEvent(player->getId(), PlayerEventCmd::SOLO);
         if (cmd != 0)
@@ -414,7 +429,7 @@ void Duplicate::setSoloAuto(unsigned int minNbPlayers, int iSoloValue)
     // which have played at least one word during the game, even if they
     // have left the game since then, or have arrived after the beginning.
     unsigned countActive = 0;
-    BOOST_FOREACH(const Player *player, m_players)
+    BOOST_FOREACH (const Player *player, m_players)
     {
         for (unsigned i = 0; i < player->getHistory().getSize(); ++i)
         {
@@ -436,7 +451,7 @@ void Duplicate::setSoloAuto(unsigned int minNbPlayers, int iSoloValue)
 
         // Find whether other players than imax have the same score
         bool otherWithSameScore = false;
-        BOOST_FOREACH(const Player *player, m_players)
+        BOOST_FOREACH (const Player *player, m_players)
         {
             if (player != bestPlayer &&
                 player->getLastMove().getScore() >= bestScore &&
@@ -457,7 +472,6 @@ void Duplicate::setSoloAuto(unsigned int minNbPlayers, int iSoloValue)
     }
 }
 
-
 /// Predicate to help retrieving commands
 struct MatchingPlayerAndEventType : public function<bool(PlayerEventCmd)>
 {
@@ -466,17 +480,15 @@ struct MatchingPlayerAndEventType : public function<bool(PlayerEventCmd)>
 
     bool operator()(const PlayerEventCmd &cmd)
     {
-        return cmd.getPlayer().getId() == m_playerId
-            && cmd.getEventType() == m_eventType;
+        return cmd.getPlayer().getId() == m_playerId && cmd.getEventType() == m_eventType;
     }
 
     const unsigned m_playerId;
     const int m_eventType;
 };
 
-
-const PlayerEventCmd * Duplicate::getPlayerEvent(unsigned iPlayerId,
-                                                 int iEventType) const
+const PlayerEventCmd *Duplicate::getPlayerEvent(unsigned iPlayerId,
+                                                int iEventType) const
 {
     ASSERT(iPlayerId < getNPlayers(), "Wrong player number");
     MatchingPlayerAndEventType predicate(iPlayerId, iEventType);

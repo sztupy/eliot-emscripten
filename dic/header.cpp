@@ -30,21 +30,21 @@
 
 // For ntohl & Co.
 #ifdef WIN32
-#   include <winsock2.h>
+#include <winsock2.h>
 #else
-#    if HAVE_NETINET_IN_H
-#       include <netinet/in.h>
-#    endif
-#    if HAVE_ARPA_INET_H
-#       include <arpa/inet.h>
-#    endif
+#if HAVE_NETINET_IN_H
+#include <netinet/in.h>
+#endif
+#if HAVE_ARPA_INET_H
+#include <arpa/inet.h>
+#endif
 #endif
 
 #if ENABLE_NLS
-#   include <libintl.h>
-#   define _(String) gettext(String)
+#include <libintl.h>
+#define _(String) gettext(String)
 #else
-#   define _(String) String
+#define _(String) String
 #endif
 
 #include "header.h"
@@ -54,14 +54,12 @@
 using boost::format;
 using boost::wformat;
 
-
 INIT_LOGGER(dic, Header);
-
 
 #if defined(WORDS_BIGENDIAN)
 // Nothing to do on big-endian machines
-#   define ntohll(x) (x)
-#   define htonll(x) (x)
+#define ntohll(x) (x)
+#define htonll(x) (x)
 #else
 #if !defined(htonll)
 static inline uint64_t htonll(uint64_t host64)
@@ -75,7 +73,6 @@ static inline uint64_t ntohll(uint64_t net64)
 }
 #endif
 #endif
-
 
 /**
  * Keyword included in dictionary headers
@@ -188,7 +185,6 @@ struct Dict_header_ext_2
     // --- we have a multiple of 64 bytes here
 };
 
-
 Header::Header(istream &iStream)
     : m_root(0), m_nbWords(0), m_nodesUsed(0), m_edgesUsed(0),
       m_nodesSaved(0), m_edgesSaved(0), m_type(kDAWG)
@@ -199,7 +195,6 @@ Header::Header(istream &iStream)
     read(iStream);
     buildCaches();
 }
-
 
 Header::Header(const DictHeaderInfo &iInfo)
 {
@@ -255,7 +250,6 @@ Header::Header(const DictHeaderInfo &iInfo)
     buildCaches();
 }
 
-
 void Header::buildCaches()
 {
     // Build the char --> code mapping
@@ -270,7 +264,7 @@ void Header::buildCaches()
     m_displayCache.assign(m_letters.size() + 1, L"");
     for (unsigned int i = 0; i < m_letters.size(); ++i)
     {
-        map<wchar_t, vector<wstring> >::const_iterator it =
+        map<wchar_t, vector<wstring>>::const_iterator it =
             m_displayAndInputData.find(m_letters[i]);
         if (it == m_displayAndInputData.end())
             m_displayCache[i + 1].append(1, m_letters[i]);
@@ -281,17 +275,17 @@ void Header::buildCaches()
     // Create a string with all the characters possibly used,
     // and another one with the characters used in multi-char input strings
     m_inputChars.reserve(m_letters.size());
-    BOOST_FOREACH(wchar_t wch, m_letters)
+    BOOST_FOREACH (wchar_t wch, m_letters)
     {
-        map<wchar_t, vector<wstring> >::const_iterator it =
+        map<wchar_t, vector<wstring>>::const_iterator it =
             m_displayAndInputData.find(wch);
         if (it == m_displayAndInputData.end())
             m_inputChars.append(1, wch);
         else
         {
-            BOOST_FOREACH(const wstring &str, it->second)
+            BOOST_FOREACH (const wstring &str, it->second)
             {
-                BOOST_FOREACH(wchar_t chr, str)
+                BOOST_FOREACH (wchar_t chr, str)
                 {
                     wchar_t upChr = towupper(chr);
                     if (m_inputChars.find(upChr) == string::npos)
@@ -307,12 +301,10 @@ void Header::buildCaches()
     }
 }
 
-
 bool Header::isMultiCharPart(wchar_t iChar) const
 {
     return m_multiCharInputChars.find(towupper(iChar)) != wstring::npos;
 }
-
 
 wchar_t Header::getCharFromCode(unsigned int iCode) const
 {
@@ -326,7 +318,6 @@ wchar_t Header::getCharFromCode(unsigned int iCode) const
     return m_letters[iCode - 1];
 }
 
-
 unsigned int Header::getCodeFromChar(wchar_t iChar) const
 {
     map<wchar_t, unsigned int>::const_iterator pair =
@@ -334,14 +325,13 @@ unsigned int Header::getCodeFromChar(wchar_t iChar) const
     if (pair == m_mapCodeFromChar.end())
     {
         format fmt(_("Header::getCodeFromChar: No code for letter '%1%' (val=%2%)"));
-        fmt % lfw(iChar) % (unsigned) iChar;
+        fmt % lfw(iChar) % (unsigned)iChar;
         throw DicException(fmt.str());
     }
     return pair->second;
 }
 
-
-const wdstring & Header::getDisplayStr(unsigned int iCode) const
+const wdstring &Header::getDisplayStr(unsigned int iCode) const
 {
     // Safety check
     if (iCode == 0 || iCode > m_letters.size())
@@ -353,7 +343,6 @@ const wdstring & Header::getDisplayStr(unsigned int iCode) const
     return m_displayCache[iCode];
 }
 
-
 vector<wistring> Header::getInputStr(unsigned int iCode) const
 {
     // Safety check
@@ -363,7 +352,7 @@ vector<wistring> Header::getInputStr(unsigned int iCode) const
         oss << iCode;
         throw DicException("Header::getInputStr: No code for letter '" + oss.str());
     }
-    map<wchar_t, vector<wstring> >::const_iterator it =
+    map<wchar_t, vector<wstring>>::const_iterator it =
         m_displayAndInputData.find(m_letters[iCode - 1]);
     if (it == m_displayAndInputData.end())
     {
@@ -375,11 +364,10 @@ vector<wistring> Header::getInputStr(unsigned int iCode) const
         return it->second;
 }
 
-
 void Header::read(istream &iStream)
 {
     Dict_header_old aHeader;
-    iStream.read((char*)&aHeader, sizeof(Dict_header_old));
+    iStream.read((char *)&aHeader, sizeof(Dict_header_old));
     if (iStream.gcount() != sizeof(Dict_header_old))
         throw DicException("Header::read: expected to read more bytes");
 
@@ -411,7 +399,7 @@ void Header::read(istream &iStream)
 
     // After reading the old header, we now read the extension
     Dict_header_ext aHeaderExt;
-    iStream.read((char*)&aHeaderExt, sizeof(Dict_header_ext));
+    iStream.read((char *)&aHeaderExt, sizeof(Dict_header_ext));
     if (iStream.gcount() != sizeof(Dict_header_ext))
         throw DicException("Header::read: expected to read more bytes");
 
@@ -462,8 +450,8 @@ void Header::read(istream &iStream)
     // Vowels and consonants
     for (unsigned int i = 0; i < m_letters.size(); ++i)
     {
-        m_vowels.push_back(aHeaderExt.vowels & (1 << i));
-        m_consonants.push_back(aHeaderExt.consonants & (1 << i));
+        m_vowels.push_back(aHeaderExt.vowels & (1 << i) ? 1 : 0);
+        m_consonants.push_back(aHeaderExt.consonants & (1 << i) ? 1 : 0);
     }
 
     // Read the additional display/input data
@@ -471,7 +459,7 @@ void Header::read(istream &iStream)
     {
         // Read the extension of the extension...
         Dict_header_ext_2 aHeaderExt2;
-        iStream.read((char*)&aHeaderExt2, sizeof(Dict_header_ext_2));
+        iStream.read((char *)&aHeaderExt2, sizeof(Dict_header_ext_2));
         if (iStream.gcount() != sizeof(Dict_header_ext_2))
             throw DicException("Header::read: expected to read more bytes (ext2)");
 
@@ -487,7 +475,6 @@ void Header::read(istream &iStream)
     }
 }
 
-
 void Header::write(ostream &oStream) const
 {
     Dict_header_old aHeader;
@@ -501,7 +488,7 @@ void Header::write(ostream &oStream) const
     aHeader.nodessaved = htonl(m_nodesSaved);
     aHeader.edgessaved = htonl(m_edgesSaved);
 
-    oStream.write((char*)&aHeader, sizeof(Dict_header_old));
+    oStream.write((char *)&aHeader, sizeof(Dict_header_old));
     if (!oStream.good())
         throw DicException("Header::write: error when writing to file");
 
@@ -551,7 +538,7 @@ void Header::write(ostream &oStream) const
     aHeaderExt.consonants = htonll(aHeaderExt.consonants);
 
     // Write the extension
-    oStream.write((char*)&aHeaderExt, sizeof(Dict_header_ext));
+    oStream.write((char *)&aHeaderExt, sizeof(Dict_header_ext));
     if (!oStream.good())
         throw DicException("Header::write: error when writing to file");
 
@@ -568,11 +555,10 @@ void Header::write(ostream &oStream) const
     aHeaderExt2.displayAndInputSize = htons(aHeaderExt2.displayAndInputSize);
 
     // Write the extension
-    oStream.write((char*)&aHeaderExt2, sizeof(Dict_header_ext_2));
+    oStream.write((char *)&aHeaderExt2, sizeof(Dict_header_ext_2));
     if (!oStream.good())
         throw DicException("Header::write: error when writing to file (ext2)");
 }
-
 
 void Header::readDisplayAndInput(const wstring &serialized)
 {
@@ -585,8 +571,9 @@ void Header::readDisplayAndInput(const wstring &serialized)
 
     // Use a more friendly type name
     typedef boost::tokenizer<boost::char_separator<wchar_t>,
-            std::wstring::const_iterator,
-            std::wstring> Tokenizer;
+                             std::wstring::const_iterator,
+                             std::wstring>
+        Tokenizer;
 
     // Split the string on double spaces
     static const boost::char_separator<wchar_t> sep1(L" ");
@@ -622,12 +609,11 @@ void Header::readDisplayAndInput(const wstring &serialized)
     }
 }
 
-
 wstring Header::writeDisplayAndInput() const
 {
     wstring serialized;
     bool first = true;
-    map<wchar_t, vector<wstring> >::const_iterator it;
+    map<wchar_t, vector<wstring>>::const_iterator it;
     for (it = m_displayAndInputData.begin();
          it != m_displayAndInputData.end(); ++it)
     {
@@ -636,7 +622,7 @@ wstring Header::writeDisplayAndInput() const
         else
             serialized += L" ";
         serialized.append(1, it->first);
-        BOOST_FOREACH(const wstring &str, it->second)
+        BOOST_FOREACH (const wstring &str, it->second)
         {
             // Make sure the string is uppercase
             serialized += L"|" + toUpper(str);
@@ -644,7 +630,6 @@ wstring Header::writeDisplayAndInput() const
     }
     return serialized;
 }
-
 
 void Header::print(ostream &out) const
 {
@@ -659,16 +644,14 @@ void Header::print(ostream &out) const
     out << fmt(_("Number of letters: %1%")) % m_letters.size() << endl;
     out << fmt(_("Number of words: %1%")) % m_nbWords << endl;
     long unsigned int size = sizeof(Dict_header_old) +
-        sizeof(Dict_header_ext) + sizeof(Dict_header_ext_2);
+                             sizeof(Dict_header_ext) + sizeof(Dict_header_ext_2);
     out << fmt(_("Header size: %1% bytes")) % size << endl;
     out << fmt(_("Root: %1% (edge)")) % m_root << endl;
     out << fmt(_("Nodes: %1% used + %2% saved")) % m_nodesUsed % m_nodesSaved << endl;
     out << fmt(_("Edges: %1% used + %2% saved")) % m_edgesUsed % m_edgesSaved << endl;
 #undef fmt
     out << "====================================================================" << endl;
-    out << format("%1% | %2% | %3% | %4% | %5% | %6% | %7%")
-        % _("Letter") % _("Points") % _("Frequency") % _("Vowel")
-        % _("Consonant") % _("Display") % _("Alt. input") << endl;
+    out << format("%1% | %2% | %3% | %4% | %5% | %6% | %7%") % _("Letter") % _("Points") % _("Frequency") % _("Vowel") % _("Consonant") % _("Display") % _("Alt. input") << endl;
     out << "-------+--------+-----------+-------+-----------+-------+------" << endl;
 #define sz(x) strlen(_(x))
     for (unsigned int i = 0; i < m_letters.size(); ++i)
@@ -679,7 +662,7 @@ void Header::print(ostream &out) const
         fmter % centerAndConvert(str(wformat(L"%1%") % m_frequency[i]), sz("Frequency"));
         fmter % centerAndConvert(str(wformat(L"%1%") % m_vowels[i]), sz("Vowel"));
         fmter % centerAndConvert(str(wformat(L"%1%") % m_consonants[i]), sz("Consonant"));
-        map<wchar_t, vector<wstring> >::const_iterator it =
+        map<wchar_t, vector<wstring>>::const_iterator it =
             m_displayAndInputData.find(m_letters[i]);
         if (it != m_displayAndInputData.end())
         {

@@ -47,12 +47,10 @@
 
 INIT_LOGGER(game, FreeGame);
 
-
 FreeGame::FreeGame(const GameParams &iParams, const Game *iMasterGame)
     : Game(iParams, iMasterGame), m_finished(false)
 {
 }
-
 
 int FreeGame::play(const wstring &iCoord, const wstring &iWord)
 {
@@ -74,13 +72,12 @@ int FreeGame::play(const wstring &iCoord, const wstring &iWord)
     return 0;
 }
 
-
 void FreeGame::playAI(unsigned int p)
 {
     ASSERT(p < getNPlayers(), "Wrong player number");
     ASSERT(!m_players[p]->isHuman(), "AI requested for a human player");
 
-    AIPlayer *player = static_cast<AIPlayer*>(m_players[p]);
+    AIPlayer *player = static_cast<AIPlayer *>(m_players[p]);
 
     player->compute(getDic(), getBoard(), getHistory().beforeFirstRound());
     const Move &move = player->getMove();
@@ -96,7 +93,6 @@ void FreeGame::playAI(unsigned int p)
     endTurn();
 }
 
-
 void FreeGame::recordPlayerMove(const Move &iMove, Player &ioPlayer)
 {
     LOG_INFO("Player " << ioPlayer.getId() << " plays: " << lfw(iMove.toString()));
@@ -104,13 +100,12 @@ void FreeGame::recordPlayerMove(const Move &iMove, Player &ioPlayer)
     accessNavigation().addAndExecute(pCmd);
 }
 
-
 void FreeGame::start()
 {
     ASSERT(getNPlayers(), "Cannot start a game without any player");
 
     // Set the initial racks of the players
-    BOOST_FOREACH(Player *player, m_players)
+    BOOST_FOREACH (Player *player, m_players)
     {
         const PlayedRack &newRack =
             helperSetRackRandom(player->getCurrentRack(), false, RACK_NEW);
@@ -123,7 +118,8 @@ void FreeGame::start()
     accessNavigation().addAndExecute(pCmd);
 }
 
-int FreeGame::makeAIMove() {
+int FreeGame::makeAIMove()
+{
     if (!m_players[m_currPlayer]->isHuman())
     {
         playAI(m_currPlayer);
@@ -138,7 +134,6 @@ bool FreeGame::isFinished() const
     // FIXME: the flag is never reset to false!
     return m_finished;
 }
-
 
 int FreeGame::endTurn()
 {
@@ -172,6 +167,7 @@ int FreeGame::endTurn()
         catch (EndGameException &e)
         {
             // End of the game
+            LOG_DEBUG("End game: " << e.what());
             endGame(m_currPlayer);
             return 1;
         }
@@ -195,7 +191,6 @@ int FreeGame::endTurn()
 
     return 0;
 }
-
 
 // Adjust the scores of the players with the points of the remaining tiles
 void FreeGame::endGame(unsigned iWinningPlayer)
@@ -228,7 +223,7 @@ void FreeGame::endGame(unsigned iWinningPlayer)
             const PlayedRack &pld = m_players[i]->getCurrentRack();
             pld.getAllTiles(tiles);
             int points = 0;
-            BOOST_FOREACH(const Tile &tile, tiles)
+            BOOST_FOREACH (const Tile &tile, tiles)
             {
                 points += tile.getPoints();
             }
@@ -243,14 +238,13 @@ void FreeGame::endGame(unsigned iWinningPlayer)
     if (iWinningPlayer < getNPlayers())
     {
         Command *pCmd = new PlayerEventCmd(*m_players[m_currPlayer],
-                                        PlayerEventCmd::END_GAME, addedPoints);
+                                           PlayerEventCmd::END_GAME, addedPoints);
         accessNavigation().addAndExecute(pCmd);
     }
 
     // Lock game
     m_finished = true;
 }
-
 
 int FreeGame::checkPass(const Player &iPlayer,
                         const wstring &iToChange) const
@@ -276,7 +270,7 @@ int FreeGame::checkPass(const Player &iPlayer,
     // Check that the letters are all present in the player's rack
     const PlayedRack &pld = iPlayer.getCurrentRack();
     Rack rack = pld.getRack();
-    BOOST_FOREACH(wchar_t wch, iToChange)
+    BOOST_FOREACH (wchar_t wch, iToChange)
     {
         // Remove the letter from the rack
         if (!rack.contains(Tile(wch)))
@@ -295,7 +289,6 @@ int FreeGame::checkPass(const Player &iPlayer,
 
     return 0;
 }
-
 
 int FreeGame::pass(const wstring &iToChange)
 {
@@ -316,7 +309,6 @@ int FreeGame::pass(const wstring &iToChange)
     return 0;
 }
 
-
 bool FreeGame::allPlayersPassedThreeTimesInARow() const
 {
     const unsigned NB_OF_PASSES = 3;
@@ -324,7 +316,7 @@ bool FreeGame::allPlayersPassedThreeTimesInARow() const
     const unsigned NB_TURNS_TO_CHECK = NB_OF_PASSES * getNPlayers();
 
     bool result = true;
-    BOOST_FOREACH(const Player *player, m_players)
+    BOOST_FOREACH (const Player *player, m_players)
     {
         const History &history = player->getHistory();
         result = result && (history.getSize() >= NB_TURNS_TO_CHECK);

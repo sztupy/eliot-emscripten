@@ -81,6 +81,7 @@ void Topping::start()
     }
     catch (EndGameException &e)
     {
+        LOG_DEBUG("End game: " << e.what());
         endGame();
         return;
     }
@@ -259,5 +260,3 @@ vector<Move> Topping::getTriedMoves() const
     }
     return results;
 }
-
-

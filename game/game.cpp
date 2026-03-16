@@ -24,12 +24,11 @@
 
 #include "config.h"
 #if ENABLE_NLS
-#   include <libintl.h>
-#   define _(String) gettext(String)
+#include <libintl.h>
+#define _(String) gettext(String)
 #else
-#   define _(String) String
+#define _(String) String
 #endif
-
 
 #include "dic.h"
 #include "tile.h"
@@ -51,39 +50,33 @@
 
 INIT_LOGGER(game, Game);
 
-
-Game::Game(const GameParams &iParams, const Game *iMasterGame):
-    m_params(iParams), m_masterGame(iMasterGame),
-    m_board(m_params), m_bag(iParams.getDic())
+Game::Game(const GameParams &iParams, const Game *iMasterGame) : m_params(iParams), m_masterGame(iMasterGame),
+                                                                 m_board(m_params), m_bag(iParams.getDic())
 {
     m_points = 0;
     m_currPlayer = 0;
 }
 
-
 Game::~Game()
 {
-    BOOST_FOREACH(Player *p, m_players)
+    BOOST_FOREACH (Player *p, m_players)
     {
         delete p;
     }
     delete m_masterGame;
 }
 
-
-Player& Game::accessPlayer(unsigned int iNum)
+Player &Game::accessPlayer(unsigned int iNum)
 {
     ASSERT(iNum < m_players.size(), "Wrong player number");
     return *(m_players[iNum]);
 }
 
-
-const Player& Game::getPlayer(unsigned int iNum) const
+const Player &Game::getPlayer(unsigned int iNum) const
 {
     ASSERT(iNum < m_players.size(), "Wrong player number");
     return *(m_players[iNum]);
 }
-
 
 void Game::shuffleRack()
 {
@@ -93,22 +86,17 @@ void Game::shuffleRack()
     m_players[currPlayer()]->setCurrentRack(pld);
 }
 
-
 void Game::reorderRack(const PlayedRack &iNewRack)
 {
-    LOG_DEBUG("Reordering rack for player " << currPlayer() <<
-              " (newRack=" << lfw(iNewRack.toString()) << ")");
+    LOG_DEBUG("Reordering rack for player " << currPlayer() << " (newRack=" << lfw(iNewRack.toString()) << ")");
     const PlayedRack &pld = getCurrentPlayer().getCurrentRack();
 
     // Make sure the new rack uses the same letters
     ASSERT(pld.getRack() == iNewRack.getRack(),
-           "The old and new racks have different letters" <<
-           "(old=" << lfw(pld.toString()) <<
-           " new=" << lfw(iNewRack.toString()) << ")");
+           "The old and new racks have different letters" << "(old=" << lfw(pld.toString()) << " new=" << lfw(iNewRack.toString()) << ")");
 
     m_players[currPlayer()]->setCurrentRack(iNewRack);
 }
-
 
 void Game::realBag(Bag &ioBag) const
 {
@@ -121,10 +109,10 @@ void Game::realBag(Bag &ioBag) const
     if (getMode() == GameParams::kFREEGAME)
     {
         // In freegame mode, take the letters from all the racks
-        BOOST_FOREACH(const Player *player, m_players)
+        BOOST_FOREACH (const Player *player, m_players)
         {
             player->getCurrentRack().getAllTiles(tiles);
-            BOOST_FOREACH(const Tile &tile, tiles)
+            BOOST_FOREACH (const Tile &tile, tiles)
             {
                 ioBag.takeTile(tile);
             }
@@ -132,16 +120,23 @@ void Game::realBag(Bag &ioBag) const
     }
     else
     {
-        // In training or duplicate mode, take the rack of the current
+        // In training or duplicate mode, take the rack of the current or played
         // player only
-        getPlayer(m_currPlayer).getCurrentRack().getAllTiles(tiles);
-        BOOST_FOREACH(const Tile &tile, tiles)
+        if (hasMasterGame())
+        {
+            // Note: this isn't fully correct, so we'll need to handle this case separately in GameMoveCmd's JOKER mode, hence we're not useing the realBag function over there
+            getRackFromMasterGame().getAllTiles(tiles);
+        }
+        else
+        {
+            getPlayer(m_currPlayer).getCurrentRack().getAllTiles(tiles);
+        }
+        BOOST_FOREACH (const Tile &tile, tiles)
         {
             ioBag.takeTile(tile);
         }
     }
 }
-
 
 bool Game::canDrawRack(const PlayedRack &iPld, bool iCheck, int *reason) const
 {
@@ -168,7 +163,7 @@ bool Game::canDrawRack(const PlayedRack &iPld, bool iCheck, int *reason) const
     // Replace all the tiles of the given rack into the bag
     vector<Tile> tiles;
     iPld.getAllTiles(tiles);
-    BOOST_FOREACH(const Tile &tile, tiles)
+    BOOST_FOREACH (const Tile &tile, tiles)
     {
         bag.replaceTile(tile);
     }
@@ -202,7 +197,6 @@ bool Game::canDrawRack(const PlayedRack &iPld, bool iCheck, int *reason) const
     return true;
 }
 
-
 PlayedRack Game::getRackFromMasterGame() const
 {
     ASSERT(hasMasterGame(), "No master game defined");
@@ -224,7 +218,6 @@ PlayedRack Game::getRackFromMasterGame() const
     return pldRack;
 }
 
-
 Move Game::getMoveFromMasterGame() const
 {
     ASSERT(hasMasterGame(), "No master game defined");
@@ -244,7 +237,6 @@ Move Game::getMoveFromMasterGame() const
 
     return move;
 }
-
 
 PlayedRack Game::helperSetRackRandom(const PlayedRack &iPld,
                                      bool iCheck, set_rack_mode mode) const
@@ -287,13 +279,14 @@ PlayedRack Game::helperSetRackRandom(const PlayedRack &iPld,
     // contains the right number of tiles.
     Bag bag(getDic());
     realBag(bag);
+
     if (mode == RACK_NEW && nold != 0)
     {
         // We may have removed too many letters from the bag (i.e. the 'new'
         // letters of the player)
         vector<Tile> tiles;
         pld.getNewTiles(tiles);
-        BOOST_FOREACH(const Tile &tile, tiles)
+        BOOST_FOREACH (const Tile &tile, tiles)
         {
             bag.replaceTile(tile);
         }
@@ -304,7 +297,7 @@ PlayedRack Game::helperSetRackRandom(const PlayedRack &iPld,
         // Replace all the tiles in the bag before choosing random ones
         vector<Tile> tiles;
         pld.getAllTiles(tiles);
-        BOOST_FOREACH(const Tile &tile, tiles)
+        BOOST_FOREACH (const Tile &tile, tiles)
         {
             bag.replaceTile(tile);
         }
@@ -337,7 +330,7 @@ PlayedRack Game::helperSetRackRandom(const PlayedRack &iPld,
     {
         // 1) Is there already a joker in the remaining letters of the rack?
         bool jokerFound = false;
-        BOOST_FOREACH(const Tile &tile, tiles)
+        BOOST_FOREACH (const Tile &tile, tiles)
         {
             if (tile.isJoker())
             {
@@ -380,7 +373,7 @@ PlayedRack Game::helperSetRackRandom(const PlayedRack &iPld,
         // Bad luck... we have to reject the rack
         vector<Tile> rejectedTiles;
         pld.getAllTiles(rejectedTiles);
-        BOOST_FOREACH(const Tile &rejTile, rejectedTiles)
+        BOOST_FOREACH (const Tile &rejTile, rejectedTiles)
         {
             bag.replaceTile(rejTile);
         }
@@ -452,13 +445,13 @@ PlayedRack Game::helperSetRackRandom(const PlayedRack &iPld,
         const Rack &rack = pld.getRack();
 
         MasterResults res(getBag());
-        res.search(getDic(), getBoard(), rack,  getHistory().beforeFirstRound());
+        res.search(getDic(), getBoard(), rack, getHistory().beforeFirstRound());
         if (!res.isEmpty())
         {
             PlayedRack pldCopy = pld;
 
             // Get the best word
-            const Round & bestRound = res.get(0);
+            const Round &bestRound = res.get(0);
             LOG_DEBUG("helperSetRackRandom(): initial rack: "
                       << lfw(pld.toString()) << " (best word: "
                       << lfw(bestRound.getWord()) << ")");
@@ -513,22 +506,20 @@ PlayedRack Game::helperSetRackRandom(const PlayedRack &iPld,
     pld.shuffleNew();
 
     // Post-condition check. This should never fail, of course :)
-    ASSERT(pld.checkRack(min, min), "helperSetRackRandom() is buggy!");
+    ASSERT(pld.checkRack(min, min), "helperSetRackRandom() is buggy! " << lfw(pld.toString()));
 
     return pld;
 }
 
-
 bool Game::rackInBag(const Rack &iRack, const Bag &iBag) const
 {
-    BOOST_FOREACH(const Tile &t, getDic().getAllTiles())
+    BOOST_FOREACH (const Tile &t, getDic().getAllTiles())
     {
         if (iRack.count(t) > iBag.count(t))
             return false;
     }
     return true;
 }
-
 
 PlayedRack Game::helperSetRackManual(bool iCheck, const wstring &iLetters) const
 {
@@ -547,8 +538,7 @@ PlayedRack Game::helperSetRackManual(bool iCheck, const wstring &iLetters) const
     if (iCheck)
     {
         int min;
-        if (m_bag.getNbVowels() > 1 && m_bag.getNbConsonants() > 1
-            && m_history.getSize() < 15)
+        if (m_bag.getNbVowels() > 1 && m_bag.getNbConsonants() > 1 && m_history.getSize() < 15)
             min = 2;
         else
             min = 1;
@@ -560,21 +550,18 @@ PlayedRack Game::helperSetRackManual(bool iCheck, const wstring &iLetters) const
     return pld;
 }
 
-
 /*********************************************************
  *********************************************************/
-
 
 unsigned int Game::getNHumanPlayers() const
 {
     unsigned int count = 0;
-    BOOST_FOREACH(const Player *player, m_players)
+    BOOST_FOREACH (const Player *player, m_players)
     {
         count += (player->isHuman() ? 1 : 0);
     }
     return count;
 }
-
 
 void Game::addPlayer(Player *iPlayer)
 {
@@ -585,10 +572,9 @@ void Game::addPlayer(Player *iPlayer)
     m_players.push_back(iPlayer);
 
     LOG_INFO("Adding player '" << lfw(iPlayer->getName())
-             << "' (" << (iPlayer->isHuman() ? "human" : "AI") << ")"
-             << " with ID " << iPlayer->getId());
+                               << "' (" << (iPlayer->isHuman() ? "human" : "AI") << ")"
+                               << " with ID " << iPlayer->getId());
 }
-
 
 void Game::nextPlayer()
 {
@@ -601,7 +587,6 @@ void Game::nextPlayer()
     Command *pCmd = new CurrentPlayerCmd(*this, newPlayerId);
     accessNavigation().addAndExecute(pCmd);
 }
-
 
 int Game::checkPlayedWord(const wstring &iCoord,
                           const wstring &iWord,
@@ -689,7 +674,6 @@ int Game::checkPlayedWord(const wstring &iCoord,
     return 0;
 }
 
-
 void Game::setGameAndPlayersRack(const PlayedRack &iRack, bool iWithNoMove)
 {
     // Set the game rack
@@ -697,7 +681,7 @@ void Game::setGameAndPlayersRack(const PlayedRack &iRack, bool iWithNoMove)
     accessNavigation().addAndExecute(pCmd);
     LOG_INFO("Setting players rack to '" + lfw(iRack.toString()) + "'");
     // All the players have the same rack
-    BOOST_FOREACH(Player *player, m_players)
+    BOOST_FOREACH (Player *player, m_players)
     {
         Command *pCmd = new PlayerRackCmd(*player, iRack);
         accessNavigation().addAndExecute(pCmd);
@@ -710,7 +694,7 @@ void Game::setGameAndPlayersRack(const PlayedRack &iRack, bool iWithNoMove)
         // and "has played with no move" in duplicate and arbitration modes.
         // This is also practical to know at which turn the warnings, penalties
         // and solos should be assigned.
-        BOOST_FOREACH(Player *player, m_players)
+        BOOST_FOREACH (Player *player, m_players)
         {
             Command *pCmd = new PlayerMoveCmd(*player, Move());
             accessNavigation().addAndExecute(pCmd);
@@ -718,13 +702,11 @@ void Game::setGameAndPlayersRack(const PlayedRack &iRack, bool iWithNoMove)
     }
 }
 
-
 Game::CurrentPlayerCmd::CurrentPlayerCmd(Game &ioGame,
-                             unsigned int iPlayerId)
+                                         unsigned int iPlayerId)
     : m_game(ioGame), m_newPlayerId(iPlayerId), m_oldPlayerId(0)
 {
 }
-
 
 void Game::CurrentPlayerCmd::doExecute()
 {
@@ -732,12 +714,10 @@ void Game::CurrentPlayerCmd::doExecute()
     m_game.setCurrentPlayer(m_newPlayerId);
 }
 
-
 void Game::CurrentPlayerCmd::doUndo()
 {
     m_game.setCurrentPlayer(m_oldPlayerId);
 }
-
 
 wstring Game::CurrentPlayerCmd::toString() const
 {

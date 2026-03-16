@@ -18,6 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *****************************************************************************/
 
+#include <boost/foreach.hpp>
 #include <sstream>
 
 #include "cmd/game_move_cmd.h"
@@ -25,18 +26,16 @@
 #include "game.h"
 #include "rack.h"
 #include "turn_data.h"
-
+#include "encoding.h"
 
 INIT_LOGGER(game, GameMoveCmd);
 
-
 GameMoveCmd::GameMoveCmd(Game &ioGame, const Move &iMove)
     : m_game(ioGame), m_move(iMove),
-    m_moveRack(ioGame.getHistory().getCurrentRack())
+      m_moveRack(ioGame.getHistory().getCurrentRack())
 {
     setAutoExecutable(false);
 }
-
 
 void GameMoveCmd::doExecute()
 {
@@ -58,7 +57,6 @@ void GameMoveCmd::doExecute()
     }
 }
 
-
 void GameMoveCmd::doUndo()
 {
     // Undo playing the round on the board
@@ -68,12 +66,11 @@ void GameMoveCmd::doUndo()
     }
 
     // Points
-    m_game.addPoints(- m_move.getScore());
+    m_game.addPoints(-m_move.getScore());
 
     // History
     m_game.accessHistory().removeLastTurn();
 }
-
 
 void GameMoveCmd::playRound()
 {
@@ -87,7 +84,8 @@ void GameMoveCmd::playRound()
     // on the board. When going back in the game, we must only
     // replace played tiles.
     // We test a rack when it is set but tiles are left in the bag.
-    Bag & bag = m_game.accessBag();
+    Bag &bag = m_game.accessBag();
+
     for (unsigned int i = 0; i < m_round.getWordLen(); i++)
     {
         if (m_round.isPlayedFromRack(i))
@@ -105,17 +103,44 @@ void GameMoveCmd::playRound()
 
     if (m_game.getParams().hasVariant(GameParams::kJOKER))
     {
+        // we need to get the real contents of the bag to know if we can replace letters from it
+        Bag realBag(m_game.getDic());
+        if (m_game.getMode() == GameParams::kFREEGAME)
+        {
+            m_game.realBag(realBag);
+        }
+        else
+        {
+            // in duplicate mode we'll need to remove the remaining rack from the actual played move
+            const PlayedRack &newRack = Move::ComputeRackForMove(m_moveRack, m_move);
+            realBag = m_game.getBag();
+            vector<Tile> tiles;
+            newRack.getAllTiles(tiles);
+
+            BOOST_FOREACH (const Tile &tile, tiles)
+            {
+                realBag.takeTile(tile);
+            }
+        }
+
         for (unsigned int i = 0; i < m_round.getWordLen(); i++)
         {
             if (m_round.isPlayedFromRack(i) && m_round.isJoker(i))
             {
                 // Is the represented letter still available in the bag?
                 const Tile &t = m_round.getTile(i).toUpper();
-                if (bag.contains(t))
+
+                LOG_DEBUG("Replacing joker " + lfw(t.getDisplayStr()));
+
+                if (realBag.contains(t))
                 {
                     bag.replaceTile(Tile::Joker());
                     bag.takeTile(t);
                     m_round.setTile(i, t);
+                }
+                else
+                {
+                    LOG_DEBUG("Not enough tiles to replace joker");
                 }
 
                 // In a joker game we should have only 1 joker in the rack
@@ -128,7 +153,6 @@ void GameMoveCmd::playRound()
     m_game.accessBoard().addRound(m_game.getDic(), m_round);
 }
 
-
 void GameMoveCmd::unplayRound()
 {
     // Update the board
@@ -139,7 +163,7 @@ void GameMoveCmd::unplayRound()
     // on the board. When going back in the game, we must only
     // replace played tiles.
     // We test a rack when it is set but tiles are left in the bag.
-    Bag & bag = m_game.accessBag();
+    Bag &bag = m_game.accessBag();
     for (unsigned int i = 0; i < m_round.getWordLen(); i++)
     {
         if (m_round.isPlayedFromRack(i))
@@ -156,7 +180,6 @@ void GameMoveCmd::unplayRound()
     }
 }
 
-
 wstring GameMoveCmd::toString() const
 {
     wostringstream oss;
@@ -164,4 +187,3 @@ wstring GameMoveCmd::toString() const
         << m_moveRack.toString() << L")";
     return oss.str();
 }
-

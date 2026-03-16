@@ -28,20 +28,17 @@
 #include "debug.h"
 #include "encoding.h"
 
-
 INIT_LOGGER(game, Bag);
-
 
 Bag::Bag(const Dictionary &iDic)
     : m_dic(iDic), m_nbTiles(0)
 {
-    BOOST_FOREACH(const Tile &tile, m_dic.getAllTiles())
+    BOOST_FOREACH (const Tile &tile, m_dic.getAllTiles())
     {
         m_tilesMap[tile] = tile.maxNumber();
         m_nbTiles += tile.maxNumber();
     }
 }
-
 
 unsigned Bag::count(const Tile &iTile) const
 {
@@ -51,13 +48,12 @@ unsigned Bag::count(const Tile &iTile) const
     return 0;
 }
 
-
 unsigned Bag::getNbVowels() const
 {
     int v = 0;
 
     std::pair<Tile, int> p;
-    BOOST_FOREACH(p, m_tilesMap)
+    BOOST_FOREACH (p, m_tilesMap)
     {
         if (p.first.isVowel())
             v += p.second;
@@ -65,20 +61,18 @@ unsigned Bag::getNbVowels() const
     return v;
 }
 
-
 unsigned Bag::getNbConsonants() const
 {
     int c = 0;
 
     std::pair<Tile, int> p;
-    BOOST_FOREACH(p, m_tilesMap)
+    BOOST_FOREACH (p, m_tilesMap)
     {
         if (p.first.isConsonant())
             c += p.second;
     }
     return c;
 }
-
 
 void Bag::takeTile(const Tile &iTile)
 {
@@ -89,7 +83,6 @@ void Bag::takeTile(const Tile &iTile)
     m_nbTiles--;
 }
 
-
 void Bag::replaceTile(const Tile &iTile)
 {
     ASSERT(count(iTile) < iTile.maxNumber(),
@@ -99,24 +92,20 @@ void Bag::replaceTile(const Tile &iTile)
     m_nbTiles++;
 }
 
-
 Tile Bag::selectRandom() const
 {
     return selectRandomTile(m_nbTiles, false, false);
 }
-
 
 Tile Bag::selectRandomVowel() const
 {
     return selectRandomTile(getNbVowels(), true, false);
 }
 
-
 Tile Bag::selectRandomConsonant() const
 {
     return selectRandomTile(getNbConsonants(), false, true);
 }
-
 
 Tile Bag::selectRandomTile(unsigned total,
                            bool onlyVowels, bool onlyConsonants) const
@@ -125,7 +114,7 @@ Tile Bag::selectRandomTile(unsigned total,
 
     int n = (int)((double)total * rand() / (RAND_MAX + 1.0));
     std::pair<Tile, int> p;
-    BOOST_FOREACH(p, m_tilesMap)
+    BOOST_FOREACH (p, m_tilesMap)
     {
         if (onlyVowels && !p.first.isVowel())
             continue;
@@ -139,12 +128,31 @@ Tile Bag::selectRandomTile(unsigned total,
     return Tile();
 }
 
-
-Bag & Bag::operator=(const Bag &iOther)
+Bag &Bag::operator=(const Bag &iOther)
 {
     m_tilesMap = iOther.m_tilesMap;
     m_nbTiles = iOther.m_nbTiles;
     return *this;
 }
 
+wstring Bag::contentsDebug() const
+{
+    wstring result;
 
+    std::pair<Tile, int> p;
+    BOOST_FOREACH (p, m_tilesMap)
+    {
+        for (int i = 0; i < p.second; i++)
+            result = result + p.first.getDisplayStr();
+
+        if (p.second > 0)
+        {
+            if (p.first.isConsonant())
+                result += 'c';
+            if (p.first.isVowel())
+                result += 'v';
+        }
+    }
+
+    return result;
+}
