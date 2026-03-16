@@ -1577,6 +1577,33 @@ document.getElementById("super_rack_game_button").onclick = () => {
   postGameInit();
 }
 
+document.getElementById("random_game_button").onclick = () => {
+  let computerMin = Math.floor(Math.random() * 100);
+  let computerMax = Math.floor(Math.random() * 100);
+
+  if (computerMin > computerMax) {
+    [computerMin, computerMax] = [computerMax, computerMin];
+  }
+
+  let computers = 1 + Math.floor(Math.random() * 3);
+
+  let flags = 0;
+  if (Math.random() < 0.30) {
+    flags += 8;
+  }
+
+  if (Math.random() < 0.30) {
+    flags += 4;
+  }
+
+  if (Math.random() < 0.30) {
+    flags += Math.random() < 0.5 ? 1 : 2;
+  }
+  console.log(1, computers, computerMin, computerMax, flags);
+  _startGame(1, computers, computerMin, computerMax, flags);
+  postGameInit();
+}
+
 document.getElementById("custom_game_button").onclick = () => {
   const humanPlayers = parseInt(document.getElementById("human_players").value, 10);
   const aiPlayers = parseInt(document.getElementById("computer_players").value, 10);
