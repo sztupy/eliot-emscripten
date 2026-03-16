@@ -97,7 +97,8 @@
             <ul>
               <li><strong>Duplicate game</strong>: Each player plays with the exact same rack and tries to find the best
                 move possible for the current board. Whoever picked the best will win and their word will be the one
-                played. Everyone only gets points for their own word though</li>
+                played. Everyone only gets points for their own word though. Game ends once the rack doesn't have at
+                least one vowel and one consonant.</li>
               <li><strong>Joker mode</strong>: The first two players get a joker into their rack. If they play it, it
                 will be replaced with the real letter if it's still in the bag. Otherwise the joker is used as in a
                 normal game. If the joker remains they get it back for the next turn.</li>
@@ -107,6 +108,7 @@
                 just needs to find what this word is.</li>
               <li><strong>Super rack mode</strong>: The players gets 8 letters in the rack instead of 7. They can still
                 only use a maximum of 7 to make words.</li>
+              <li><strong>Combination</strong>: You can also combine these game modes.</li>
             </ul>
           </li>
         </ul>
@@ -383,6 +385,18 @@
             mode<br><span class="game_description">Play against 3 AI controlled players who know the entire dictionary
               and always play the best
               moves</span></button>
+
+          <button id="duplicate_game_button"><img draggable="false" src="img/new_game_duplicate.jpg"
+              alt="Picture of a tournament">Duplicate game<br><span class="game_description">Tournament style,
+              where each player tries to find the best word possible on the same board</span></button>
+          <button id="joker_game_button"><img draggable="false" src="img/new_game_joker.jpg"
+              alt="A joker">Joker<br><span class="game_description">You always get a joker in your rack</span></button>
+          <button id="deus_game_button"><img draggable="false" src="img/new_game_deus.jpg" alt="A magic wand">Deus ex
+            Machina<br><span class="game_description">The 7th
+              letter you get is always one that allows you to potentially score high</span></button>
+          <button id="super_rack_game_button"><img draggable="false" src="img/new_game_super.jpg" alt="8 letters">Super
+            rack<br><span class="game_description">Play with 8 letters instead
+              of 7</span></button>
         </p>
 
         <h3>Or customize your experience</h3>

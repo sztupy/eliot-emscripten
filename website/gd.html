@@ -99,7 +99,8 @@
             <ul>
               <li><strong>Duplicate game</strong>: Each player plays with the exact same rack and tries to find the best
                 move possible for the current board. Whoever picked the best will win and their word will be the one
-                played. Everyone only gets points for their own word though</li>
+                played. Everyone only gets points for their own word though. Game ends once the rack doesn't have at
+                least one vowel and one consonant.</li>
               <li><strong>Joker mode</strong>: The first two players get a joker into their rack. If they play it, it
                 will be replaced with the real letter if it's still in the bag. Otherwise the joker is used as in a
                 normal game. If the joker remains they get it back for the next turn.</li>
@@ -109,6 +110,7 @@
                 just needs to find what this word is.</li>
               <li><strong>Super rack mode</strong>: The players gets 8 letters in the rack instead of 7. They can still
                 only use a maximum of 7 to make words.</li>
+              <li><strong>Combination</strong>: You can also combine these game modes.</li>
             </ul>
           </li>
         </ul>
@@ -379,6 +381,19 @@
               alt="Ceathrar a’ cluich geama">Geama
             eòlach<br><span class="game_description">Cluich an aghaidh trì AI aig a bheil eòlas air an fhaclair gu lèir
               agus a chluicheas na gluasadan as fheàrr an-còmhnaidh</span></button>
+
+          <button id="duplicate_game_button"><img draggable="false" src="img/new_game_duplicate.jpg"
+              alt="Dealbh de cho-fharpais">Geama dùblaichte<br><span class="game_description">Stoidhle farpais, far am
+              bi gach cluicheadair a’ feuchainn ris an fhacal as fheàrr a lorg air an aon bhòrd</span></button>
+          <button id="joker_game_button"><img draggable="false" src="img/new_game_joker.jpg"
+              alt="Joker">Cairt-chuiridh<br><span class="game_description">Gheibh thu cairt-chuiridh
+              an-còmhnaidh</span></button>
+          <button id="deus_game_button"><img draggable="false" src="img/new_game_deus.jpg" alt="Slat draoidheachd">Deus
+            ex Machina<br><span class="game_description">An 7mh litir a gheibh thu, 's e sin an litir a leigeas leat
+              sgòr àrd fhaighinn an-còmhnaidh</span></button>
+          <button id="super_rack_game_button"><img draggable="false" src="img/new_game_super.jpg"
+              alt="8 litrichean">Racais sàr-mhath<br><span class="game_description">Cluich le 8 litrichean an àite
+              7</span></button>
         </p>
 
         <h3>No gnàthaich an t-eòlas agad</h3>

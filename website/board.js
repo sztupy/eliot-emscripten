@@ -1557,6 +1557,26 @@ document.getElementById("expert_game_button").onclick = () => {
   postGameInit();
 }
 
+document.getElementById("duplicate_game_button").onclick = () => {
+  _startGame(1, 3, 20, 50, 8);
+  postGameInit();
+}
+
+document.getElementById("joker_game_button").onclick = () => {
+  _startGame(1, 2, 20, 50, 1);
+  postGameInit();
+}
+
+document.getElementById("deus_game_button").onclick = () => {
+  _startGame(1, 2, 20, 50, 2);
+  postGameInit();
+}
+
+document.getElementById("super_rack_game_button").onclick = () => {
+  _startGame(1, 2, 20, 50, 4);
+  postGameInit();
+}
+
 document.getElementById("custom_game_button").onclick = () => {
   const humanPlayers = parseInt(document.getElementById("human_players").value, 10);
   const aiPlayers = parseInt(document.getElementById("computer_players").value, 10);
